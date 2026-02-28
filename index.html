@@ -4,112 +4,310 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>多摩.dev</title>
-  <meta name="description" content="多摩地域のエンジニア・ものづくりに関わる人が集まるコミュニティ" />
+  <meta name="description" content="多摩で学びが循環する場" />
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-      line-height: 1.7;
-      color: #222;
-      background: #f7f7f7;
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --sub:#4b5563;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --brand:#0b57d0;
+      --brand-2:#111827;
+      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      --shadow-sm: 0 6px 16px rgba(17,24,39,.06);
+      --radius: 16px;
     }
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 40px 20px 64px;
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      line-height:1.75;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% -10%, rgba(11,87,208,.12), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(17,24,39,.10), transparent 55%),
+        var(--bg);
     }
-    .card {
-      background: #fff;
-      border-radius: 12px;
+
+    .container{
+      max-width:860px;
+      margin:0 auto;
+      padding:36px 16px 72px;
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
       padding: 28px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
     }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 2rem;
+
+    /* ヘッダーに“顔”を作る */
+    .hero{
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--line);
     }
-    .lead {
-      margin: 0 0 24px;
-      color: #555;
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:.85rem;
+      color:var(--sub);
+      background: rgba(11,87,208,.08);
+      border:1px solid rgba(11,87,208,.18);
+      padding:6px 10px;
+      border-radius:999px;
+      margin-bottom: 12px;
     }
-    .section {
-      margin-top: 28px;
+    .dot{
+      width:8px;height:8px;border-radius:999px;
+      background: var(--brand);
+      box-shadow: 0 0 0 3px rgba(11,87,208,.15);
     }
-    h2 {
-      font-size: 1.1rem;
+
+    h1{
+      margin:0 0 8px;
+      font-size: clamp(1.9rem, 3.6vw, 2.4rem);
+      letter-spacing: .01em;
+      line-height:1.2;
+    }
+
+    .lead{
+      margin:0;
+      color:var(--sub);
+      font-size: 1rem;
+    }
+
+    /* セクションを整える */
+    .section{
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px dashed var(--line);
+    }
+    .section:first-of-type{
+      margin-top: 20px;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    h2{
+      font-size: 1.05rem;
+      margin: 0 0 10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    h2::before{
+      content:"";
+      width:10px;
+      height:10px;
+      border-radius:3px;
+      background: rgba(11,87,208,.18);
+      border:1px solid rgba(11,87,208,.28);
+    }
+
+    .note{
+      color: var(--muted);
+      font-size: .95rem;
       margin: 0 0 10px;
     }
-    ul {
-      padding-left: 1.2em;
-      margin: 0;
-    }
-    li { margin: 6px 0; }
-    a { color: #0b57d0; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .button {
-      display: inline-block;
+
+    /* ボタンを2種類に */
+    .actions{
+      display:flex;
+      flex-wrap: wrap;
+      gap:10px;
       margin-top: 8px;
-      background: #111;
-      color: #fff;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
       padding: 10px 14px;
-      border-radius: 8px;
+      border-radius: 10px;
+      text-decoration:none;
+      font-weight: 600;
+      border:1px solid var(--line);
+      transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary{
+      background: var(--brand-2);
+      color:#fff;
+      border-color: var(--brand-2);
+    }
+    .btn-primary:hover{ opacity:.95; }
+
+    .btn-secondary{
+      background:#fff;
+      color: var(--text);
+    }
+    .btn-secondary:hover{ border-color:#cbd5e1; }
+
+    /* リンク一覧を「カード化」して見栄えUP */
+    .links{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .link-card{
+      display:block;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-decoration:none;
+      color: inherit;
+      background: #fff;
+      transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+    .link-card:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+      border-color: #cbd5e1;
+    }
+    .link-title{
+      font-weight: 700;
+      margin: 0 0 2px;
+    }
+    .link-desc{
+      margin:0;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    a{
+      color: var(--brand);
       text-decoration: none;
     }
-    .button:hover { opacity: 0.9; text-decoration: none; }
-    footer {
-      margin-top: 24px;
-      color: #666;
-      font-size: 0.9rem;
+    a:hover{ text-decoration: underline; }
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .95em;
     }
-    .note {
-      color: #666;
-      font-size: 0.95rem;
+
+    .mini{
+      margin: 0;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .footer{
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .9rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content: space-between;
+      align-items:center;
+    }
+
+    @media (min-width: 720px){
+      .container{ padding: 44px 20px 84px; }
+      .links{ grid-template-columns: 1fr 1fr; }
+      .card{ padding: 34px; }
+      .lead{ font-size: 1.03rem; }
     }
   </style>
 </head>
 <body>
   <main class="container">
     <div class="card">
-      <h1>多摩.dev</h1>
-      <p class="lead">
-        多摩地域のエンジニア・デザイナー・プロダクトづくりに関わる方が、
-        学びと交流のために集まるコミュニティです。
-      </p>
+
+      <header class="hero">
+        <div class="badge"><span class="dot"></span>多摩で学びが循環する場</div>
+        <h1>多摩.dev</h1>
+        <p class="lead">
+          多摩.dev は、東京都多摩市を拠点とするエンジニアコミュニティです。<br>
+          聖蹟桜ヶ丘、多摩センター、立川、八王子など多摩地域での勉強会を開催。<br>
+          多摩で働く・暮らすエンジニア同士が、気軽に集まり、互いの知見や経験を共有できる場にしていけたらうれしいです。
+        </p>
+      </header>
 
       <section class="section">
         <h2>次回開催</h2>
         <p class="note">最新の開催情報は connpass をご確認ください。</p>
-        <a class="button" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
-          connpassを見る
-        </a>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
+            connpassを見る
+          </a>
+          <a class="btn btn-secondary" href="https://tamadev.connpass.com/event/" target="_blank" rel="noopener noreferrer">
+            開催一覧
+          </a>
+        </div>
       </section>
 
       <section class="section">
         <h2>公式リンク</h2>
-        <ul>
-          <li><a href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">connpass</a></li>
-          <li><a href="https://discord.gg/XXXXXXX" target="_blank" rel="noopener noreferrer">Discord</a>（招待リンク差し替え）</li>
-          <li><a href="https://x.com/XXXXXXXX" target="_blank" rel="noopener noreferrer">X（旧Twitter）</a>（アカウント差し替え）</li>
-        </ul>
+        <div class="links">
+          <a class="link-card" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">connpass</div>
+            <p class="link-desc">開催情報・参加申し込み</p>
+          </a>
+          <a class="link-card" href="https://discord.com/invite/X9R3zVrtxx" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">Discord</div>
+            <p class="link-desc">参加者コミュニケーション</p>
+          </a>
+        </div>
+        <p class="mini" style="margin-top:10px;">
+          ※ 初参加の方も歓迎です。気軽にご参加ください。
+        </p>
       </section>
 
       <section class="section">
         <h2>お問い合わせ</h2>
-        <p>
-          ご連絡は <a href="mailto:hello@example.com">hello@example.com</a> までお願いいたします。<br>
+        <p class="note">
+          ご連絡は <a class="mono" href="mailto:hello@example.com">hello@example.com</a> までお願いいたします。<br>
           （後で公式メールアドレスに差し替え）
         </p>
       </section>
 
       <section class="section">
         <h2>運営</h2>
-        <p>多摩.dev 運営</p>
+        <p style="margin:0 0 8px;"><strong>髙橋直規（幡ヶ谷亭直吉）</strong></p>
+        <div class="actions">
+          <a class="btn btn-secondary" href="https://x.com/asagayanaoki" target="_blank" rel="noopener noreferrer">
+            X（旧Twitter）
+          </a>
+        </div>
       </section>
 
-      <footer>
-        © 多摩.dev
-      </footer>
+      <div class="footer">
+        <span>© 多摩.dev</span>
+        <span class="mini">Last updated: <span id="lastUpdated">—</span></span>
+      </div>
+
     </div>
   </main>
+
+  <script>
+    // 表示のアクセント：最終更新日（任意）
+    const d = new Date(document.lastModified);
+    if (!isNaN(d.getTime())) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      document.getElementById("lastUpdated").textContent = `${y}/${m}/${day}`;
+    }
+  </script>
 </body>
 </html>
