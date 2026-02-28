@@ -229,7 +229,17 @@ a:hover{ text-decoration: underline; }
   height: auto;
   display: block;
   border-radius: 14px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(229,231,235,.8);
+  box-shadow: 0 6px 18px rgba(17,24,39,.06);
+  margin-bottom: 16px;
+}
+
+.heroActions{
+  margin-top: 14px;
+}
+
+.hero{
+  padding-bottom: 20px;
   margin-bottom: 18px;
 }
 
