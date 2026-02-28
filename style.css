@@ -224,12 +224,6 @@ a:hover{ text-decoration: underline; }
   align-items:center;
 }
 
-@media (min-width: 720px){
-  .container{ padding: 44px 20px 84px; }
-  .links{ grid-template-columns: 1fr 1fr; }
-  .card{ padding: 34px; }
-  .lead{ font-size: 1.03rem; }
-}
 .heroImage{
   width: 100%;
   height: auto;
@@ -237,4 +231,11 @@ a:hover{ text-decoration: underline; }
   border-radius: 14px;
   border: 1px solid var(--line);
   margin-bottom: 18px;
+}
+
+@media (min-width: 720px){
+  .container{ padding: 44px 20px 84px; }
+  .links{ grid-template-columns: 1fr 1fr; }
+  .card{ padding: 34px; }
+  .lead{ font-size: 1.03rem; }
 }
