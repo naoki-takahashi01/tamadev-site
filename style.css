@@ -230,3 +230,11 @@ a:hover{ text-decoration: underline; }
   .card{ padding: 34px; }
   .lead{ font-size: 1.03rem; }
 }
+.heroImage{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  margin-bottom: 18px;
+}
