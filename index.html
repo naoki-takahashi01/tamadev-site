@@ -11,22 +11,36 @@
 <body>
   <main class="container">
     <div class="card">
+
+      <!-- 画像はそのまま “ヘッダー画像” として見せる -->
       <img class="heroImage" src="./hero.png" alt="多摩.dev" />
-      <header class="hero">
+
+      <!-- ヒーローに「タイトル/キャッチ/CTA」を戻す -->
+      <header class="hero" aria-label="多摩.dev">
+        <div class="badge"><span class="dot"></span>多摩で学びが循環する場</div>
+        <h1>多摩.dev</h1>
+
         <p class="lead">
           多摩.dev は、東京都多摩市を拠点とするエンジニアコミュニティです。<br>
           聖蹟桜ヶ丘、多摩センター、立川、八王子など多摩地域での勉強会を開催。<br>
           多摩で働く・暮らすエンジニア同士が、気軽に集まり、互いの知見や経験を共有できる場にしていけたらうれしいです。
         </p>
+
+        <div class="actions heroActions">
+          <a class="btn btn-primary" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
+            connpassを見る
+          </a>
+          <a class="btn btn-secondary" href="https://discord.com/invite/X9R3zVrtxx" target="_blank" rel="noopener noreferrer">
+            Discordに参加
+          </a>
+        </div>
       </header>
 
+      <!-- 次回開催は「開催一覧」導線を残しつつ、説明を短く -->
       <section class="section" aria-labelledby="next-event">
         <h2 id="next-event">次回開催</h2>
         <p class="note">最新の開催情報は connpass をご確認ください。</p>
         <div class="actions">
-          <a class="btn btn-primary" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
-            connpassを見る
-          </a>
           <a class="btn btn-secondary" href="https://tamadev.connpass.com/event/" target="_blank" rel="noopener noreferrer">
             開催一覧
           </a>
@@ -74,7 +88,6 @@
   </main>
 
   <script>
-    // 任意：最終更新日を表示（GitHub Pagesでも自然に動きます）
     const d = new Date(document.lastModified);
     if (!isNaN(d.getTime())) {
       const y = d.getFullYear();
