@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>イベント履歴 | 多摩.dev</title>
+  <meta name="description" content="多摩.dev のイベント履歴（過去イベントの登壇資料・レポート・参加レポートへのリンク集）" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="pageHeader">
+      <h1>イベント履歴</h1>
+      <p>過去のイベントの connpass、登壇資料、開催レポート、参加レポートをまとめています。</p>
+    </header>
+
+    <!-- 次回イベント（任意） -->
+    <section class="card" aria-labelledby="next-event">
+      <h2 id="next-event">次回イベント</h2>
+      <p class="muted">準備中の場合は非表示でも構いません。</p>
+      <ul class="list">
+        <li>
+          <strong>多摩.dev #2</strong>（2026-04-24）
+          <span class="muted"> / 会場：TBD</span>
+          <div class="actions">
+            <a href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">connpassを見る</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 過去イベント一覧 -->
+    <section class="card" aria-labelledby="past-events">
+      <h2 id="past-events">過去イベント</h2>
+
+      <ul class="eventList">
+        <!-- 例：イベント1 -->
+        <li class="eventItem">
+          <div class="eventMeta">
+            <div class="eventDate">2026-02-26</div>
+            <div class="eventTitle">
+              <a href="/events/2026-02-26/" aria-label="多摩.dev #1 の詳細へ">多摩.dev #1</a>
+            </div>
+            <div class="eventTags">
+              <span class="tag">LT</span>
+              <span class="tag">交流</span>
+            </div>
+          </div>
+          <div class="eventLinks">
+            <a href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">connpass</a>
+            <a href="/events/2026-02-26/#talks">登壇資料</a>
+            <a href="/events/2026-02-26/#organizer-report">開催レポート</a>
+            <a href="/events/2026-02-26/#participant-reports">参加レポート</a>
+          </div>
+        </li>
+
+        <!-- 追加する場合はここにイベントを増やしてください -->
+      </ul>
+
+      <p class="muted">
+        ※参加レポートは公開されている記事・投稿へのリンクを中心に、運営が見つけた範囲で掲載しています。
+      </p>
+    </section>
+
+    <footer class="pageFooter">
+      <a href="/" aria-label="トップへ戻る">トップへ戻る</a>
+    </footer>
+  </main>
+</body>
+</html>
