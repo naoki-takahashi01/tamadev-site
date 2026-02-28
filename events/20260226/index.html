@@ -51,65 +51,162 @@
     </section>
 
     <!-- 登壇者情報と登壇資料 -->
-    <section class="card" aria-labelledby="talks">
-      <h2 id="talks">登壇者情報と登壇資料</h2>
+<section class="card" aria-labelledby="talks">
+  <h2 id="talks">登壇者情報と登壇資料</h2>
+  <p class="muted">当日の登壇内容と公開資料へのリンクです。資料が未公開の場合は「後日公開予定」または「非公開」としています。</p>
 
-      <ul class="talkList">
-        <!-- 例：登壇1 -->
-        <li class="talkItem">
-          <div class="talkHeader">
-            <h3 class="talkTitle">（セッションタイトル）</h3>
-            <div class="muted">登壇者：<a href="#" target="_blank" rel="noopener noreferrer">登壇者名</a></div>
-          </div>
+  <!-- 10分トーク -->
+  <h3 class="sectionTitle">10分トーク</h3>
+  <ul class="talkGrid" role="list">
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">10分</span>
+        <h4 class="talkTitle">良い勉強会を作るための「現在公開可能な情報」 2026年版</h4>
+      </div>
 
-          <div class="talkLinks">
-            <a href="https://speakerdeck.com/" target="_blank" rel="noopener noreferrer">スライド（Speaker Deck）</a>
-            <a href="https://github.com/" target="_blank" rel="noopener noreferrer">関連リンク（GitHub 等）</a>
-          </div>
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">Kaitou</a><span class="muted"> さん</span>
+        </div>
+      </div>
 
-          <p class="muted">※資料が未公開の場合は「後日公開予定」と明記してください。</p>
-        </li>
+      <div class="talkLinks">
+        <a class="talkLink" href="#" target="_blank" rel="noopener noreferrer">資料（Speaker Deck など）</a>
+        <a class="talkLink" href="#" target="_blank" rel="noopener noreferrer">関連リンク（任意）</a>
+      </div>
+    </li>
 
-        <!-- 例：登壇2（資料未公開例） -->
-        <li class="talkItem">
-          <div class="talkHeader">
-            <h3 class="talkTitle">（セッションタイトル）</h3>
-            <div class="muted">登壇者：登壇者名</div>
-          </div>
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">10分</span>
+        <h4 class="talkTitle">AI推進PJのリーダーを1年間やってみた話</h4>
+      </div>
 
-          <div class="talkLinks">
-            <span class="badge">資料：後日公開予定</span>
-          </div>
-        </li>
-      </ul>
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">いいづか</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <span class="talkLink isPending">資料：後日公開予定</span>
+      </div>
+    </li>
+
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">10分</span>
+        <h4 class="talkTitle">多摩ニュータウンを、味わう</h4>
+      </div>
+
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">Steve Aoki</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <a class="talkLink" href="#" target="_blank" rel="noopener noreferrer">資料（Speaker Deck）</a>
+      </div>
+    </li>
+  </ul>
+
+  <!-- 5分LT -->
+  <h3 class="sectionTitle">LT（5分）</h3>
+  <ul class="talkGrid" role="list">
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">LT</span>
+        <h4 class="talkTitle">ファシリタティブ・リーダーについて</h4>
+      </div>
+
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">ナカグチ｜しょっち</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <a class="talkLink" href="#" target="_blank" rel="noopener noreferrer">資料（Docswell）</a>
+      </div>
+    </li>
+
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">LT</span>
+        <h4 class="talkTitle">エンジニアが始めるUXリサーチ入門</h4>
+      </div>
+
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">Daichi KUDO</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <a class="talkLink" href="#" target="_blank" rel="noopener noreferrer">資料（Speaker Deck）</a>
+      </div>
+    </li>
+
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">LT</span>
+        <h4 class="talkTitle">非公開</h4>
+      </div>
+
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">がら</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <span class="talkLink isPrivate">資料：非公開</span>
+      </div>
+    </li>
+
+    <li class="talkCard">
+      <div class="talkHeader">
+        <span class="talkBadge">LT</span>
+        <h4 class="talkTitle">ずっと勘違いしてたQCDS</h4>
+      </div>
+
+      <div class="talkMeta">
+        <div class="speaker">
+          <span class="muted">登壇者：</span>
+          <a href="#" target="_blank" rel="noopener noreferrer">Taira</a><span class="muted"> さん</span>
+        </div>
+      </div>
+
+      <div class="talkLinks">
+        <span class="talkLink isPending">資料：後日公開予定</span>
+      </div>
+    </li>
+  </ul>
+</section>
+    <!-- 参加レポート（外部リンク集） -->
+    <section class="card" aria-labelledby="x-timeline">
+      <h2 id="participant-reports">当日のXタイムライン</h2>
+      <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fposfie.com%2F%40asagayanaoki%2Fp%2FdBuM1Io" title="多摩.dev #1 タイムライン" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://posfie.com/@asagayanaoki/p/dBuM1Io">posfie.com</a></cite></p>
     </section>
 
     <!-- 多摩.dev イベント詳細ページ内の開催レポート欄にカード表示 -->
     <section class="card" aria-labelledby="organizer-report">
       <h2 id="organizer-report">開催レポート</h2>
-    
-      <!-- 手動カード -->
       <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fhiliteeternal.hatenablog.com%2Fentry%2F2026%2F02%2F27%2F231937" title="多摩.dev #1を開催しました - 幡ヶ谷亭直吉ブログ" class="embed-card embed-blogcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://hiliteeternal.hatenablog.com/entry/2026/02/27/231937?_gl=1*16faykt*_gcl_au*MTEwMjI1NDg4NC4xNzcxODU1NzYw">hiliteeternal.hatenablog.com</a></cite></p>
     </section>
 
     <!-- 参加レポート（外部リンク集） -->
     <section class="card" aria-labelledby="participant-reports">
       <h2 id="participant-reports">参加レポート</h2>
-      <ul class="linkList">
-        <li>
-          <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Fkeitafukui%2Fn%2Fn85275fd67d1e%3Fsub_rt%3Dshare_pb" title="【参加レポート】多摩.dev #1｜keita" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://note.com/keitafukui/n/n85275fd67d1e?sub_rt=share_pb">note.com</a></cite></p>
-        </li>
-        <li>
-          <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Ftetsu_yaaaaaaaa%2Fn%2Fncd1de993fd44%3Fsub_rt%3Dshare_pb" title="多摩.dev #1に参加しました｜しんむら" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://note.com/tetsu_yaaaaaaaa/n/ncd1de993fd44?sub_rt=share_pb">note.com</a></cite></p>
-        </li>
-      </ul>
-
-      <div class="actions">
-        <!-- ハッシュタグ検索やconnpassコメントなど、収集導線を置くと運用が楽です -->
-        <a href="https://x.com/search?q=%23%E5%A4%9A%E6%91%A9dev&src=typed_query" target="_blank" rel="noopener noreferrer">
-          Xで #多摩dev を検索する
-        </a>
-      </div>
+      <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Fkeitafukui%2Fn%2Fn85275fd67d1e%3Fsub_rt%3Dshare_pb" title="【参加レポート】多摩.dev #1｜keita" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://note.com/keitafukui/n/n85275fd67d1e?sub_rt=share_pb">note.com</a></cite></p>
+      <p><iframe src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Ftetsu_yaaaaaaaa%2Fn%2Fncd1de993fd44%3Fsub_rt%3Dshare_pb" title="多摩.dev #1に参加しました｜しんむら" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" loading="lazy"></iframe><cite class="hatena-citation"><a href="https://note.com/tetsu_yaaaaaaaa/n/ncd1de993fd44?sub_rt=share_pb">note.com</a></cite></p>
     </section>
 
     <footer class="pageFooter">
