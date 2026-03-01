@@ -25,26 +25,29 @@
 <body>
   <main class="container">
     <div class="card">
-
-      <!-- 画像はそのまま “ヘッダー画像” として見せる -->
       <img class="heroImage" src="./hero.png" alt="多摩.dev" />
-
-      <!-- ヒーローに「タイトル/キャッチ/CTA」を戻す -->
       <header class="hero" aria-label="多摩.dev">
         <h1>多摩.dev</h1>
-
         <p class="lead">
           多摩.dev は、東京都多摩市を拠点とするエンジニアコミュニティです。<br>
-          聖蹟桜ヶ丘、多摩センター、立川、八王子など多摩地域での勉強会を開催。<br>
-          多摩で働く・暮らすエンジニア同士が、気軽に集まり、互いの知見や経験を共有できる場にしていけたらうれしいです。
         </p>
-
       </header>
-    
-      <section class="section" aria-labelledby="int">
-        <h2 id="int">発起の想い</h2>
-        <script defer class="speakerdeck-embed" data-id="2a65af301a5247c5a5d93443d16cb17f" data-ratio="1.7777777777777777" src="//speakerdeck.com/assets/embed.js"></script>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="badge"><span class="dot" aria-hidden="true"></span>多摩で学びが循環する場</p>
+        <h1 id="hero-title">多摩.dev</h1>
+        <p class="lead">
+          多摩地域のエンジニアが、気軽に集まり、学び、つながるコミュニティです。
+        </p>
+      
+        <div class="nextEvent" aria-label="次回開催情報">
+          <p class="nextEventTitle">次回開催</p>
+          <p class="nextEventMeta">
+            <strong>2026/04/24（金）</strong> 関戸公民館＠聖蹟桜ヶ丘
+          </p>
+        </div>
       </section>
+      
       <section class="section" aria-labelledby="links">
         <h2 id="links">公式リンク</h2>
         <div class="links">
@@ -57,6 +60,11 @@
             <p class="link-desc">参加者コミュニケーション</p>
           </a>
         </div>
+      </section>
+
+      <section class="section" aria-labelledby="int">
+        <h2 id="int">発起の想い</h2>
+        <script defer class="speakerdeck-embed" data-id="2a65af301a5247c5a5d93443d16cb17f" data-ratio="1.7777777777777777" src="//speakerdeck.com/assets/embed.js"></script>
       </section>
 
       <section class="section" aria-labelledby="event">
