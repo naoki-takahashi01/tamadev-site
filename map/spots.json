@@ -1,5 +1,31 @@
 [
   {
+    "id": "1518772591462973650",
+    "name": "猫目堂茶店",
+    "type": "shop",
+    "area": "多摩地域",
+    "position": [
+      35.6627638,
+      139.3828009
+    ],
+    "description": "豊田駅近くの猫目堂茶店 8:30からモーニングやっています☕",
+    "sourceUrl": "https://www.nekomedousaten.com/",
+    "revision": "2026-06-23T00:20:03.235000+00:00:v6"
+  },
+  {
+    "id": "1516007303990480977",
+    "name": "cafe & atelier re:ku",
+    "type": "shop",
+    "area": "日野市",
+    "position": [
+      35.6670964,
+      139.4075339
+    ],
+    "description": "日野市の高幡橋近くにおしゃれなカフェができていました。 Wi-Fi と電源ありの明るい雰囲気のカフェです。 ホットサンドもおいしかったです。",
+    "sourceUrl": "https://www.google.com/maps/place/cafe+%26+atelier+re:ku/@35.6670964,139.4075339,3a,75y,90t/data=!3m8!1e2!3m6!1sCIABIhBY2uDeTGmkRD8tmOh-kJ3J!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-cs-s%2FAPNQkAHvqgbM6Dy47BG6iEcR8nOU2AwHvYWjhYp4AnIfNwF0yquTT8vUyYnl0NkqUyVZ-w-_kt8zRCG4MXfgj1E8WWMk9GmBlwOr3cB1nvUCtOa85xcXB0rmM_eOXW4CgpGr2wuGqxkvxTTiYGAR%3Dw137-h195-k-no!7i1076!8i1522!4m8!3m7!1s0x6018e3bd65fa01cb:0x5d8256708d2882b!8m2!3d35.6671066!4d139.4074624!10e9!15sChLjgqvjg5Xjgqfjg7vllqvojLZaEiIQ44Kr44OV44KnIOWWq-iMtpIBBGNhZmWaAURDaTlEUVVsUlFVTnZaRU5vZEhsalJqbHZUMjFXVUZKdWJIUlRNazV1VWxka2FWZHNTWGxhVlZKcFdsaENXRTB6WXhBQuABAPoBBAgAECI!16s%2Fg%2F11z7dj454p?authuser=0&entry=tts&g_ep=EgoyMDI2MDYxMC4wIPu8ASoASAFQAw%3D%3D&skid=7100de5f-7073-496b-89f0-18104d49cd51",
+    "revision": "2026-06-15T09:11:47.325000+00:00:v6"
+  },
+  {
     "id": "1513172903498092617",
     "name": "郷林",
     "type": "shop",
@@ -11,6 +37,19 @@
     "description": "すごく素敵そう。",
     "sourceUrl": "https://tamapon.com/2026/06/07/kamosuryoriten/",
     "revision": "2026-06-07T13:28:53.587000+00:00:v6"
+  },
+  {
+    "id": "1511362510220034189",
+    "name": "トスカーナ",
+    "type": "shop",
+    "area": "厚木市",
+    "position": [
+      35.4245154,
+      139.3425196
+    ],
+    "description": "<#1452312766537797732> でピザの話題が挙がっていたので。笑 立川の老舗イタリアン「トスカーナ」のピザは具沢山でとてもオススメです。多分月1くらいで食べてます。🍕",
+    "sourceUrl": "https://www.tamatebakonet.jp/shop/detail/id=9664",
+    "revision": "2026-06-02T13:35:02.194000+00:00:v6"
   },
   {
     "id": "1505200461106385027-1",
@@ -58,6 +97,19 @@
     "revision": "2026-05-16T13:29:56.498000+00:00:v6"
   },
   {
+    "id": "1497763770305613874",
+    "name": "銀龍 多摩市",
+    "type": "shop",
+    "area": "多摩市",
+    "position": [
+      35.6415216,
+      139.4513858
+    ],
+    "description": "多摩市と言えばの銀龍が復活したみたいです！ 新装後行けてないですが、屋外にテーブル席があるのが、郊外ならではな感じで好きです。",
+    "sourceUrl": "https://ginryu.net/",
+    "revision": "2026-04-26T00:58:29.946000+00:00:v6"
+  },
+  {
     "id": "1480905213610037339",
     "name": "多摩うどん ぽんぽこ",
     "type": "shop",
@@ -84,6 +136,75 @@
     "revision": "2026-03-07T10:58:54.507000+00:00:v6"
   },
   {
+    "id": "1476499629309956126",
+    "name": "ヴィータ聖蹟桜ヶ丘",
+    "type": "spot",
+    "area": "多摩市",
+    "position": [
+      35.6496055,
+      139.4469699
+    ],
+    "description": "vitaのブックオフ、技術書がすこし充実してて好きです。 売った人に会いたくなります。",
+    "sourceUrl": "https://vitamallseiseki.jp/shop/bookoff%E3%83%B4%E3%82%A3%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%BC%E3%83%AB%E3%81%9B%E3%81%84%E3%81%9B%E3%81%8D/",
+    "revision": "2026-02-26T08:42:23.664000+00:00:v6"
+  },
+  {
+    "id": "1465559300964356137",
+    "name": "れすと",
+    "type": "shop",
+    "area": "清瀬市",
+    "position": [
+      35.7690394,
+      139.5163785
+    ],
+    "description": "図書館良いですよねー！ 中央図書館、多摩センターからも行きやすい距離で雰囲気好きです。 図書館に併設されてるカフェも良心的な価格帯でゆっくりできます。",
+    "sourceUrl": "https://resuto-tamacity.org/lp/momo/",
+    "revision": "2026-01-27T04:09:26.125000+00:00:v6"
+  },
+  {
+    "id": "1465342866858447112",
+    "name": "多摩市立中央図書館",
+    "type": "shop",
+    "area": "多摩市",
+    "position": [
+      35.6210477,
+      139.4242849
+    ],
+    "description": "多摩センターならパルテノンのすぐ近くの中央図書館の活動室借りたいっす！！資格あるのかな... アジャイル本色々ありまっす",
+    "sourceUrl": "https://tamapon.com/2023/06/22/tamacitylibrary-repo/",
+    "revision": "2026-01-26T13:49:24.213000+00:00:v6"
+  },
+  {
+    "id": "1464910964251168892-1",
+    "messageId": "1464910964251168892",
+    "name": "うどん佐糖",
+    "type": "shop",
+    "area": "多摩地域",
+    "position": [
+      35.6451516,
+      139.556434
+    ],
+    "description": "（うどんつながりと言うことで）個人的推しうどん屋さん - うどんだけじゃなく、かき揚げが至高",
+    "sourceUrl": "https://maps.app.goo.gl/UCAQdpgtqfYhEmaf8",
+    "mapUrl": "https://maps.app.goo.gl/UCAQdpgtqfYhEmaf8",
+    "revision": "2026-01-25T09:13:10.607000+00:00:v6"
+  },
+  {
+    "id": "1464910964251168892-2",
+    "messageId": "1464910964251168892",
+    "name": "府中 武蔵野うどん",
+    "type": "shop",
+    "area": "多摩地域",
+    "position": [
+      35.6709516,
+      139.4772532
+    ],
+    "description": "- 武蔵野うどん大好き",
+    "sourceUrl": "https://maps.app.goo.gl/svbScimyP4zdMpCT6",
+    "mapUrl": "https://maps.app.goo.gl/svbScimyP4zdMpCT6",
+    "revision": "2026-01-25T09:13:10.607000+00:00:v6"
+  },
+  {
     "id": "1464277337590993107",
     "name": "🍙おむすびカフェ くさびや",
     "type": "event",
@@ -95,6 +216,19 @@
     "description": "「今日、この多摩のおすすめスポットに対する嬉しいフィードバックを頂いた」記念。 かなり贔屓な個人店のおむすび屋さん。 ボードゲームをする会や落語会などいろいろなイベントを催されていて素敵なお店です。 ここでLT会とかできたら素敵。",
     "sourceUrl": "https://kusabiya.jp/",
     "revision": "2026-01-23T15:15:22.239000+00:00:v6"
+  },
+  {
+    "id": "1462337169405251744",
+    "name": "川崎",
+    "type": "event",
+    "area": "羽村市",
+    "position": [
+      35.7530437,
+      139.3172959
+    ],
+    "description": "多摩のお隣エリア枠で、川崎水族館も好きです。 いつもゆっくり過ごせるし、多摩川の生態が見れます。",
+    "sourceUrl": "https://kawa-sui.com/",
+    "revision": "2026-01-18T06:45:50.097000+00:00:v6"
   },
   {
     "id": "1460928279367389195",
