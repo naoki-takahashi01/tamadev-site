@@ -31,11 +31,19 @@
       line-height: 1.8;
     }
 
+    .map-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 24px 0 16px;
+    }
+
     .map-legend {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
-      margin: 24px 0 16px;
     }
 
     .map-legend-item {
@@ -63,12 +71,51 @@
       background-color: #f59e0b;
     }
 
+    .map-legend-dot--current {
+      background-color: #7c3aed;
+    }
+
+    .map-location-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #111827;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .map-location-button:hover {
+      background-color: #f9fafb;
+    }
+
+    .map-location-button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
     #event-map {
       width: 100%;
       height: 560px;
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       overflow: hidden;
+    }
+
+    .map-status {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .map-status--error {
+      color: #b91c1c;
     }
 
     .map-note {
@@ -185,6 +232,11 @@
     }
 
     @media (max-width: 640px) {
+      .map-controls {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
       #event-map {
         height: 440px;
       }
@@ -210,30 +262,48 @@
       今後の開催を検討している会場も紹介しています。
     </p>
 
-    <div class="map-legend" aria-label="開催状況の凡例">
-      <span class="map-legend-item">
-        <span
-          class="map-legend-dot map-legend-dot--held"
-          aria-hidden="true"
-        ></span>
-        開催済み
-      </span>
+    <div class="map-controls">
+      <div class="map-legend" aria-label="地図の凡例">
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--held"
+            aria-hidden="true"
+          ></span>
+          開催済み
+        </span>
 
-      <span class="map-legend-item">
-        <span
-          class="map-legend-dot map-legend-dot--scheduled"
-          aria-hidden="true"
-        ></span>
-        開催予定
-      </span>
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--scheduled"
+            aria-hidden="true"
+          ></span>
+          開催予定
+        </span>
 
-      <span class="map-legend-item">
-        <span
-          class="map-legend-dot map-legend-dot--candidate"
-          aria-hidden="true"
-        ></span>
-        開催候補
-      </span>
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--candidate"
+            aria-hidden="true"
+          ></span>
+          開催候補
+        </span>
+
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--current"
+            aria-hidden="true"
+          ></span>
+          現在地
+        </span>
+      </div>
+
+      <button
+        id="show-current-location"
+        class="map-location-button"
+        type="button"
+      >
+        現在地を表示
+      </button>
     </div>
 
     <div
@@ -241,6 +311,13 @@
       role="region"
       aria-label="多摩.devの開催会場と候補会場を示した地図"
     ></div>
+
+    <p
+      id="map-status"
+      class="map-status"
+      role="status"
+      aria-live="polite"
+    ></p>
 
     <p class="map-note">
       開催候補として掲載している会場は、
@@ -263,9 +340,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // positionには会場の緯度・経度を設定します。
-    // 掲載している座標は目安のため、
-    // 公開前に各会場の正確な位置を確認してください。
+    // positionには会場の緯度・経度を指定します。
+    // 以下には概算の座標を含むため、
+    // 公開前に実際の施設の位置をご確認ください。
     const venues = [
       {
         name: "多摩市立関戸公民館",
@@ -334,6 +411,14 @@
       candidate: "#f59e0b"
     };
 
+    const venueList = document.getElementById("venue-list");
+
+    const locationButton = document.getElementById(
+      "show-current-location"
+    );
+
+    const statusElement = document.getElementById("map-status");
+
     const map = L.map("event-map", {
       scrollWheelZoom: false
     }).setView([35.6500, 139.4300], 11);
@@ -346,8 +431,6 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }
     ).addTo(map);
-
-    const venueList = document.getElementById("venue-list");
 
     function createDirectionsUrl(venueName) {
       const directionsUrl = new URL(
@@ -380,9 +463,7 @@
       const link = document.createElement("a");
       link.href = venue.eventUrl;
 
-      const isExternal = /^https?:\/\//.test(venue.eventUrl);
-
-      if (isExternal) {
+      if (/^https?:\/\//.test(venue.eventUrl)) {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
       }
@@ -392,6 +473,15 @@
         : "イベント情報を見る";
 
       return link;
+    }
+
+    function createStatusBadge(venue) {
+      const badge = document.createElement("span");
+
+      badge.className = `venue-status venue-status--${venue.status}`;
+      badge.textContent = statusLabels[venue.status];
+
+      return badge;
     }
 
     function createPopup(venue) {
@@ -407,12 +497,7 @@
       popup.appendChild(area);
 
       const statusParagraph = document.createElement("p");
-
-      const status = document.createElement("span");
-      status.className = `venue-status venue-status--${venue.status}`;
-      status.textContent = statusLabels[venue.status];
-
-      statusParagraph.appendChild(status);
+      statusParagraph.appendChild(createStatusBadge(venue));
       popup.appendChild(statusParagraph);
 
       const description = document.createElement("p");
@@ -449,12 +534,7 @@
       card.appendChild(title);
 
       const statusParagraph = document.createElement("p");
-
-      const status = document.createElement("span");
-      status.className = `venue-status venue-status--${venue.status}`;
-      status.textContent = statusLabels[venue.status];
-
-      statusParagraph.appendChild(status);
+      statusParagraph.appendChild(createStatusBadge(venue));
       card.appendChild(statusParagraph);
 
       const area = document.createElement("p");
@@ -529,6 +609,109 @@
         }
       );
     }
+
+    let currentLocationMarker = null;
+    let currentLocationCircle = null;
+
+    function showStatus(message, isError = false) {
+      statusElement.textContent = message;
+
+      statusElement.classList.toggle(
+        "map-status--error",
+        isError
+      );
+    }
+
+    function setLocationLoading(isLoading) {
+      locationButton.disabled = isLoading;
+
+      locationButton.textContent = isLoading
+        ? "現在地を取得中..."
+        : "現在地を表示";
+    }
+
+    locationButton.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        showStatus(
+          "お使いのブラウザでは位置情報を利用できません。",
+          true
+        );
+        return;
+      }
+
+      setLocationLoading(true);
+
+      showStatus(
+        "現在地を取得しています。位置情報の利用を許可してください。"
+      );
+
+      map.locate({
+        setView: true,
+        maxZoom: 13,
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 60000
+      });
+    });
+
+    map.on("locationfound", (event) => {
+      setLocationLoading(false);
+
+      if (currentLocationMarker) {
+        map.removeLayer(currentLocationMarker);
+      }
+
+      if (currentLocationCircle) {
+        map.removeLayer(currentLocationCircle);
+      }
+
+      currentLocationCircle = L.circle(event.latlng, {
+        radius: event.accuracy,
+        color: "#7c3aed",
+        fillColor: "#7c3aed",
+        fillOpacity: 0.08,
+        weight: 1
+      }).addTo(map);
+
+      currentLocationMarker = L.circleMarker(event.latlng, {
+        radius: 9,
+        fillColor: "#7c3aed",
+        color: "#ffffff",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 1
+      })
+        .addTo(map)
+        .bindPopup("現在地")
+        .openPopup();
+
+      showStatus("現在地を表示しました。");
+    });
+
+    map.on("locationerror", (event) => {
+      setLocationLoading(false);
+
+      if (event.code === 1) {
+        showStatus(
+          "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。",
+          true
+        );
+        return;
+      }
+
+      if (event.code === 3) {
+        showStatus(
+          "現在地の取得に時間がかかりました。もう一度お試しください。",
+          true
+        );
+        return;
+      }
+
+      showStatus(
+        "現在地を取得できませんでした。端末の位置情報設定をご確認ください。",
+        true
+      );
+    });
   </script>
 </body>
 </html>
