@@ -1,1310 +1,657 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>開催地・おすすめスポットマップ | 多摩.dev</title>
-
-  <meta
-    name="description"
-    content="多摩.devの開催会場、候補会場、コミュニティで紹介された多摩地域のおすすめスポットを紹介します。"
-  />
-
-  <!-- 多摩.dev共通スタイル -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-
-  <style>
-    .map-page {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 32px 16px 64px;
-    }
-
-    .map-description {
-      line-height: 1.8;
-    }
-
-    .map-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin: 24px 0 16px;
-    }
-
-    .map-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 16px;
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-
-    .map-filter {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      min-height: 32px;
-      color: #111827;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .map-filter input {
-      width: 16px;
-      height: 16px;
-      margin: 0;
-      cursor: pointer;
-    }
-
-    .map-filter-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .map-filter-dot--held {
-      background-color: #16a34a;
-    }
-
-    .map-filter-dot--scheduled {
-      background-color: #2563eb;
-    }
-
-    .map-filter-dot--candidate {
-      background-color: #f59e0b;
-    }
-
-    .map-filter-dot--spot {
-      background-color: #db2777;
-    }
-
-    .map-location-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      padding: 8px 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background-color: #ffffff;
-      color: #111827;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .map-location-button:hover {
-      background-color: #f9fafb;
-    }
-
-    .map-location-button:disabled {
-      cursor: wait;
-      opacity: 0.65;
-    }
-
-    #event-map {
-      width: 100%;
-      height: 560px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .map-status {
-      min-height: 1.5em;
-      margin: 12px 0 0;
-      color: #4b5563;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .map-status--error {
-      color: #b91c1c;
-    }
-
-    .map-note {
-      margin-top: 16px;
-      color: #666666;
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .map-popup {
-      min-width: 200px;
-      max-width: 280px;
-    }
-
-    .map-popup h2 {
-      margin: 0 0 8px;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
-    .map-popup p {
-      margin: 6px 0;
-      line-height: 1.6;
-    }
-
-    .map-popup-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .venue-section {
-      margin-top: 40px;
-    }
-
-    .venue-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .venue-card {
-      padding: 20px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      background-color: #ffffff;
-    }
-
-    .venue-card[hidden],
-    .venue-section[hidden] {
-      display: none;
-    }
-
-    .venue-card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-      line-height: 1.5;
-    }
-
-    .venue-card p {
-      margin: 8px 0;
-      line-height: 1.7;
-    }
-
-    .venue-area {
-      color: #4b5563;
-      font-size: 14px;
-    }
-
-    .venue-status {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .venue-status--held {
-      background-color: #dcfce7;
-      color: #166534;
-    }
-
-    .venue-status--scheduled {
-      background-color: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .venue-status--candidate {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
-
-    .venue-status--spot {
-      background-color: #fce7f3;
-      color: #9d174d;
-    }
-
-    .venue-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .venue-links a {
-      width: fit-content;
-    }
-
-    .venue-map-button {
-      width: fit-content;
-      padding: 0;
-      border: 0;
-      background: none;
-      color: #2563eb;
-      cursor: pointer;
-      font: inherit;
-      text-decoration: underline;
-    }
-
-    .venue-map-button:hover {
-      color: #1d4ed8;
-    }
-
-    .community-status {
-      color: #4b5563;
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    @media (max-width: 640px) {
-      .map-controls {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .map-filters {
-        gap: 8px 14px;
-      }
-
-      #event-map {
-        height: 440px;
-      }
-
-      .venue-list {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <main class="map-page">
-    <h1>多摩.dev 開催地・おすすめスポットマップ</h1>
-
-    <p class="map-description">
-      多摩.devは、多摩地域のさまざまな場所を巡りながら、
-      地域で学びを交換できる場をつくっています。
-    </p>
-
-    <p class="map-description">
-      これまでの開催会場や開催予定の会場に加えて、
-      今後の開催を検討している会場や、コミュニティで紹介された
-      多摩地域のおすすめスポットも紹介しています。
-    </p>
-
-    <div class="map-controls">
-      <fieldset
-        class="map-filters"
-        aria-label="地図に表示する場所を選択"
-      >
-        <label class="map-filter">
-          <input
-            type="checkbox"
-            value="held"
-            checked
-          />
-
-          <span
-            class="map-filter-dot map-filter-dot--held"
-            aria-hidden="true"
-          ></span>
-
-          開催済み
-        </label>
-
-        <label class="map-filter">
-          <input
-            type="checkbox"
-            value="scheduled"
-            checked
-          />
-
-          <span
-            class="map-filter-dot map-filter-dot--scheduled"
-            aria-hidden="true"
-          ></span>
-
-          開催予定
-        </label>
-
-        <label class="map-filter">
-          <input
-            type="checkbox"
-            value="candidate"
-            checked
-          />
-
-          <span
-            class="map-filter-dot map-filter-dot--candidate"
-            aria-hidden="true"
-          ></span>
-
-          開催候補
-        </label>
-
-        <label class="map-filter">
-          <input
-            type="checkbox"
-            value="spot"
-            checked
-          />
-
-          <span
-            class="map-filter-dot map-filter-dot--spot"
-            aria-hidden="true"
-          ></span>
-
-          おすすめスポット
-        </label>
-      </fieldset>
-
-      <button
-        id="show-current-location"
-        class="map-location-button"
-        type="button"
-      >
-        現在地を表示
-      </button>
-    </div>
-
-    <div
-      id="event-map"
-      role="region"
-      aria-label="多摩.devの開催会場、候補会場、おすすめスポットを示した地図"
-    ></div>
-
-    <p
-      id="map-status"
-      class="map-status"
-      role="status"
-      aria-live="polite"
-    ></p>
-
-    <p class="map-note">
-      開催候補として掲載している会場は、
-      今後の開催を検討している施設です。
-      イベントの開催や施設の予約が確定しているものではありません。
-    </p>
-
-    <section
-      id="venue-section"
-      class="venue-section"
-    >
-      <h2>開催会場・候補会場</h2>
-
-      <div
-        id="venue-list"
-        class="venue-list"
-      ></div>
-    </section>
-
-    <section
-      id="community-section"
-      class="venue-section"
-    >
-      <h2>コミュニティのおすすめスポット</h2>
-
-      <p
-        id="community-status"
-        class="community-status"
-        role="status"
-      >
-        おすすめスポットを読み込んでいます。
-      </p>
-
-      <div
-        id="community-spot-list"
-        class="venue-list"
-      ></div>
-    </section>
-
-    <p>
-      <a href="/">トップページへ戻る</a>
-    </p>
-  </main>
-
-  <!-- Leaflet本体 -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script>
-    // positionには会場の緯度・経度を指定します。
-    // 必要に応じて実際の施設の位置に合わせてください。
-    const venues = [
-      {
-        name: "多摩市立関戸公民館",
-        area: "聖蹟桜ヶ丘・多摩市",
-        position: [35.6502, 139.4475],
-        status: "held",
-        description: "多摩.dev #1、#2 などを開催。",
-        eventUrl: "/events/"
-      },
-      {
-        name: "せいせきカワマチ",
-        area: "聖蹟桜ヶ丘・多摩市",
-        position: [35.6544, 139.4505],
-        status: "candidate",
-        description: "屋外でのLT会など、今後の開催候補。"
-      },
-      {
-        name: "パルテノン多摩",
-        area: "多摩センター・多摩市",
-        position: [35.6248, 139.4241],
-        status: "held",
-        description: "多摩.dev #3 を開催。",
-        eventUrl: "/events/"
-      },
-      {
-        name: "八王子市生涯学習センター クリエイトホール",
-        area: "八王子・八王子市",
-        position: [35.6574, 139.3402],
-        status: "held",
-        description: "多摩.dev #4 を開催。",
-        eventUrl: "/events/20260807/"
-      },
-      {
-        name: "たましんRISURUホール",
-        area: "立川・立川市",
-        position: [35.6950, 139.4213],
-        status: "scheduled",
-        description: "2026年10月16日：多摩.dev #5",
-        eventUrl: "https://tamadev.connpass.com/event/401154/"
-      },
-      {
-        name: "調布市文化会館たづくり",
-        area: "調布・調布市",
-        position: [35.6501, 139.5431],
-        status: "candidate",
-        description: "今後の開催候補。"
-      },
-      {
-        name: "八王子市生涯学習センター 南大沢分館",
-        area: "南大沢・八王子市",
-        position: [35.6143, 139.3800],
-        status: "candidate",
-        description: "今後の開催候補。"
-      },
-      {
-        name: "稲城市立地域振興プラザ",
-        area: "稲城・稲城市",
-        position: [35.6360, 139.5024],
-        status: "candidate",
-        description: "今後の開催候補。"
-      }
-    ];
-
-    const statusLabels = {
-      held: "開催済み",
-      scheduled: "開催予定",
-      candidate: "開催候補",
-      spot: "おすすめスポット"
-    };
-
-    const statusColors = {
-      held: "#16a34a",
-      scheduled: "#2563eb",
-      candidate: "#f59e0b",
-      spot: "#db2777"
-    };
-
-    const venueList = document.getElementById(
-      "venue-list"
+"use strict";
+
+const fs = require("node:fs/promises");
+const path = require("node:path");
+
+const DISCORD_API_BASE = "https://discord.com/api/v10";
+const MAP_REACTION = "🗺️";
+const MAX_MESSAGE_PAGES = 5;
+const MAX_REACTION_PAGES = 5;
+const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
+const NOMINATIM_USER_AGENT =
+  "tamadev-discord-spots/1.0 (+https://tamadev.jp/map/)";
+const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
+const GOOGLE_MAPS_HOSTS = new Set([
+  "maps.app.goo.gl",
+  "goo.gl",
+  "google.com",
+  "www.google.com",
+  "maps.google.com",
+  "google.co.jp",
+  "www.google.co.jp"
+]);
+
+let previousGeocodingAt = 0;
+
+function requiredEnvironmentVariable(name) {
+  const value = process.env[name];
+
+  if (!value || !value.trim()) {
+    throw new Error(
+      name + " が未設定です。GitHub Secretsの設定を確認してください。"
     );
+  }
 
-    const communitySpotList = document.getElementById(
-      "community-spot-list"
+  return value.trim();
+}
+
+function normalizeEmoji(value) {
+  return String(value || "").replace(/\uFE0F/g, "");
+}
+
+function isValidPosition(latitude, longitude) {
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    Math.abs(latitude) <= 90 &&
+    Math.abs(longitude) <= 180
+  );
+}
+
+function parseCoordinatePair(value) {
+  const match = String(value || "").match(
+    /(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)/
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  const latitude = Number(match[1]);
+  const longitude = Number(match[2]);
+
+  return isValidPosition(latitude, longitude)
+    ? [latitude, longitude]
+    : null;
+}
+
+function extractCoordinatesFromUrl(urlString) {
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(urlString);
+  } catch {
+    return null;
+  }
+
+  const decodedUrl = decodeURIComponent(parsedUrl.toString());
+  const atCoordinates = decodedUrl.match(
+    /@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/
+  );
+
+  if (atCoordinates) {
+    return parseCoordinatePair(atCoordinates[1] + "," + atCoordinates[2]);
+  }
+
+  const placeCoordinates = decodedUrl.match(
+    /!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/
+  );
+
+  if (placeCoordinates) {
+    return parseCoordinatePair(
+      placeCoordinates[1] + "," + placeCoordinates[2]
     );
+  }
 
-    const communityStatus = document.getElementById(
-      "community-status"
-    );
+  for (const key of ["q", "query", "destination", "ll", "center"]) {
+    const position = parseCoordinatePair(parsedUrl.searchParams.get(key));
 
-    const venueSection = document.getElementById(
-      "venue-section"
-    );
+    if (position) {
+      return position;
+    }
+  }
 
-    const communitySection = document.getElementById(
-      "community-section"
-    );
+  return parseCoordinatePair(parsedUrl.pathname);
+}
 
-    const locationButton = document.getElementById(
-      "show-current-location"
-    );
+function extractUrls(message) {
+  const texts = [message.content || ""];
 
-    const statusElement = document.getElementById(
-      "map-status"
-    );
-
-    const filterInputs = document.querySelectorAll(
-      ".map-filters input[type='checkbox']"
-    );
-
-    // GitHub Actionsが更新するJSONを直接読み込みます。
-    const communitySpotsUrl =
-      "https://raw.githubusercontent.com/naoki-takahashi01/tamadev-site/main/map/spots.json";
-
-    // 地図上のマーカーと一覧カードをまとめて管理します。
-    const places = [];
-
-    const map = L.map("event-map", {
-      scrollWheelZoom: false
-    }).setView(
-      [35.6500, 139.4300],
-      11
-    );
-
-    L.tileLayer(
-      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }
-    ).addTo(map);
-
-    function createDirectionsUrl(venueName) {
-      const directionsUrl = new URL(
-        "https://www.google.com/maps/dir/"
-      );
-
-      directionsUrl.searchParams.set(
-        "api",
-        "1"
-      );
-
-      directionsUrl.searchParams.set(
-        "destination",
-        venueName
-      );
-
-      directionsUrl.searchParams.set(
-        "travelmode",
-        "transit"
-      );
-
-      return directionsUrl.toString();
+  for (const embed of message.embeds || []) {
+    if (embed.url) {
+      texts.push(embed.url);
     }
 
-    function createExternalLink(url, label) {
-      const link = document.createElement(
-        "a"
-      );
-
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = label;
-
-      return link;
+    if (embed.description) {
+      texts.push(embed.description);
     }
+  }
 
-    function createEventLink(venue) {
-      if (!venue.eventUrl) {
-        return null;
-      }
+  const matches = texts.join("\n").match(/https?:\/\/[^\s<>]+/g) || [];
 
-      const link = document.createElement(
-        "a"
-      );
+  return [...new Set(matches.map((url) => url.replace(/[),。、]+$/, "")))];
+}
 
-      link.href = venue.eventUrl;
+function isGoogleMapsUrl(urlString) {
+  try {
+    const url = new URL(urlString);
 
-      if (/^https?:\/\//.test(venue.eventUrl)) {
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-      }
+    return (
+      GOOGLE_MAPS_HOSTS.has(url.hostname) &&
+      (
+        url.hostname === "maps.app.goo.gl" ||
+        url.hostname === "maps.google.com" ||
+        url.pathname.startsWith("/maps") ||
+        url.pathname.startsWith("/place/")
+      )
+    );
+  } catch {
+    return false;
+  }
+}
 
-      if (venue.status === "spot") {
-        link.textContent =
-          "紹介記事・公式サイトを見る";
-      } else if (
-        venue.eventUrl.includes("connpass.com")
-      ) {
-        link.textContent =
-          "connpassでイベント情報を見る";
-      } else {
-        link.textContent =
-          "イベント情報を見る";
-      }
+function cleanText(value, maximumLength) {
+  return String(value || "")
+    .replace(/https?:\/\/[^\s<>]+/g, "")
+    .replace(/<@!?\d+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maximumLength);
+}
 
-      return link;
-    }
+function extractPlaceName(message, mapsUrl) {
+  const content = message.content || "";
 
-    function createStatusBadge(venue) {
-      const badge = document.createElement(
-        "span"
-      );
+  const explicitName = content.match(
+    /(?:場所|施設|会場|店名|名称|スポット)\s*[：:]\s*([^\n]+)/u
+  );
 
-      badge.className =
-        `venue-status venue-status--${venue.status}`;
+  if (explicitName) {
+    return cleanText(explicitName[1], 80);
+  }
 
-      badge.textContent =
-        statusLabels[venue.status];
+  if (mapsUrl) {
+    try {
+      const parsedUrl = new URL(mapsUrl);
 
-      return badge;
-    }
+      const placePath = decodeURIComponent(
+        parsedUrl.pathname
+      ).match(/\/place\/([^/]+)/);
 
-    function createPopup(venue) {
-      const popup = document.createElement(
-        "div"
-      );
-
-      popup.className =
-        "map-popup";
-
-      const title = document.createElement(
-        "h2"
-      );
-
-      title.textContent =
-        venue.name;
-
-      popup.appendChild(
-        title
-      );
-
-      const area = document.createElement(
-        "p"
-      );
-
-      area.textContent =
-        venue.area;
-
-      popup.appendChild(
-        area
-      );
-
-      const statusParagraph = document.createElement(
-        "p"
-      );
-
-      statusParagraph.appendChild(
-        createStatusBadge(
-          venue
-        )
-      );
-
-      popup.appendChild(
-        statusParagraph
-      );
-
-      const description = document.createElement(
-        "p"
-      );
-
-      description.textContent =
-        venue.description;
-
-      popup.appendChild(
-        description
-      );
-
-      const links = document.createElement(
-        "div"
-      );
-
-      links.className =
-        "map-popup-links";
-
-      const eventLink = createEventLink(
-        venue
-      );
-
-      if (eventLink) {
-        links.appendChild(
-          eventLink
+      if (placePath && !parseCoordinatePair(placePath[1])) {
+        return cleanText(
+          placePath[1].replace(/\+/g, " "),
+          80
         );
       }
 
-      links.appendChild(
-        createExternalLink(
-          createDirectionsUrl(
-            venue.name
-          ),
-          "Googleマップでアクセス方法を見る"
-        )
-      );
+      for (const key of ["query", "q", "destination"]) {
+        const value = parsedUrl.searchParams.get(key);
 
-      popup.appendChild(
-        links
-      );
+        if (value && !parseCoordinatePair(value)) {
+          return cleanText(value, 80);
+        }
+      }
+    } catch {
+      // URLから場所を取得できない場合は本文や記事を確認します。
+    }
+  }
 
-      return popup;
+  const facilityPattern =
+    /メッセ|ホール|センター|公園|広場|美術館|博物館|図書館|カフェ|珈琲|コーヒー|書店|駅|会館|プラザ|食堂|レストラン|うどん|そば|パン/u;
+
+  // 記事タイトルの「多摩うどん『ぽんぽこ』」などから店名を取得。
+  for (const embed of message.embeds || []) {
+    const title = cleanText(embed.title, 160);
+
+    const titledPlace = title.match(
+      /^([^「」『』|｜]{1,30})[「『]([^」』]{1,50})[」』]/u
+    );
+
+    if (titledPlace && facilityPattern.test(titledPlace[1])) {
+      return cleanText(
+        titledPlace[1].trim() + " " + titledPlace[2].trim(),
+        80
+      );
+    }
+  }
+
+  // 投稿本文や記事説明にある「東京たま未来メッセ」などを取得。
+  const texts = [
+    ...(message.embeds || []).map((embed) =>
+      [embed.title, embed.description].filter(Boolean).join("\n")
+    ),
+    content
+  ];
+
+  const quotedNames = texts.flatMap((text) =>
+    [...text.matchAll(/[「『]([^」』]{1,60})[」』]/gu)]
+      .map((match) => cleanText(match[1], 80))
+      .filter(Boolean)
+  );
+
+  const facilityName = quotedNames.find((name) =>
+    facilityPattern.test(name)
+  );
+
+  if (facilityName) {
+    return facilityName;
+  }
+
+  if (quotedNames.length > 0) {
+    return quotedNames[0];
+  }
+
+  const nonUrlLines = content
+    .split(/\r?\n/)
+    .map((line) => cleanText(line, 100))
+    .filter(Boolean)
+    .filter(
+      (line) =>
+        !/^(種類|分類|説明|紹介|日時|開催日)\s*[：:]/u.test(line)
+    );
+
+  if (nonUrlLines.length > 0) {
+    return nonUrlLines[0].slice(0, 80);
+  }
+
+  const embedTitle = (message.embeds || []).find(
+    (embed) => embed.title
+  );
+
+  return embedTitle ? cleanText(embedTitle.title, 80) : "";
+}
+
+function extractDescription(message, placeName) {
+  const lines = (message.content || "")
+    .split(/\r?\n/)
+    .map((line) => cleanText(line, 200))
+    .filter(Boolean)
+    .filter((line) => line !== placeName)
+    .filter((line) =>
+      !/^(場所|施設|会場|店名|名称|スポット|種類|分類)\s*[：:]/u.test(line)
+    );
+
+  if (lines.length > 0) {
+    return cleanText(lines.join(" "), 160);
+  }
+
+  const embed = (message.embeds || []).find(
+    (item) => item.description || item.title
+  );
+
+  return cleanText(
+    embed ? (embed.description || embed.title) : "コミュニティで紹介されたスポット。",
+    160
+  );
+}
+
+function classifySpot(message) {
+  const text = [
+    message.content || "",
+    ...(message.embeds || []).map(
+      (embed) => [embed.title, embed.description].filter(Boolean).join(" ")
+    )
+  ].join(" ");
+
+  if (/イベント|開催|お祭り|祭り|フェス|展示|ワークショップ|勉強会|体験会/u.test(text)) {
+    return "event";
+  }
+
+  if (/お店|飲食|カフェ|珈琲|コーヒー|パン屋|レストラン|ランチ|食堂|書店/u.test(text)) {
+    return "shop";
+  }
+
+  return "spot";
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+async function requestDiscord(endpoint, token) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const response = await fetch(DISCORD_API_BASE + endpoint, {
+      headers: {
+        Authorization: "Bot " + token,
+        "User-Agent": NOMINATIM_USER_AGENT
+      },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (response.status === 429 && attempt < 2) {
+      const body = await response.json().catch(() => ({}));
+      const retryAfter = Number(body.retry_after || 1);
+      await wait(Math.max(retryAfter * 1000, 1000));
+      continue;
     }
 
-    function createVenueCard(
-      venue,
-      marker
+    if (!response.ok) {
+      throw new Error(
+        "Discord APIへの接続に失敗しました (" +
+          response.status +
+          ")。Botの権限、トークン、チャンネルIDを確認してください。"
+      );
+    }
+
+    return response.json();
+  }
+
+  throw new Error("Discord APIのリクエスト制限に達しました。");
+}
+
+async function fetchChannelMessages(channelId, token) {
+  const messages = [];
+  let before = "";
+
+  for (let page = 0; page < MAX_MESSAGE_PAGES; page += 1) {
+    const parameters = new URLSearchParams({
+      limit: "100"
+    });
+
+    if (before) {
+      parameters.set("before", before);
+    }
+
+    const batch = await requestDiscord(
+      "/channels/" + encodeURIComponent(channelId) +
+        "/messages?" + parameters.toString(),
+      token
+    );
+
+    if (!Array.isArray(batch)) {
+      throw new Error("Discordの投稿一覧の形式が正しくありません。");
+    }
+
+    messages.push(...batch);
+
+    if (batch.length < 100) {
+      break;
+    }
+
+    before = batch[batch.length - 1].id;
+  }
+
+  return messages;
+}
+
+function getMapReaction(message) {
+  return (message.reactions || []).find(
+    (reaction) =>
+      normalizeEmoji(reaction.emoji && reaction.emoji.name) ===
+        normalizeEmoji(MAP_REACTION)
+  );
+}
+
+async function wasApprovedByOwner(message, reaction, channelId, token, approverId) {
+  let after = "";
+  const emoji = encodeURIComponent(reaction.emoji.name);
+
+  for (let page = 0; page < MAX_REACTION_PAGES; page += 1) {
+    const parameters = new URLSearchParams({
+      limit: "100"
+    });
+
+    if (after) {
+      parameters.set("after", after);
+    }
+
+    const users = await requestDiscord(
+      "/channels/" + encodeURIComponent(channelId) +
+        "/messages/" + encodeURIComponent(message.id) +
+        "/reactions/" + emoji + "?" + parameters.toString(),
+      token
+    );
+
+    if (
+      users.some(
+        (user) =>
+          user.id === approverId ||
+          user.id === message.author.id
+      )
     ) {
-      const card = document.createElement(
-        "article"
-      );
-
-      card.className =
-        "venue-card";
-
-      card.dataset.status =
-        venue.status;
-
-      const title = document.createElement(
-        "h3"
-      );
-
-      title.textContent =
-        venue.name;
-
-      card.appendChild(
-        title
-      );
-
-      const statusParagraph = document.createElement(
-        "p"
-      );
-
-      statusParagraph.appendChild(
-        createStatusBadge(
-          venue
-        )
-      );
-
-      card.appendChild(
-        statusParagraph
-      );
-
-      const area = document.createElement(
-        "p"
-      );
-
-      area.className =
-        "venue-area";
-
-      area.textContent =
-        venue.area;
-
-      card.appendChild(
-        area
-      );
-
-      const description = document.createElement(
-        "p"
-      );
-
-      description.textContent =
-        venue.description;
-
-      card.appendChild(
-        description
-      );
-
-      const links = document.createElement(
-        "div"
-      );
-
-      links.className =
-        "venue-links";
-
-      const mapButton = document.createElement(
-        "button"
-      );
-
-      mapButton.type =
-        "button";
-
-      mapButton.className =
-        "venue-map-button";
-
-      mapButton.textContent =
-        "地図で場所を見る";
-
-      mapButton.addEventListener(
-        "click",
-        () => {
-          document.getElementById(
-            "event-map"
-          ).scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
-
-          map.setView(
-            venue.position,
-            15
-          );
-
-          marker.openPopup();
-        }
-      );
-
-      links.appendChild(
-        mapButton
-      );
-
-      const eventLink = createEventLink(
-        venue
-      );
-
-      if (eventLink) {
-        links.appendChild(
-          eventLink
-        );
-      }
-
-      links.appendChild(
-        createExternalLink(
-          createDirectionsUrl(
-            venue.name
-          ),
-          "Googleマップでアクセス方法を見る"
-        )
-      );
-
-      card.appendChild(
-        links
-      );
-
-      return card;
+      return true;
     }
 
-    function addPlaceToMap(
-      venue,
-      listElement
-    ) {
-      const marker = L.circleMarker(
-        venue.position,
-        {
-          radius: 10,
-          fillColor:
-            statusColors[venue.status],
-          color: "#ffffff",
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.95
-        }
-      );
-
-      marker.bindPopup(
-        createPopup(
-          venue
-        )
-      );
-
-      const card = createVenueCard(
-        venue,
-        marker
-      );
-
-      listElement.appendChild(
-        card
-      );
-
-      places.push({
-        venue,
-        marker,
-        card
-      });
-
-      return marker;
+    if (users.length < 100) {
+      return false;
     }
 
-    function getVisibleStatuses() {
-      return new Set(
-        Array.from(
-          filterInputs
-        )
-          .filter(
-            (input) => input.checked
-          )
-          .map(
-            (input) => input.value
-          )
+    after = users[users.length - 1].id;
+  }
+
+  return false;
+}
+
+async function expandMapsUrl(url) {
+  if (!url || !isGoogleMapsUrl(url)) {
+    return url;
+  }
+
+  try {
+    const response = await fetch(url, {
+      redirect: "follow",
+      headers: {
+        "User-Agent": NOMINATIM_USER_AGENT
+      },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    await response.body?.cancel();
+
+    return response.url || url;
+  } catch {
+    return url;
+  }
+}
+
+async function findPlace(placeName) {
+  const elapsed = Date.now() - previousGeocodingAt;
+
+  if (elapsed < 1100) {
+    await wait(1100 - elapsed);
+  }
+
+  previousGeocodingAt = Date.now();
+
+  const searchUrl = new URL(NOMINATIM_BASE);
+  searchUrl.searchParams.set("format", "jsonv2");
+  searchUrl.searchParams.set("q", placeName);
+  searchUrl.searchParams.set("countrycodes", "jp");
+  searchUrl.searchParams.set("addressdetails", "1");
+  searchUrl.searchParams.set("limit", "1");
+  searchUrl.searchParams.set("viewbox", "138.95,35.90,139.68,35.42");
+  searchUrl.searchParams.set("bounded", "1");
+
+  const response = await fetch(searchUrl, {
+    headers: {
+      "User-Agent": NOMINATIM_USER_AGENT,
+      "Accept-Language": "ja"
+    },
+    signal: AbortSignal.timeout(15000)
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      "場所の検索に失敗しました (" + response.status + "): " + placeName
+    );
+  }
+
+  const results = await response.json();
+
+  if (!Array.isArray(results) || results.length === 0) {
+    return null;
+  }
+
+  const result = results[0];
+  const latitude = Number(result.lat);
+  const longitude = Number(result.lon);
+
+  if (!isValidPosition(latitude, longitude)) {
+    return null;
+  }
+
+  const address = result.address || {};
+
+  return {
+    position: [latitude, longitude],
+    area: address.city || address.town || address.village || address.county || "多摩地域"
+  };
+}
+
+async function readExistingSpots() {
+  try {
+    const contents = await fs.readFile(SPOTS_PATH, "utf8");
+    const spots = JSON.parse(contents);
+
+    if (!Array.isArray(spots)) {
+      throw new Error("map/spots.json は配列である必要があります。");
+    }
+
+    return spots;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return [];
+    }
+
+    throw error;
+  }
+}
+
+async function convertMessageToSpot(message, previousSpot) {
+  const revision = message.edited_timestamp || message.timestamp || "";
+
+  if (previousSpot && previousSpot.revision === revision) {
+    return previousSpot;
+  }
+
+  const urls = extractUrls(message);
+  const originalMapsUrl = urls.find(isGoogleMapsUrl);
+  const mapsUrl = originalMapsUrl
+    ? await expandMapsUrl(originalMapsUrl)
+    : "";
+  const name = extractPlaceName(message, mapsUrl);
+
+  if (!name) {
+    console.warn(
+      "投稿 " + message.id +
+        " は場所を特定できません。「場所: 施設名」を追加してください。"
+    );
+    return null;
+  }
+
+  let position = mapsUrl ? extractCoordinatesFromUrl(mapsUrl) : null;
+  let area = previousSpot && previousSpot.area
+    ? previousSpot.area
+    : "多摩地域";
+
+  if (!position) {
+    const place = await findPlace(name);
+
+    if (!place) {
+      console.warn(
+        "投稿 " + message.id +
+          " の場所を検索できません: " + name +
+          "。正式な施設名またはGoogleマップのURLを追加してください。"
       );
+      return null;
     }
 
-    function updateVisiblePlaces(
-      adjustBounds = true
-    ) {
-      const visibleStatuses =
-        getVisibleStatuses();
+    position = place.position;
+    area = place.area;
+  }
 
-      const visiblePositions =
-        [];
+  const sourceUrl = urls.find((url) => !isGoogleMapsUrl(url)) || mapsUrl || "";
 
-      let visibleVenueCount =
-        0;
+  return {
+    id: message.id,
+    name,
+    type: classifySpot(message),
+    area,
+    position,
+    description: extractDescription(message, name),
+    sourceUrl,
+    revision
+  };
+}
 
-      for (const place of places) {
-        const isVisible =
-          visibleStatuses.has(
-            place.venue.status
-          );
+async function main() {
+  const token = requiredEnvironmentVariable("DISCORD_BOT_TOKEN");
+  const channelId = requiredEnvironmentVariable("DISCORD_CHANNEL_ID");
+  const approverId = requiredEnvironmentVariable("DISCORD_APPROVER_USER_ID");
+  const previousSpots = await readExistingSpots();
+  const previousSpotsById = new Map(
+    previousSpots.map((spot) => [spot.id, spot])
+  );
+  const messages = await fetchChannelMessages(channelId, token);
+  const selectedMessages = messages.filter(
+    (message) => !message.author?.bot && getMapReaction(message)
+  );
+  const approvedSpots = [];
 
-        place.card.hidden =
-          !isVisible;
+  console.log(
+    messages.length + "件の投稿から、地図リアクション付きの" +
+      selectedMessages.length + "件を確認します。"
+  );
 
-        if (isVisible) {
-          if (!map.hasLayer(place.marker)) {
-            place.marker.addTo(
-              map
-            );
-          }
-
-          visiblePositions.push(
-            place.venue.position
-          );
-
-          if (
-            place.venue.status !== "spot"
-          ) {
-            visibleVenueCount += 1;
-          }
-
-        } else if (
-          map.hasLayer(place.marker)
-        ) {
-          map.removeLayer(
-            place.marker
-          );
-        }
-      }
-
-      venueSection.hidden =
-        visibleVenueCount === 0;
-
-      communitySection.hidden =
-        !visibleStatuses.has(
-          "spot"
-        );
-
-      if (
-        adjustBounds &&
-        visiblePositions.length > 0
-      ) {
-        map.fitBounds(
-          visiblePositions,
-          {
-            padding: [40, 40],
-            maxZoom: 15
-          }
-        );
-      }
-    }
-
-    for (const input of filterInputs) {
-      input.addEventListener(
-        "change",
-        () => {
-          updateVisiblePlaces();
-        }
-      );
-    }
-
-    for (const venue of venues) {
-      addPlaceToMap(
-        venue,
-        venueList
-      );
-    }
-
-    updateVisiblePlaces();
-
-    function isValidCommunitySpot(
-      spot
-    ) {
-      return (
-        spot &&
-        typeof spot.name === "string" &&
-        spot.name.trim().length > 0 &&
-        Array.isArray(
-          spot.position
-        ) &&
-        spot.position.length === 2 &&
-        spot.position.every(
-          (coordinate) =>
-            Number.isFinite(
-              coordinate
-            )
-        ) &&
-        Math.abs(
-          spot.position[0]
-        ) <= 90 &&
-        Math.abs(
-          spot.position[1]
-        ) <= 180 &&
-        (
-          !spot.sourceUrl ||
-          /^https?:\/\//i.test(
-            spot.sourceUrl
-          )
-        )
-      );
-    }
-
-    async function loadCommunitySpots() {
-      try {
-        const response = await fetch(
-          communitySpotsUrl,
-          {
-            cache: "no-store"
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            `スポット情報の取得に失敗しました: ${response.status}`
-          );
-        }
-
-        const spots =
-          await response.json();
-
-        if (!Array.isArray(spots)) {
-          throw new Error(
-            "スポット情報の形式が正しくありません。"
-          );
-        }
-
-        let spotCount =
-          0;
-
-        for (const spot of spots) {
-          if (
-            !isValidCommunitySpot(
-              spot
-            )
-          ) {
-            continue;
-          }
-
-          const venue = {
-            name:
-              spot.name,
-
-            area:
-              spot.area ||
-              "多摩地域",
-
-            position:
-              spot.position,
-
-            status:
-              "spot",
-
-            description:
-              spot.description ||
-              "コミュニティで紹介されたスポット。",
-
-            eventUrl:
-              spot.sourceUrl ||
-              undefined
-          };
-
-          addPlaceToMap(
-            venue,
-            communitySpotList
-          );
-
-          spotCount += 1;
-        }
-
-        if (
-          spotCount === 0
-        ) {
-          communityStatus.textContent =
-            "おすすめスポットはまだ登録されていません。";
-
-        } else {
-          communityStatus.textContent =
-            `Discordで紹介された${spotCount}件のスポットを掲載しています。`;
-        }
-
-        updateVisiblePlaces();
-
-      } catch (error) {
-        console.error(
-          "おすすめスポットの読み込みに失敗しました。",
-          error
-        );
-
-        communityStatus.textContent =
-          "おすすめスポットを読み込めませんでした。時間をおいて再度お試しください。";
-      }
-    }
-
-    loadCommunitySpots();
-
-    let currentLocationMarker =
-      null;
-
-    let currentLocationCircle =
-      null;
-
-    function showStatus(
+  for (const message of selectedMessages) {
+    const reaction = getMapReaction(message);
+    const approved = await wasApprovedByOwner(
       message,
-      isError = false
-    ) {
-      statusElement.textContent =
-        message;
+      reaction,
+      channelId,
+      token,
+      approverId
+    );
 
-      statusElement.classList.toggle(
-        "map-status--error",
-        isError
+    if (!approved) {
+      continue;
+    }
+
+    if (!message.content && !(message.embeds || []).length) {
+      console.warn(
+        "投稿 " + message.id +
+          " の本文を取得できません。MESSAGE CONTENT INTENTを確認してください。"
       );
+      continue;
     }
 
-    function setLocationLoading(
-      isLoading
-    ) {
-      locationButton.disabled =
-        isLoading;
+    const spot = await convertMessageToSpot(
+      message,
+      previousSpotsById.get(message.id)
+    );
 
-      locationButton.textContent =
-        isLoading
-          ? "現在地を取得中..."
-          : "現在地を表示";
+    if (spot) {
+      approvedSpots.push(spot);
+    }
+  }
+
+  approvedSpots.sort((left, right) => {
+    if (left.id === right.id) {
+      return 0;
     }
 
-    locationButton.addEventListener(
-      "click",
-      () => {
-        if (
-          !navigator.geolocation
-        ) {
-          showStatus(
-            "お使いのブラウザでは位置情報を利用できません。",
-            true
-          );
+    return BigInt(left.id) > BigInt(right.id) ? -1 : 1;
+  });
 
-          return;
-        }
+  await fs.writeFile(
+    SPOTS_PATH,
+    JSON.stringify(approvedSpots, null, 2) + "\n",
+    "utf8"
+  );
 
-        setLocationLoading(
-          true
-        );
+  console.log(
+    approvedSpots.length + "件の承認済みスポットを map/spots.json に保存しました。"
+  );
+}
 
-        showStatus(
-          "現在地を取得しています。位置情報の利用を許可してください。"
-        );
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}
 
-        map.locate({
-          setView: true,
-          maxZoom: 13,
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 60000
-        });
-      }
-    );
-
-    map.on(
-      "locationfound",
-      (event) => {
-        setLocationLoading(
-          false
-        );
-
-        if (
-          currentLocationMarker
-        ) {
-          map.removeLayer(
-            currentLocationMarker
-          );
-        }
-
-        if (
-          currentLocationCircle
-        ) {
-          map.removeLayer(
-            currentLocationCircle
-          );
-        }
-
-        currentLocationCircle =
-          L.circle(
-            event.latlng,
-            {
-              radius:
-                event.accuracy,
-
-              color:
-                "#7c3aed",
-
-              fillColor:
-                "#7c3aed",
-
-              fillOpacity:
-                0.08,
-
-              weight:
-                1
-            }
-          ).addTo(
-            map
-          );
-
-        currentLocationMarker =
-          L.circleMarker(
-            event.latlng,
-            {
-              radius: 9,
-              fillColor: "#7c3aed",
-              color: "#ffffff",
-              weight: 3,
-              opacity: 1,
-              fillOpacity: 1
-            }
-          )
-            .addTo(
-              map
-            )
-            .bindPopup(
-              "現在地"
-            )
-            .openPopup();
-
-        showStatus(
-          "現在地を表示しました。"
-        );
-      }
-    );
-
-    map.on(
-      "locationerror",
-      (event) => {
-        setLocationLoading(
-          false
-        );
-
-        if (
-          event.code === 1
-        ) {
-          showStatus(
-            "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。",
-            true
-          );
-
-          return;
-        }
-
-        if (
-          event.code === 3
-        ) {
-          showStatus(
-            "現在地の取得に時間がかかりました。もう一度お試しください。",
-            true
-          );
-
-          return;
-        }
-
-        showStatus(
-          "現在地を取得できませんでした。端末の位置情報設定をご確認ください。",
-          true
-        );
-      }
-    );
-  </script>
-</body>
-</html>
+module.exports = {
+  classifySpot,
+  extractCoordinatesFromUrl,
+  extractDescription,
+  extractPlaceName,
+  extractUrls,
+  getMapReaction,
+  isGoogleMapsUrl,
+  normalizeEmoji,
+  parseCoordinatePair
+};
