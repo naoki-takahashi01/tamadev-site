@@ -395,7 +395,13 @@ async function wasApprovedByOwner(message, reaction, channelId, token, approverI
       token
     );
 
-    if (users.some((user) => user.id === approverId)) {
+    if (
+      users.some(
+        (user) =>
+          user.id === approverId ||
+          user.id === message.author.id
+      )
+    ) {
       return true;
     }
 
