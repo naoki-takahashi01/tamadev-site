@@ -1,5 +1,18 @@
 [
   {
+    "id": "1513172903498092617",
+    "name": "郷林",
+    "type": "shop",
+    "area": "相模原市",
+    "position": [
+      35.5684191,
+      139.3959883
+    ],
+    "description": "すごく素敵そう。",
+    "sourceUrl": "https://tamapon.com/2026/06/07/kamosuryoriten/",
+    "revision": "2026-06-07T13:28:53.587000+00:00:v6"
+  },
+  {
     "id": "1505200461106385027-1",
     "messageId": "1505200461106385027",
     "name": "TAILWIND coffee brewers",
@@ -43,18 +56,6 @@
     "sourceUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
     "mapUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
     "revision": "2026-05-16T13:29:56.498000+00:00:v6"
-  },  {
-    "id": "1513172903498092617",
-    "name": "郷林",
-    "type": "shop",
-    "area": "相模原市",
-    "position": [
-      35.5684191,
-      139.3959883
-    ],
-    "description": "すごく素敵そう。",
-    "sourceUrl": "https://tamapon.com/2026/06/07/kamosuryoriten/",
-    "revision": "2026-06-07T13:28:53.587000+00:00:v6"
   },
   {
     "id": "1480905213610037339",
