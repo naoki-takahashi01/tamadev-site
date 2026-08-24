@@ -881,6 +881,23 @@
         statusParagraph
       );
 
+      if (
+        venue.status === "spot" &&
+        venue.genre
+      ) {
+        const genre =
+          document.createElement(
+            "p"
+          );
+      
+        genre.textContent =
+          `ジャンル：${venue.genre}`;
+      
+        popup.appendChild(
+          genre
+        );
+      }
+
       if (venue.description) {
         const description =
           document.createElement(
@@ -987,6 +1004,26 @@
       card.appendChild(
         area
       );
+
+      if (
+        venue.status === "spot" &&
+        venue.genre
+      ) {
+        const genre =
+          document.createElement(
+            "p"
+          );
+      
+        genre.className =
+          "venue-genre";
+      
+        genre.textContent =
+          `ジャンル：${venue.genre}`;
+      
+        card.appendChild(
+          genre
+        );
+      }
 
       if (venue.description) {
         const description =
@@ -1348,6 +1385,10 @@
             area:
               spot.area ||
               "多摩地域",
+
+            genre:
+              spot.genre ||
+              "その他",
 
             position:
               spot.position,
