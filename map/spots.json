@@ -1,5 +1,31 @@
 [
   {
+    "id": "1513172903498092617",
+    "name": "醸す料理店",
+    "type": "shop",
+    "area": "多摩市",
+    "position": [
+      35.6141295,
+      139.4306861
+    ],
+    "description": "すごく素敵そう。",
+    "sourceUrl": "https://tamapon.com/2026/06/07/kamosuryoriten/",
+    "revision": "2026-06-07T13:28:53.587000+00:00"
+  },
+  {
+    "id": "1505200461106385027",
+    "name": "〒183",
+    "type": "shop",
+    "area": "府中市",
+    "position": [
+      35.6693751,
+      139.4774094
+    ],
+    "description": "府中市情報です😆 （北府中駅？）（どの駅からも離れてます） わたしの好きなカフェ 遠方からわざわざ来る人がいると聞いてます🙂‍↕️ （府中本町駅）最近できたこちらもとても良いです （東府中駅）営業日少なくてなかなか行けないんですけどここの紅茶が美味しい お近くに御用のある際はぜひ寄ってみてください😆",
+    "sourceUrl": "https://www.google.com/maps/place/%E3%80%92183-0051+Tokyo,+Fuchu,+Sakaecho,+2+Chome%E2%88%92%EF%BC%92%EF%BC%97%E2%88%9210+%E3%82%B3%E3%83%BC%E3%83%9D%E3%83%A9%E3%82%B9%E3%81%A8%E3%81%93%E3%82%8D+TAILWIND+coffee+brewers/data=!4m2!3m1!1s0x6018e5b4e56947e1:0x302c586fe2a675e7!18m1!1e1?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI2LjE4LjQYACCenQoqlAEsOTQyNjc3MjcsOTQyOTIxOTUsOTQyOTk1MzIsMTAwNzk2NDk4LDEwMDc5Nzc2MSwxMDA3OTY1MzUsMTAwODE1MDM2LDk0Mjg0NDU3LDk0MjgwNTc2LDk0MjA3Mzk0LDk0MjA3NTA2LDk0MjA4NTA2LDk0MjE4NjUzLDk0MjI5ODM5LDk0Mjc1MTY4LDk0Mjc5NjE5QgJKUA%3D%3D&skid=375f043a-afc3-484d-90a8-d02b38c50482",
+    "revision": "2026-05-16T13:29:56.498000+00:00"
+  },
+  {
     "id": "1480905213610037339",
     "name": "多摩うどん ぽんぽこ",
     "type": "spot",
@@ -11,6 +37,58 @@
     "description": "今日も行ったのですが、聖ヶ丘団地の中にある「ぽんぽこ」といううどん屋が大変美味しいのでこっそりおすすめします。",
     "sourceUrl": "https://note.com/rinkei90/n/nf6c3cb7b8cd2",
     "revision": "2026-03-10T12:28:36.813000+00:00"
+  },
+  {
+    "id": "1479795474985779355",
+    "name": "町田リス園",
+    "type": "spot",
+    "area": "町田市",
+    "position": [
+      35.5779748,
+      139.4499801
+    ],
+    "description": "今日、はじめて町田リス園に行きました。 アクセスあまり良くないですが、それも含めて遠足気分で楽しかったです。",
+    "sourceUrl": "https://www.machida-risuen.com/",
+    "revision": "2026-03-07T10:58:54.507000+00:00"
+  },
+  {
+    "id": "1464277337590993107",
+    "name": "🍙おむすびカフェ くさびや",
+    "type": "event",
+    "area": "多摩市",
+    "position": [
+      35.6478826,
+      139.447162
+    ],
+    "description": "「今日、この多摩のおすすめスポットに対する嬉しいフィードバックを頂いた」記念。 かなり贔屓な個人店のおむすび屋さん。 ボードゲームをする会や落語会などいろいろなイベントを催されていて素敵なお店です。 ここでLT会とかできたら素敵。",
+    "sourceUrl": "https://kusabiya.jp/",
+    "revision": "2026-01-23T15:15:22.239000+00:00"
+  },
+  {
+    "id": "1460928279367389195",
+    "name": "久保田酒造",
+    "type": "spot",
+    "area": "大和市",
+    "position": [
+      35.4475136,
+      139.4795615
+    ],
+    "description": "日本酒お好きな方もいらっしゃるようなので、私のおすすめの酒蔵を共有します。相模原市にある、小さなところです。 年に何度か、酒造り工程の体験などもやってます。",
+    "sourceUrl": "https://www.tsukui.ne.jp/kubota/index.html",
+    "revision": "2026-01-14T09:27:24.536000+00:00"
+  },
+  {
+    "id": "1454406482199052412",
+    "name": "831家和田店",
+    "type": "shop",
+    "area": "多摩市",
+    "position": [
+      35.6429138,
+      139.4292649
+    ],
+    "description": "どこの駅からも微妙に通そうな位置にありつつ、最高に美味しいラーメン屋さん。",
+    "sourceUrl": "https://gj0a900.gorp.jp/",
+    "revision": "2026-08-24T12:33:34.370000+00:00"
   },
   {
     "id": "1453756358980665565",
