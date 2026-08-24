@@ -2585,18 +2585,21 @@ async function main() {
     }
   );
 
+const publicSpots = spots.map(
+  ({ description, ...spot }) => spot
+);
+
   await fs.writeFile(
     SPOTS_PATH,
-
+  
     `${JSON.stringify(
-      spots,
+      publicSpots,
       null,
       2
     )}\n`,
-
+  
     "utf8"
   );
-
   console.log(
     `${spots.length}件の承認済みスポットを map/spots.json に保存しました。`
   );
