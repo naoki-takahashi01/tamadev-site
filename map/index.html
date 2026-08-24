@@ -11,10 +11,10 @@
     content="多摩.devの開催地と、これから開催を検討している地域を紹介します。"
   />
 
-  <!-- 多摩.dev共通のスタイル -->
+  <!-- 多摩.dev共通スタイル -->
   <link rel="stylesheet" href="/style.css" />
 
-  <!-- Leafletのスタイル -->
+  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -31,11 +31,19 @@
       line-height: 1.8;
     }
 
+    .map-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 24px 0 16px;
+    }
+
     .map-legend {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
-      margin: 24px 0 16px;
     }
 
     .map-legend-item {
@@ -63,6 +71,33 @@
       background-color: #f59e0b;
     }
 
+    .map-legend-dot--current {
+      background-color: #7c3aed;
+    }
+
+    .map-location-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #111827;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .map-location-button:hover {
+      background-color: #f9fafb;
+    }
+
+    .map-location-button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
     #event-map {
       width: 100%;
       height: 560px;
@@ -70,9 +105,21 @@
       overflow: hidden;
     }
 
+    .map-status {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .map-status--error {
+      color: #b91c1c;
+    }
+
     .map-note {
       margin-top: 16px;
-      color: #666;
+      color: #666666;
       font-size: 14px;
       line-height: 1.8;
     }
@@ -97,6 +144,11 @@
     }
 
     @media (max-width: 640px) {
+      .map-controls {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
       #event-map {
         height: 440px;
       }
@@ -113,21 +165,48 @@
       地域で学びを交換できる場をつくっています。
     </p>
 
-    <div class="map-legend" aria-label="開催状況の凡例">
-      <span class="map-legend-item">
-        <span class="map-legend-dot map-legend-dot--held"></span>
-        開催済み
-      </span>
+    <div class="map-controls">
+      <div class="map-legend" aria-label="開催状況の凡例">
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--held"
+            aria-hidden="true"
+          ></span>
+          開催済み
+        </span>
 
-      <span class="map-legend-item">
-        <span class="map-legend-dot map-legend-dot--scheduled"></span>
-        開催予定
-      </span>
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--scheduled"
+            aria-hidden="true"
+          ></span>
+          開催予定
+        </span>
 
-      <span class="map-legend-item">
-        <span class="map-legend-dot map-legend-dot--candidate"></span>
-        開催候補
-      </span>
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--candidate"
+            aria-hidden="true"
+          ></span>
+          開催候補
+        </span>
+
+        <span class="map-legend-item">
+          <span
+            class="map-legend-dot map-legend-dot--current"
+            aria-hidden="true"
+          ></span>
+          現在地
+        </span>
+      </div>
+
+      <button
+        id="show-current-location"
+        class="map-location-button"
+        type="button"
+      >
+        現在地を表示
+      </button>
     </div>
 
     <div
@@ -135,6 +214,13 @@
       role="region"
       aria-label="多摩.devの開催地を示した地図"
     ></div>
+
+    <p
+      id="map-status"
+      class="map-status"
+      role="status"
+      aria-live="polite"
+    ></p>
 
     <p class="map-note">
       開催候補は今後の開催を検討している地域であり、
@@ -146,7 +232,6 @@
     </p>
   </main>
 
-  <!-- Leaflet本体 -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
@@ -225,6 +310,12 @@
       candidate: "#f59e0b"
     };
 
+    const locationButton = document.getElementById(
+      "show-current-location"
+    );
+
+    const statusElement = document.getElementById("map-status");
+
     const map = L.map("event-map").setView(
       [35.6500, 139.4300],
       11
@@ -240,11 +331,9 @@
     ).addTo(map);
 
     for (const location of locations) {
-      const color = statusColors[location.status];
-
       const marker = L.circleMarker(location.position, {
         radius: 10,
-        fillColor: color,
+        fillColor: statusColors[location.status],
         color: "#ffffff",
         weight: 2,
         opacity: 1,
@@ -266,12 +355,117 @@
       `);
     }
 
-    map.fitBounds(
-      locations.map((location) => location.position),
-      {
-        padding: [40, 40]
+    if (locations.length > 0) {
+      map.fitBounds(
+        locations.map((location) => location.position),
+        {
+          padding: [40, 40]
+        }
+      );
+    }
+
+    let currentLocationMarker = null;
+    let currentLocationCircle = null;
+
+    function showStatus(message, isError = false) {
+      statusElement.textContent = message;
+
+      statusElement.classList.toggle(
+        "map-status--error",
+        isError
+      );
+    }
+
+    function setLocationLoading(isLoading) {
+      locationButton.disabled = isLoading;
+
+      locationButton.textContent = isLoading
+        ? "現在地を取得中..."
+        : "現在地を表示";
+    }
+
+    locationButton.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        showStatus(
+          "お使いのブラウザでは位置情報を利用できません。",
+          true
+        );
+        return;
       }
-    );
+
+      setLocationLoading(true);
+
+      showStatus(
+        "現在地を取得しています。ブラウザから確認された場合は、位置情報の利用を許可してください。"
+      );
+
+      map.locate({
+        setView: true,
+        maxZoom: 13,
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 60000
+      });
+    });
+
+    map.on("locationfound", (event) => {
+      setLocationLoading(false);
+
+      if (currentLocationMarker) {
+        map.removeLayer(currentLocationMarker);
+      }
+
+      if (currentLocationCircle) {
+        map.removeLayer(currentLocationCircle);
+      }
+
+      currentLocationMarker = L.circleMarker(event.latlng, {
+        radius: 9,
+        fillColor: "#7c3aed",
+        color: "#ffffff",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 1
+      })
+        .addTo(map)
+        .bindPopup("現在地")
+        .openPopup();
+
+      currentLocationCircle = L.circle(event.latlng, {
+        radius: event.accuracy,
+        color: "#7c3aed",
+        fillColor: "#7c3aed",
+        fillOpacity: 0.08,
+        weight: 1
+      }).addTo(map);
+
+      showStatus("現在地を表示しました。");
+    });
+
+    map.on("locationerror", (event) => {
+      setLocationLoading(false);
+
+      if (event.code === 1) {
+        showStatus(
+          "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。",
+          true
+        );
+        return;
+      }
+
+      if (event.code === 3) {
+        showStatus(
+          "現在地の取得に時間がかかりました。通信状況をご確認のうえ、もう一度お試しください。",
+          true
+        );
+        return;
+      }
+
+      showStatus(
+        "現在地を取得できませんでした。端末の位置情報設定をご確認ください。",
+        true
+      );
+    });
   </script>
 </body>
 </html>
