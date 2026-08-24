@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>開催マップ | 多摩.dev</title>
+
+  <meta
+    name="description"
+    content="多摩.devの開催地と、これから開催を検討している地域を紹介します。"
+  />
+
+  <!-- 多摩.dev共通のスタイル -->
+  <link rel="stylesheet" href="/style.css" />
+
+  <!-- Leafletのスタイル -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    .map-page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 16px 64px;
+    }
+
+    .map-description {
+      line-height: 1.8;
+    }
+
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 24px 0 16px;
+    }
+
+    .map-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .map-legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .map-legend-dot--held {
+      background-color: #16a34a;
+    }
+
+    .map-legend-dot--scheduled {
+      background-color: #2563eb;
+    }
+
+    .map-legend-dot--candidate {
+      background-color: #f59e0b;
+    }
+
+    #event-map {
+      width: 100%;
+      height: 560px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .map-note {
+      margin-top: 16px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .map-popup {
+      min-width: 180px;
+    }
+
+    .map-popup h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .map-popup p {
+      margin: 4px 0;
+      line-height: 1.6;
+    }
+
+    .map-popup a {
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 640px) {
+      #event-map {
+        height: 440px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="map-page">
+    <h1>多摩.dev 開催マップ</h1>
+
+    <p class="map-description">
+      多摩.devは、多摩地域のさまざまな場所を巡りながら、
+      地域で学びを交換できる場をつくっています。
+    </p>
+
+    <div class="map-legend" aria-label="開催状況の凡例">
+      <span class="map-legend-item">
+        <span class="map-legend-dot map-legend-dot--held"></span>
+        開催済み
+      </span>
+
+      <span class="map-legend-item">
+        <span class="map-legend-dot map-legend-dot--scheduled"></span>
+        開催予定
+      </span>
+
+      <span class="map-legend-item">
+        <span class="map-legend-dot map-legend-dot--candidate"></span>
+        開催候補
+      </span>
+    </div>
+
+    <div
+      id="event-map"
+      role="region"
+      aria-label="多摩.devの開催地を示した地図"
+    ></div>
+
+    <p class="map-note">
+      開催候補は今後の開催を検討している地域であり、
+      開催が確定しているものではありません。
+    </p>
+
+    <p>
+      <a href="/">トップページへ戻る</a>
+    </p>
+  </main>
+
+  <!-- Leaflet本体 -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const locations = [
+      {
+        name: "聖蹟桜ヶ丘",
+        city: "多摩市",
+        position: [35.6502, 139.4475],
+        status: "held",
+        description: "多摩.dev #1、#2 などを開催",
+        url: "/events/"
+      },
+      {
+        name: "多摩センター",
+        city: "多摩市",
+        position: [35.6248, 139.4241],
+        status: "held",
+        description: "多摩.dev #3 を開催",
+        url: "/events/"
+      },
+      {
+        name: "八王子",
+        city: "八王子市",
+        position: [35.6556, 139.3389],
+        status: "held",
+        description: "多摩.dev #4 を開催",
+        url: "/events/20260807/"
+      },
+      {
+        name: "立川",
+        city: "立川市",
+        position: [35.6978, 139.4138],
+        status: "scheduled",
+        description: "2026年10月16日：多摩.dev #5",
+        url: "https://tamadev.connpass.com/event/401154/"
+      },
+      {
+        name: "調布",
+        city: "調布市",
+        position: [35.6520, 139.5430],
+        status: "candidate",
+        description: "今後の開催候補"
+      },
+      {
+        name: "南大沢",
+        city: "八王子市",
+        position: [35.6143, 139.3800],
+        status: "candidate",
+        description: "今後の開催候補"
+      },
+      {
+        name: "稲城",
+        city: "稲城市",
+        position: [35.6360, 139.5024],
+        status: "candidate",
+        description: "今後の開催候補"
+      },
+      {
+        name: "永山",
+        city: "多摩市",
+        position: [35.6302, 139.4484],
+        status: "candidate",
+        description: "今後の開催候補"
+      }
+    ];
+
+    const statusLabels = {
+      held: "開催済み",
+      scheduled: "開催予定",
+      candidate: "開催候補"
+    };
+
+    const statusColors = {
+      held: "#16a34a",
+      scheduled: "#2563eb",
+      candidate: "#f59e0b"
+    };
+
+    const map = L.map("event-map").setView(
+      [35.6500, 139.4300],
+      11
+    );
+
+    L.tileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }
+    ).addTo(map);
+
+    for (const location of locations) {
+      const color = statusColors[location.status];
+
+      const marker = L.circleMarker(location.position, {
+        radius: 10,
+        fillColor: color,
+        color: "#ffffff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.95
+      }).addTo(map);
+
+      const link = location.url
+        ? `<a href="${location.url}">イベント情報を見る</a>`
+        : "";
+
+      marker.bindPopup(`
+        <div class="map-popup">
+          <h2>${location.name}</h2>
+          <p>${location.city}</p>
+          <p>${statusLabels[location.status]}</p>
+          <p>${location.description}</p>
+          ${link}
+        </div>
+      `);
+    }
+
+    map.fitBounds(
+      locations.map((location) => location.position),
+      {
+        padding: [40, 40]
+      }
+    );
+  </script>
+</body>
+</html>
