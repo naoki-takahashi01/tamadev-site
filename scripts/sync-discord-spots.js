@@ -8,14 +8,13 @@ const DISCORD_API_BASE = "https://discord.com/api/v10";
 const MAP_REACTION = "🗺️";
 
 const MAX_MESSAGE_PAGES = 5;
-
 const MAX_REACTION_PAGES = 5;
 
 const NOMINATIM_BASE =
   "https://nominatim.openstreetmap.org/search";
 
-const NOMINATIM_USER_AGENT =
-  "tamadev-discord-spots/2.0 (+https://tamadev.jp/map/)";
+const USER_AGENT =
+  "tamadev-discord-spots/3.0 (+https://tamadev.jp/map/)";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -34,6 +33,9 @@ const GOOGLE_MAPS_HOSTS = new Set([
   "www.google.co.jp"
 ]);
 
+const TAMA_AREA_PATTERN =
+  /多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子/u;
+
 let previousGeocodingAt = 0;
 
 function requiredEnvironmentVariable(name) {
@@ -49,7 +51,8 @@ function requiredEnvironmentVariable(name) {
 }
 
 function normalizeEmoji(value) {
-  return String(value || "").replace(/\uFE0F/g, "");
+  return String(value || "")
+    .replace(/\uFE0F/g, "");
 }
 
 function cleanText(value, maximumLength = 160) {
@@ -61,12 +64,97 @@ function cleanText(value, maximumLength = 160) {
     .slice(0, maximumLength);
 }
 
-function isValidPosition(latitude, longitude) {
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&nbsp;/gi, " ")
+    .replace(
+      /&#(\d+);/g,
+      (_, code) => {
+        const value = Number(code);
+
+        return (
+          Number.isInteger(value) &&
+          value >= 0 &&
+          value <= 0x10ffff
+        )
+          ? String.fromCodePoint(value)
+          : "";
+      }
+    )
+    .replace(
+      /&#x([0-9a-f]+);/gi,
+      (_, code) => {
+        const value = Number.parseInt(
+          code,
+          16
+        );
+
+        return (
+          Number.isInteger(value) &&
+          value >= 0 &&
+          value <= 0x10ffff
+        )
+          ? String.fromCodePoint(value)
+          : "";
+      }
+    );
+}
+
+function stripHtml(value) {
+  return cleanText(
+    decodeHtmlEntities(
+      String(value || "")
+        .replace(
+          /<script\b[^>]*>[\s\S]*?<\/script>/gi,
+          " "
+        )
+        .replace(
+          /<style\b[^>]*>[\s\S]*?<\/style>/gi,
+          " "
+        )
+        .replace(
+          /<br\s*\/?>/gi,
+          " "
+        )
+        .replace(
+          /<[^>]+>/g,
+          " "
+        )
+    ),
+    1200
+  );
+}
+
+function isValidPosition(
+  latitude,
+  longitude
+) {
   return (
     Number.isFinite(latitude) &&
     Number.isFinite(longitude) &&
     Math.abs(latitude) <= 90 &&
     Math.abs(longitude) <= 180
+  );
+}
+
+function isWithinTamaRegion(
+  latitude,
+  longitude
+) {
+  return (
+    isValidPosition(
+      latitude,
+      longitude
+    ) &&
+    latitude >= 35.42 &&
+    latitude <= 35.90 &&
+    longitude >= 138.95 &&
+    longitude <= 139.68
   );
 }
 
@@ -79,21 +167,32 @@ function parseCoordinatePair(value) {
     return null;
   }
 
-  const latitude = Number(match[1]);
-  const longitude = Number(match[2]);
+  const latitude = Number(
+    match[1]
+  );
 
-  if (!isValidPosition(latitude, longitude)) {
-    return null;
-  }
+  const longitude = Number(
+    match[2]
+  );
 
-  return [latitude, longitude];
+  return isValidPosition(
+    latitude,
+    longitude
+  )
+    ? [
+        latitude,
+        longitude
+      ]
+    : null;
 }
 
 function extractCoordinatesFromUrl(urlString) {
   let parsedUrl;
 
   try {
-    parsedUrl = new URL(urlString);
+    parsedUrl = new URL(
+      urlString
+    );
   } catch {
     return null;
   }
@@ -101,7 +200,9 @@ function extractCoordinatesFromUrl(urlString) {
   let decodedUrl;
 
   try {
-    decodedUrl = decodeURIComponent(parsedUrl.toString());
+    decodedUrl = decodeURIComponent(
+      parsedUrl.toString()
+    );
   } catch {
     decodedUrl = parsedUrl.toString();
   }
@@ -134,7 +235,9 @@ function extractCoordinatesFromUrl(urlString) {
     "center"
   ]) {
     const position = parseCoordinatePair(
-      parsedUrl.searchParams.get(key)
+      parsedUrl.searchParams.get(
+        key
+      )
     );
 
     if (position) {
@@ -142,35 +245,53 @@ function extractCoordinatesFromUrl(urlString) {
     }
   }
 
-  return parseCoordinatePair(parsedUrl.pathname);
+  return parseCoordinatePair(
+    parsedUrl.pathname
+  );
 }
 
 function extractUrls(message) {
-  const texts = [message.content || ""];
+  const texts = [
+    message.content || ""
+  ];
 
   for (const embed of message.embeds || []) {
     if (embed.url) {
-      texts.push(embed.url);
+      texts.push(
+        embed.url
+      );
     }
 
     if (embed.description) {
-      texts.push(embed.description);
+      texts.push(
+        embed.description
+      );
     }
 
     for (const field of embed.fields || []) {
       if (field.value) {
-        texts.push(field.value);
+        texts.push(
+          field.value
+        );
       }
     }
   }
 
   const matches =
-    texts.join("\n").match(/https?:\/\/[^\s<>]+/g) || [];
+    texts
+      .join("\n")
+      .match(
+        /https?:\/\/[^\s<>]+/g
+      ) || [];
 
   return [
     ...new Set(
-      matches.map((url) =>
-        url.replace(/[),。、]+$/, "")
+      matches.map(
+        (url) =>
+          url.replace(
+            /[),。、]+$/,
+            ""
+          )
       )
     )
   ];
@@ -178,15 +299,23 @@ function extractUrls(message) {
 
 function isGoogleMapsUrl(urlString) {
   try {
-    const url = new URL(urlString);
+    const url = new URL(
+      urlString
+    );
 
     return (
-      GOOGLE_MAPS_HOSTS.has(url.hostname) &&
+      GOOGLE_MAPS_HOSTS.has(
+        url.hostname
+      ) &&
       (
         url.hostname === "maps.app.goo.gl" ||
         url.hostname === "maps.google.com" ||
-        url.pathname.startsWith("/maps") ||
-        url.pathname.startsWith("/place/")
+        url.pathname.startsWith(
+          "/maps"
+        ) ||
+        url.pathname.startsWith(
+          "/place/"
+        )
       )
     );
   } catch {
@@ -194,24 +323,35 @@ function isGoogleMapsUrl(urlString) {
   }
 }
 
-function extractPlaceNameFromMapsUrl(mapsUrl) {
+function extractPlaceNameFromMapsUrl(
+  mapsUrl
+) {
   if (!mapsUrl) {
     return "";
   }
 
   try {
-    const parsedUrl = new URL(mapsUrl);
+    const parsedUrl = new URL(
+      mapsUrl
+    );
 
     const placePath = decodeURIComponent(
       parsedUrl.pathname
-    ).match(/\/place\/([^/]+)/);
+    ).match(
+      /\/place\/([^/]+)/
+    );
 
     if (
       placePath &&
-      !parseCoordinatePair(placePath[1])
+      !parseCoordinatePair(
+        placePath[1]
+      )
     ) {
       return cleanText(
-        placePath[1].replace(/\+/g, " "),
+        placePath[1].replace(
+          /\+/g,
+          " "
+        ),
         80
       );
     }
@@ -221,10 +361,21 @@ function extractPlaceNameFromMapsUrl(mapsUrl) {
       "q",
       "destination"
     ]) {
-      const value = parsedUrl.searchParams.get(key);
+      const value =
+        parsedUrl.searchParams.get(
+          key
+        );
 
-      if (value && !parseCoordinatePair(value)) {
-        return cleanText(value, 80);
+      if (
+        value &&
+        !parseCoordinatePair(
+          value
+        )
+      ) {
+        return cleanText(
+          value,
+          80
+        );
       }
     }
   } catch {
@@ -234,8 +385,13 @@ function extractPlaceNameFromMapsUrl(mapsUrl) {
   return "";
 }
 
-function normalizeEmbedTitle(value) {
-  let title = cleanText(value, 160);
+function normalizePlaceName(value) {
+  let title = cleanText(
+    decodeHtmlEntities(
+      value
+    ),
+    160
+  );
 
   if (!title) {
     return "";
@@ -243,11 +399,11 @@ function normalizeEmbedTitle(value) {
 
   title = title
     .replace(
-      /\s*[|｜]\s*(食べログ|Instagram|インスタグラム|note|Google マップ|Google Maps).*$/iu,
+      /\s*[|｜]\s*(食べログ|Instagram|インスタグラム|note|Google マップ|Google Maps|ラーメンデータベース).*$/iu,
       ""
     )
     .replace(
-      /\s*[-–—]\s*(食べログ|Instagram|インスタグラム|note).*$/iu,
+      /\s*[-–—]\s*(食べログ|Instagram|インスタグラム|note|ラーメンデータベース).*$/iu,
       ""
     )
     .replace(
@@ -259,7 +415,7 @@ function normalizeEmbedTitle(value) {
       ""
     )
     .replace(
-      /\s*[（(][^()（）]*(?:カフェ|グルメ|うどん|そば|レストラン|食堂|パン)[^()（）]*[)）]\s*$/u,
+      /\s*[（(][^()（）]*(?:カフェ|グルメ|うどん|そば|レストラン|食堂|パン|ラーメン)[^()（）]*[)）]\s*$/u,
       ""
     )
     .replace(
@@ -268,6 +424,10 @@ function normalizeEmbedTitle(value) {
     )
     .replace(
       /^(?:東京都)?(?:多摩市|八王子市|立川市|調布市|稲城市|府中市)\s+(?:うどん|カフェ|ラーメン|グルメ)\s+/u,
+      ""
+    )
+    .replace(
+      /(?:を紹介します|を紹介する|をご紹介|のご紹介)\s*$/u,
       ""
     )
     .trim();
@@ -288,8 +448,9 @@ function normalizeEmbedTitle(value) {
     );
 
     if (
-      /うどん|そば|カフェ|珈琲|書店|食堂|レストラン|パン/u
-        .test(prefix)
+      /うどん|そば|カフェ|珈琲|書店|食堂|レストラン|パン/u.test(
+        prefix
+      )
     ) {
       return cleanText(
         `${prefix} ${name}`,
@@ -300,19 +461,16 @@ function normalizeEmbedTitle(value) {
     return name;
   }
 
-  title = title
-    .replace(
-      /(?:を紹介します|を紹介する|をご紹介|のご紹介)\s*$/u,
-      ""
-    )
-    .trim();
-
-  return cleanText(title, 80);
+  return cleanText(
+    title,
+    80
+  );
 }
 
 function extractQuotedNames(message) {
   const texts = [
     message.content || "",
+
     ...(message.embeds || []).flatMap(
       (embed) => [
         embed.title || "",
@@ -323,44 +481,64 @@ function extractQuotedNames(message) {
 
   return [
     ...new Set(
-      texts.flatMap((text) =>
-        [...text.matchAll(
-          /[「『]([^」』]{1,60})[」』]/gu
-        )]
-          .map((match) =>
-            cleanText(match[1], 80)
-          )
-          .filter(Boolean)
+      texts.flatMap(
+        (text) =>
+          [...text.matchAll(
+            /[「『]([^」』]{1,60})[」』]/gu
+          )]
+            .map(
+              (match) =>
+                cleanText(
+                  match[1],
+                  80
+                )
+            )
+            .filter(
+              Boolean
+            )
       )
     )
   ];
 }
 
-function extractPlaceCandidates(message, mapsUrl) {
+function extractPlaceCandidates(
+  message,
+  mapsUrl,
+  pageInformation = []
+) {
   const candidates = [];
 
-  const addCandidate = (value) => {
-    const normalized = cleanText(
-      value,
-      80
-    );
+  const addCandidate = (
+    value
+  ) => {
+    const normalized =
+      normalizePlaceName(
+        value
+      );
 
     if (
       normalized &&
-      !candidates.includes(normalized)
+      !candidates.includes(
+        normalized
+      )
     ) {
-      candidates.push(normalized);
+      candidates.push(
+        normalized
+      );
     }
   };
 
-  const content = message.content || "";
+  const content =
+    message.content || "";
 
   const explicitName = content.match(
     /(?:場所|施設|会場|店名|名称|スポット)\s*[：:]\s*([^\n]+)/u
   );
 
   if (explicitName) {
-    addCandidate(explicitName[1]);
+    addCandidate(
+      explicitName[1]
+    );
   }
 
   addCandidate(
@@ -369,36 +547,65 @@ function extractPlaceCandidates(message, mapsUrl) {
     )
   );
 
-  for (const embed of message.embeds || []) {
+  for (
+    const information
+    of pageInformation
+  ) {
+    if (
+      information.name
+    ) {
+      addCandidate(
+        information.name
+      );
+    }
+  }
+
+  for (
+    const embed
+    of message.embeds || []
+  ) {
     addCandidate(
-      normalizeEmbedTitle(
-        embed.title
-      )
+      embed.title
     );
   }
 
-  for (const quotedName of extractQuotedNames(
-    message
-  )) {
-    addCandidate(quotedName);
+  for (
+    const quotedName
+    of extractQuotedNames(
+      message
+    )
+  ) {
+    addCandidate(
+      quotedName
+    );
   }
 
   const placeInSentence = content.match(
     /(?:ある|あるのは|あるのが|お店は|店は|施設は)\s*[「『]?([A-Za-z][A-Za-z0-9 .&'-]{2,40}|[一-龠ぁ-んァ-ヶー]{2,30})[」』]?(?:という|です|で、|。)/u
   );
 
-  if (placeInSentence) {
+  if (
+    placeInSentence
+  ) {
     addCandidate(
       placeInSentence[1]
     );
   }
 
   const contentLines = content
-    .split(/\r?\n/)
-    .map((line) =>
-      cleanText(line, 100)
+    .split(
+      /\r?\n/
     )
-    .filter(Boolean)
+    .map(
+      (line) =>
+        cleanText(
+          line,
+          100
+        )
+    )
+    .filter(
+      Boolean
+    )
     .filter(
       (line) =>
         !/^(種類|分類|説明|紹介|日時|開催日)\s*[：:]/u.test(
@@ -406,13 +613,19 @@ function extractPlaceCandidates(message, mapsUrl) {
         )
     );
 
-  for (const line of contentLines) {
+  for (
+    const line
+    of contentLines
+  ) {
     if (
       line.length <= 40 &&
-      !/おすすめです|美味しいです|おいしいです|ある.*です/u
-        .test(line)
+      !/おすすめです|美味しいです|おいしいです|ある.*です/u.test(
+        line
+      )
     ) {
-      addCandidate(line);
+      addCandidate(
+        line
+      );
     }
   }
 
@@ -428,64 +641,142 @@ function extractPlaceCandidates(message, mapsUrl) {
   return candidates;
 }
 
-function extractPlaceName(message, mapsUrl) {
-  return extractPlaceCandidates(
-    message,
-    mapsUrl
-  )[0] || "";
+function extractPlaceName(
+  message,
+  mapsUrl
+) {
+  return (
+    extractPlaceCandidates(
+      message,
+      mapsUrl
+    )[0] || ""
+  );
+}
+
+function extractAddressFromText(value) {
+  const text = decodeHtmlEntities(
+    String(
+      value || ""
+    )
+  )
+    .replace(
+      /<br\s*\/?>/gi,
+      " "
+    )
+    .replace(
+      /<[^>]+>/g,
+      " "
+    )
+    .replace(
+      /[ \t]+/g,
+      " "
+    );
+
+  const addressMatch = text.match(
+    /(?:〒\s*\d{3}[-ー]\d{4}\s*)?(?:東京都)?(?:多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市)(?:[一-龠ぁ-んァ-ヶーA-Za-z0-9０-９丁目番地号\-−ー\s]{2,60})/u
+  );
+
+  if (
+    !addressMatch
+  ) {
+    return "";
+  }
+
+  let address = addressMatch[0]
+    .replace(
+      /^〒\s*\d{3}[-ー]\d{4}\s*/u,
+      ""
+    )
+    .replace(
+      /\s+(?:TEL|電話|営業時間|定休日|アクセス|地図|店舗情報).*$/iu,
+      ""
+    )
+    .trim();
+
+  const numberedAddress = address.match(
+    /^(.{2,50}?(?:\d|[０-９])(?:丁目|番地|番|号|[-−ー]\d|[-−ー][０-９])?.{0,20})/u
+  );
+
+  if (
+    numberedAddress
+  ) {
+    address =
+      numberedAddress[1].trim();
+  }
+
+  return cleanText(
+    address,
+    100
+  );
 }
 
 function extractAddress(message) {
   const texts = [
     message.content || "",
+
     ...(message.embeds || []).flatMap(
       (embed) => [
         embed.title || "",
         embed.description || "",
+
         ...(embed.fields || []).map(
-          (field) => field.value || ""
+          (field) =>
+            field.value || ""
         )
       ]
     )
   ];
 
-  const joined = texts.join("\n");
+  for (
+    const text
+    of texts
+  ) {
+    const address =
+      extractAddressFromText(
+        text
+      );
 
-  const address = joined.match(
-    /(?:〒\s*\d{3}[-ー]\d{4}\s*)?(?:東京都)?(?:多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市)[^\n、。]{2,50}/u
-  );
-
-  if (!address) {
-    return "";
+    if (
+      address
+    ) {
+      return address;
+    }
   }
 
-  return cleanText(
-    address[0]
-      .replace(
-        /^〒\s*\d{3}[-ー]\d{4}\s*/u,
-        ""
-      ),
-    100
-  );
+  return "";
 }
 
-function extractAreaHint(message) {
+function extractAreaHint(
+  message,
+  pageInformation = []
+) {
   const texts = [
     message.content || "",
+
     ...(message.embeds || []).flatMap(
       (embed) => [
         embed.title || "",
         embed.description || ""
       ]
-    )
-  ].join(" ");
+    ),
 
-  const areaMatch = texts.match(
-    /多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子/u
+    ...pageInformation.flatMap(
+      (information) => [
+        information.address || "",
+        information.description || "",
+        information.name || ""
+      ]
+    )
+  ].join(
+    " "
   );
 
-  return areaMatch
-    ? areaMatch[0]
+  const match = texts.match(
+    TAMA_AREA_PATTERN
+  );
+
+  return match
+    ? match[0]
     : "";
 }
 
@@ -493,15 +784,22 @@ function extractDescription(
   message,
   placeName
 ) {
-  const lines = (message.content || "")
-    .split(/\r?\n/)
-    .map((line) =>
-      cleanText(
-        line,
-        200
-      )
+  const lines = (
+    message.content || ""
+  )
+    .split(
+      /\r?\n/
     )
-    .filter(Boolean)
+    .map(
+      (line) =>
+        cleanText(
+          line,
+          200
+        )
+    )
+    .filter(
+      Boolean
+    )
     .filter(
       (line) =>
         line !== placeName
@@ -513,14 +811,20 @@ function extractDescription(
         )
     );
 
-  if (lines.length > 0) {
+  if (
+    lines.length > 0
+  ) {
     return cleanText(
-      lines.join(" "),
+      lines.join(
+        " "
+      ),
       160
     );
   }
 
-  const embed = (message.embeds || []).find(
+  const embed = (
+    message.embeds || []
+  ).find(
     (item) =>
       item.description ||
       item.title
@@ -528,36 +832,51 @@ function extractDescription(
 
   return cleanText(
     embed
-      ? embed.description || embed.title
+      ? (
+          embed.description ||
+          embed.title
+        )
       : "コミュニティで紹介されたスポット。",
+
     160
   );
 }
 
-function classifySpot(message) {
+function classifySpot(
+  message
+) {
   const text = [
     message.content || "",
+
     ...(message.embeds || []).map(
       (embed) =>
         [
           embed.title,
           embed.description
         ]
-          .filter(Boolean)
-          .join(" ")
+          .filter(
+            Boolean
+          )
+          .join(
+            " "
+          )
     )
-  ].join(" ");
+  ].join(
+    " "
+  );
 
   if (
-    /イベント|開催|お祭り|祭り|フェス|展示|ワークショップ|勉強会|体験会/u
-      .test(text)
+    /イベント|開催|お祭り|祭り|フェス|展示|ワークショップ|勉強会|体験会/u.test(
+      text
+    )
   ) {
     return "event";
   }
 
   if (
-    /お店|飲食|カフェ|珈琲|コーヒー|パン屋|レストラン|ランチ|食堂|書店|うどん|カレー/u
-      .test(text)
+    /お店|飲食|カフェ|珈琲|コーヒー|パン屋|レストラン|ランチ|食堂|書店|うどん|カレー|ラーメン|酒店/u.test(
+      text
+    )
   ) {
     return "shop";
   }
@@ -565,7 +884,9 @@ function classifySpot(message) {
   return "spot";
 }
 
-function wait(milliseconds) {
+function wait(
+  milliseconds
+) {
   return new Promise(
     (resolve) => {
       setTimeout(
@@ -585,23 +906,25 @@ async function requestDiscord(
     attempt < 3;
     attempt += 1
   ) {
-    const response = await fetch(
-      DISCORD_API_BASE + endpoint,
-      {
-        headers: {
-          Authorization:
-            `Bot ${token}`,
+    const response =
+      await fetch(
+        DISCORD_API_BASE + endpoint,
 
-          "User-Agent":
-            NOMINATIM_USER_AGENT
-        },
+        {
+          headers: {
+            Authorization:
+              `Bot ${token}`,
 
-        signal:
-          AbortSignal.timeout(
-            15000
-          )
-      }
-    );
+            "User-Agent":
+              USER_AGENT
+          },
+
+          signal:
+            AbortSignal.timeout(
+              15000
+            )
+        }
+      );
 
     if (
       response.status === 429 &&
@@ -627,7 +950,9 @@ async function requestDiscord(
       continue;
     }
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
       throw new Error(
         `Discord APIへの接続に失敗しました: ${response.status}`
       );
@@ -654,11 +979,15 @@ async function fetchChannelMessages(
     page < MAX_MESSAGE_PAGES;
     page += 1
   ) {
-    const parameters = new URLSearchParams({
-      limit: "100"
-    });
+    const parameters =
+      new URLSearchParams({
+        limit:
+          "100"
+      });
 
-    if (before) {
+    if (
+      before
+    ) {
       parameters.set(
         "before",
         before
@@ -669,32 +998,47 @@ async function fetchChannelMessages(
       `/channels/${encodeURIComponent(channelId)}` +
       `/messages?${parameters.toString()}`;
 
-    const batch = await requestDiscord(
-      endpoint,
-      token
-    );
+    const batch =
+      await requestDiscord(
+        endpoint,
+        token
+      );
 
-    if (!Array.isArray(batch)) {
+    if (
+      !Array.isArray(
+        batch
+      )
+    ) {
       throw new Error(
         "Discordの投稿一覧の形式が正しくありません。"
       );
     }
 
-    messages.push(...batch);
+    messages.push(
+      ...batch
+    );
 
-    if (batch.length < 100) {
+    if (
+      batch.length < 100
+    ) {
       break;
     }
 
     before =
-      batch[batch.length - 1].id;
+      batch[
+        batch.length - 1
+      ].id;
   }
 
   return messages;
 }
 
-function getMapReaction(message) {
-  return (message.reactions || []).find(
+function getMapReaction(
+  message
+) {
+  return (
+    message.reactions || []
+  ).find(
     (reaction) =>
       normalizeEmoji(
         reaction.emoji &&
@@ -715,20 +1059,25 @@ async function wasApprovedByOwner(
 ) {
   let after = "";
 
-  const emoji = encodeURIComponent(
-    reaction.emoji.name
-  );
+  const emoji =
+    encodeURIComponent(
+      reaction.emoji.name
+    );
 
   for (
     let page = 0;
     page < MAX_REACTION_PAGES;
     page += 1
   ) {
-    const parameters = new URLSearchParams({
-      limit: "100"
-    });
+    const parameters =
+      new URLSearchParams({
+        limit:
+          "100"
+      });
 
-    if (after) {
+    if (
+      after
+    ) {
       parameters.set(
         "after",
         after
@@ -740,71 +1089,906 @@ async function wasApprovedByOwner(
       `/messages/${encodeURIComponent(message.id)}` +
       `/reactions/${emoji}?${parameters.toString()}`;
 
-    const users = await requestDiscord(
-      endpoint,
-      token
-    );
+    const users =
+      await requestDiscord(
+        endpoint,
+        token
+      );
 
-    const approved = users.some(
-      (user) =>
-        user.id === approverId ||
-        user.id === message.author.id
-    );
-
-    if (approved) {
+    if (
+      users.some(
+        (user) =>
+          user.id === approverId ||
+          user.id === message.author.id
+      )
+    ) {
       return true;
     }
 
-    if (users.length < 100) {
+    if (
+      users.length < 100
+    ) {
       return false;
     }
 
     after =
-      users[users.length - 1].id;
+      users[
+        users.length - 1
+      ].id;
   }
 
   return false;
 }
 
-async function expandMapsUrl(url) {
+async function expandMapsUrl(
+  url
+) {
   if (
     !url ||
-    !isGoogleMapsUrl(url)
+    !isGoogleMapsUrl(
+      url
+    )
   ) {
     return url;
   }
 
   try {
-    const response = await fetch(
-      url,
-      {
-        redirect: "follow",
+    const response =
+      await fetch(
+        url,
 
-        headers: {
-          "User-Agent":
-            NOMINATIM_USER_AGENT
-        },
+        {
+          redirect:
+            "follow",
 
-        signal:
-          AbortSignal.timeout(
-            15000
-          )
-      }
-    );
+          headers: {
+            "User-Agent":
+              USER_AGENT
+          },
+
+          signal:
+            AbortSignal.timeout(
+              15000
+            )
+        }
+      );
 
     await response.body?.cancel();
 
-    return response.url || url;
+    return (
+      response.url ||
+      url
+    );
   } catch {
     return url;
   }
 }
 
-async function findPlace(query) {
-  const elapsed =
-    Date.now() - previousGeocodingAt;
+function extractTagAttribute(
+  tag,
+  attributeName
+) {
+  const pattern =
+    new RegExp(
+      `\\b${attributeName}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
 
-  if (elapsed < 1100) {
+      "i"
+    );
+
+  const match =
+    String(
+      tag || ""
+    ).match(
+      pattern
+    );
+
+  if (
+    !match
+  ) {
+    return "";
+  }
+
+  return decodeHtmlEntities(
+    match[1] ||
+    match[2] ||
+    match[3] ||
+    ""
+  );
+}
+
+function extractMetaContent(
+  html,
+  keys
+) {
+  const tags =
+    html.match(
+      /<meta\b[^>]*>/gi
+    ) || [];
+
+  const normalizedKeys =
+    new Set(
+      keys.map(
+        (key) =>
+          key.toLowerCase()
+      )
+    );
+
+  for (
+    const tag
+    of tags
+  ) {
+    const property =
+      extractTagAttribute(
+        tag,
+        "property"
+      ).toLowerCase();
+
+    const name =
+      extractTagAttribute(
+        tag,
+        "name"
+      ).toLowerCase();
+
+    const itemprop =
+      extractTagAttribute(
+        tag,
+        "itemprop"
+      ).toLowerCase();
+
+    if (
+      normalizedKeys.has(
+        property
+      ) ||
+      normalizedKeys.has(
+        name
+      ) ||
+      normalizedKeys.has(
+        itemprop
+      )
+    ) {
+      const content =
+        extractTagAttribute(
+          tag,
+          "content"
+        );
+
+      if (
+        content
+      ) {
+        return content;
+      }
+    }
+  }
+
+  return "";
+}
+
+function extractHtmlTitle(
+  html
+) {
+  const match =
+    html.match(
+      /<title\b[^>]*>([\s\S]*?)<\/title>/i
+    );
+
+  if (
+    !match
+  ) {
+    return "";
+  }
+
+  return stripHtml(
+    match[1]
+  );
+}
+
+function extractJsonLdBlocks(
+  html
+) {
+  const blocks = [];
+
+  const pattern =
+    /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+
+  for (
+    const match
+    of html.matchAll(
+      pattern
+    )
+  ) {
+    const raw =
+      match[1]
+        .trim()
+        .replace(
+          /^<!--/,
+          ""
+        )
+        .replace(
+          /-->$/,
+          ""
+        )
+        .trim();
+
+    try {
+      blocks.push(
+        JSON.parse(
+          raw
+        )
+      );
+    } catch {
+      continue;
+    }
+  }
+
+  return blocks;
+}
+
+function flattenJsonLd(
+  value,
+  results = [],
+  depth = 0
+) {
+  if (
+    !value ||
+    depth > 8
+  ) {
+    return results;
+  }
+
+  if (
+    Array.isArray(
+      value
+    )
+  ) {
+    for (
+      const item
+      of value
+    ) {
+      flattenJsonLd(
+        item,
+        results,
+        depth + 1
+      );
+    }
+
+    return results;
+  }
+
+  if (
+    typeof value !== "object"
+  ) {
+    return results;
+  }
+
+  results.push(
+    value
+  );
+
+  for (
+    const key
+    of [
+      "@graph",
+      "mainEntity",
+      "itemListElement",
+      "item",
+      "location",
+      "subjectOf",
+      "about"
+    ]
+  ) {
+    if (
+      value[key]
+    ) {
+      flattenJsonLd(
+        value[key],
+        results,
+        depth + 1
+      );
+    }
+  }
+
+  return results;
+}
+
+function formatStructuredAddress(
+  address
+) {
+  if (
+    !address
+  ) {
+    return "";
+  }
+
+  if (
+    typeof address === "string"
+  ) {
+    return cleanText(
+      address,
+      100
+    );
+  }
+
+  if (
+    typeof address !== "object"
+  ) {
+    return "";
+  }
+
+  return cleanText(
+    [
+      address.addressRegion,
+      address.addressLocality,
+      address.streetAddress
+    ]
+      .filter(
+        Boolean
+      )
+      .join(
+        ""
+      ),
+    100
+  );
+}
+
+function extractStructuredPosition(
+  value
+) {
+  if (
+    !value ||
+    typeof value !== "object"
+  ) {
+    return null;
+  }
+
+  const geo =
+    value.geo ||
+    value.location?.geo ||
+    value;
+
+  const latitude =
+    Number(
+      geo.latitude ??
+      geo.lat
+    );
+
+  const longitude =
+    Number(
+      geo.longitude ??
+      geo.lon ??
+      geo.lng
+    );
+
+  if (
+    isWithinTamaRegion(
+      latitude,
+      longitude
+    )
+  ) {
+    return [
+      latitude,
+      longitude
+    ];
+  }
+
+  return null;
+}
+
+function findStructuredPlace(
+  html
+) {
+  const entries =
+    extractJsonLdBlocks(
+      html
+    ).flatMap(
+      (block) =>
+        flattenJsonLd(
+          block
+        )
+    );
+
+  const placeTypes =
+    /Restaurant|FoodEstablishment|CafeOrCoffeeShop|Store|LocalBusiness|Place|TouristAttraction|Organization|Event|Bakery|BarOrPub/u;
+
+  const scoredEntries =
+    entries
+      .map(
+        (entry) => {
+          const type =
+            Array.isArray(
+              entry["@type"]
+            )
+              ? entry["@type"].join(
+                  " "
+                )
+              : String(
+                  entry["@type"] || ""
+                );
+
+          const position =
+            extractStructuredPosition(
+              entry
+            );
+
+          const address =
+            formatStructuredAddress(
+              entry.address ||
+              entry.location?.address
+            );
+
+          let score = 0;
+
+          if (
+            placeTypes.test(
+              type
+            )
+          ) {
+            score += 5;
+          }
+
+          if (
+            position
+          ) {
+            score += 4;
+          }
+
+          if (
+            address
+          ) {
+            score += 3;
+          }
+
+          if (
+            entry.name
+          ) {
+            score += 1;
+          }
+
+          return {
+            entry,
+            score,
+            position,
+            address
+          };
+        }
+      )
+      .sort(
+        (left, right) =>
+          right.score -
+          left.score
+      );
+
+  const best =
+    scoredEntries[0];
+
+  if (
+    !best ||
+    best.score === 0
+  ) {
+    return {
+      name:
+        "",
+
+      address:
+        "",
+
+      position:
+        null
+    };
+  }
+
+  return {
+    name:
+      normalizePlaceName(
+        best.entry.name ||
+        best.entry.headline ||
+        ""
+      ),
+
+    address:
+      best.address,
+
+    position:
+      best.position
+  };
+}
+
+function extractCoordinatesFromHtml(
+  html
+) {
+  const latitudeMeta =
+    extractMetaContent(
+      html,
+      [
+        "place:location:latitude",
+        "geo.position",
+        "icbm",
+        "latitude"
+      ]
+    );
+
+  const longitudeMeta =
+    extractMetaContent(
+      html,
+      [
+        "place:location:longitude",
+        "longitude"
+      ]
+    );
+
+  if (
+    latitudeMeta &&
+    longitudeMeta
+  ) {
+    const latitude =
+      Number(
+        latitudeMeta
+      );
+
+    const longitude =
+      Number(
+        longitudeMeta
+      );
+
+    if (
+      isWithinTamaRegion(
+        latitude,
+        longitude
+      )
+    ) {
+      return [
+        latitude,
+        longitude
+      ];
+    }
+  }
+
+  if (
+    latitudeMeta
+  ) {
+    const position =
+      parseCoordinatePair(
+        latitudeMeta.replace(
+          ";",
+          ","
+        )
+      );
+
+    if (
+      position &&
+      isWithinTamaRegion(
+        position[0],
+        position[1]
+      )
+    ) {
+      return position;
+    }
+  }
+
+  const patterns = [
+    /["']latitude["']\s*:\s*["']?(-?\d{1,2}(?:\.\d+)?)["']?[\s\S]{0,120}?["']longitude["']\s*:\s*["']?(-?\d{1,3}(?:\.\d+)?)/i,
+
+    /["']lat["']\s*:\s*["']?(-?\d{1,2}(?:\.\d+)?)["']?[\s\S]{0,100}?["'](?:lng|lon)["']\s*:\s*["']?(-?\d{1,3}(?:\.\d+)?)/i,
+
+    /@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/,
+
+    /!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/
+  ];
+
+  for (
+    const pattern
+    of patterns
+  ) {
+    const match =
+      html.match(
+        pattern
+      );
+
+    if (
+      !match
+    ) {
+      continue;
+    }
+
+    const latitude =
+      Number(
+        match[1]
+      );
+
+    const longitude =
+      Number(
+        match[2]
+      );
+
+    if (
+      isWithinTamaRegion(
+        latitude,
+        longitude
+      )
+    ) {
+      return [
+        latitude,
+        longitude
+      ];
+    }
+  }
+
+  return null;
+}
+
+function extractAddressFromHtml(
+  html
+) {
+  const structured =
+    findStructuredPlace(
+      html
+    );
+
+  if (
+    structured.address
+  ) {
+    return structured.address;
+  }
+
+  const metaCandidates = [
+    extractMetaContent(
+      html,
+      [
+        "og:street-address",
+        "street-address",
+        "streetaddress"
+      ]
+    ),
+
+    extractMetaContent(
+      html,
+      [
+        "description",
+        "og:description",
+        "twitter:description"
+      ]
+    )
+  ];
+
+  for (
+    const candidate
+    of metaCandidates
+  ) {
+    const address =
+      extractAddressFromText(
+        candidate
+      );
+
+    if (
+      address
+    ) {
+      return address;
+    }
+  }
+
+  const labeledPatterns = [
+    /(?:住所|所在地|店舗住所|アクセス)\s*[:：]?\s*(?:<\/[^>]+>\s*<[^>]+>)*([^<\n]{8,120})/giu,
+
+    /itemprop\s*=\s*["']streetAddress["'][^>]*>([\s\S]{3,150}?)<\//giu,
+
+    /class\s*=\s*["'][^"']*(?:address|rstinfo-table__address)[^"']*["'][^>]*>([\s\S]{3,250}?)<\//giu
+  ];
+
+  for (
+    const pattern
+    of labeledPatterns
+  ) {
+    for (
+      const match
+      of html.matchAll(
+        pattern
+      )
+    ) {
+      const address =
+        extractAddressFromText(
+          match[1]
+        );
+
+      if (
+        address
+      ) {
+        return address;
+      }
+    }
+  }
+
+  return extractAddressFromText(
+    html.slice(
+      0,
+      400000
+    )
+  );
+}
+
+async function fetchPageInformation(
+  sourceUrl
+) {
+  if (
+    !sourceUrl ||
+    isGoogleMapsUrl(
+      sourceUrl
+    )
+  ) {
+    return null;
+  }
+
+  let parsedUrl;
+
+  try {
+    parsedUrl =
+      new URL(
+        sourceUrl
+      );
+  } catch {
+    return null;
+  }
+
+  if (
+    ![
+      "http:",
+      "https:"
+    ].includes(
+      parsedUrl.protocol
+    )
+  ) {
+    return null;
+  }
+
+  try {
+    console.log(
+      `リンク先を確認: ${sourceUrl}`
+    );
+
+    const response =
+      await fetch(
+        sourceUrl,
+
+        {
+          redirect:
+            "follow",
+
+          headers: {
+            "User-Agent":
+              USER_AGENT,
+
+            "Accept":
+              "text/html,application/xhtml+xml",
+
+            "Accept-Language":
+              "ja,en;q=0.8"
+          },
+
+          signal:
+            AbortSignal.timeout(
+              15000
+            )
+        }
+      );
+
+    if (
+      !response.ok
+    ) {
+      console.warn(
+        `リンク先を取得できませんでした: ${response.status} / ${sourceUrl}`
+      );
+
+      return null;
+    }
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !/text\/html|application\/xhtml\+xml/i.test(
+        contentType
+      )
+    ) {
+      await response.body?.cancel();
+
+      return null;
+    }
+
+    const html =
+      (
+        await response.text()
+      ).slice(
+        0,
+        1200000
+      );
+
+    const structured =
+      findStructuredPlace(
+        html
+      );
+
+    const metaTitle =
+      extractMetaContent(
+        html,
+        [
+          "og:title",
+          "twitter:title"
+        ]
+      );
+
+    const description =
+      extractMetaContent(
+        html,
+        [
+          "og:description",
+          "description",
+          "twitter:description"
+        ]
+      );
+
+    const information = {
+      url:
+        response.url ||
+        sourceUrl,
+
+      name:
+        structured.name ||
+        normalizePlaceName(
+          metaTitle ||
+          extractHtmlTitle(
+            html
+          )
+        ),
+
+      address:
+        structured.address ||
+        extractAddressFromHtml(
+          html
+        ),
+
+      position:
+        structured.position ||
+        extractCoordinatesFromHtml(
+          html
+        ),
+
+      description:
+        cleanText(
+          description,
+          200
+        )
+    };
+
+    console.log(
+      `リンク先の情報: ` +
+      `店名=${information.name || "不明"} / ` +
+      `住所=${information.address || "不明"} / ` +
+      `座標=${information.position?.join(",") || "不明"}`
+    );
+
+    return information;
+
+  } catch (
+    error
+  ) {
+    console.warn(
+      `リンク先の取得に失敗しました: ${sourceUrl} / ${error.message}`
+    );
+
+    return null;
+  }
+}
+
+async function findPlace(
+  query
+) {
+  const elapsed =
+    Date.now() -
+    previousGeocodingAt;
+
+  if (
+    elapsed < 1100
+  ) {
     await wait(
       1100 - elapsed
     );
@@ -813,9 +1997,10 @@ async function findPlace(query) {
   previousGeocodingAt =
     Date.now();
 
-  const searchUrl = new URL(
-    NOMINATIM_BASE
-  );
+  const searchUrl =
+    new URL(
+      NOMINATIM_BASE
+    );
 
   searchUrl.searchParams.set(
     "format",
@@ -852,25 +2037,29 @@ async function findPlace(query) {
     "1"
   );
 
-  const response = await fetch(
-    searchUrl,
-    {
-      headers: {
-        "User-Agent":
-          NOMINATIM_USER_AGENT,
+  const response =
+    await fetch(
+      searchUrl,
 
-        "Accept-Language":
-          "ja"
-      },
+      {
+        headers: {
+          "User-Agent":
+            USER_AGENT,
 
-      signal:
-        AbortSignal.timeout(
-          15000
-        )
-    }
-  );
+          "Accept-Language":
+            "ja"
+        },
 
-  if (!response.ok) {
+        signal:
+          AbortSignal.timeout(
+            15000
+          )
+      }
+    );
+
+  if (
+    !response.ok
+  ) {
     throw new Error(
       `場所の検索に失敗しました: ${response.status} / ${query}`
     );
@@ -880,24 +2069,29 @@ async function findPlace(query) {
     await response.json();
 
   if (
-    !Array.isArray(results) ||
+    !Array.isArray(
+      results
+    ) ||
     results.length === 0
   ) {
     return null;
   }
 
-  const result = results[0];
+  const result =
+    results[0];
 
-  const latitude = Number(
-    result.lat
-  );
+  const latitude =
+    Number(
+      result.lat
+    );
 
-  const longitude = Number(
-    result.lon
-  );
+  const longitude =
+    Number(
+      result.lon
+    );
 
   if (
-    !isValidPosition(
+    !isWithinTamaRegion(
       latitude,
       longitude
     )
@@ -925,7 +2119,7 @@ async function findPlace(query) {
 
 async function findPlaceFromCandidates(
   candidates,
-  address,
+  addresses,
   areaHint
 ) {
   const searches = [];
@@ -934,10 +2128,11 @@ async function findPlaceFromCandidates(
     query,
     displayName
   ) => {
-    const normalized = cleanText(
-      query,
-      120
-    );
+    const normalized =
+      cleanText(
+        query,
+        120
+      );
 
     if (
       normalized &&
@@ -951,15 +2146,34 @@ async function findPlaceFromCandidates(
           normalized,
 
         displayName:
-          displayName || normalized
+          displayName ||
+          normalized
       });
     }
   };
 
-  for (const candidate of candidates.slice(
-    0,
-    4
-  )) {
+  for (
+    const address
+    of addresses
+  ) {
+    if (
+      address
+    ) {
+      addSearch(
+        address,
+        candidates[0] ||
+        address
+      );
+    }
+  }
+
+  for (
+    const candidate
+    of candidates.slice(
+      0,
+      4
+    )
+  ) {
     if (
       areaHint &&
       !candidate.includes(
@@ -976,28 +2190,62 @@ async function findPlaceFromCandidates(
       candidate,
       candidate
     );
+
+    const simplifiedCandidate =
+      candidate
+        .replace(
+          /\s*[-–—]\s*.+$/u,
+          ""
+        )
+        .replace(
+          /\s*[（(].*?[)）]\s*/gu,
+          ""
+        )
+        .replace(
+          /\s+(?:クーポン|公式|店舗情報).*$/u,
+          ""
+        )
+        .trim();
+
+    if (
+      simplifiedCandidate &&
+      simplifiedCandidate !== candidate
+    ) {
+      if (
+        areaHint
+      ) {
+        addSearch(
+          `${areaHint} ${simplifiedCandidate}`,
+          simplifiedCandidate
+        );
+      }
+
+      addSearch(
+        simplifiedCandidate,
+        simplifiedCandidate
+      );
+    }
   }
 
-  if (address) {
-    addSearch(
-      address,
-      candidates[0] || address
-    );
-  }
-
-  for (const search of searches.slice(
-    0,
-    8
-  )) {
+  for (
+    const search
+    of searches.slice(
+      0,
+      10
+    )
+  ) {
     console.log(
       `場所を検索: ${search.query}`
     );
 
-    const place = await findPlace(
-      search.query
-    );
+    const place =
+      await findPlace(
+        search.query
+      );
 
-    if (place) {
+    if (
+      place
+    ) {
       return {
         ...place,
 
@@ -1018,18 +2266,26 @@ async function readExistingSpots() {
         "utf8"
       );
 
-    const spots = JSON.parse(
-      contents
-    );
+    const spots =
+      JSON.parse(
+        contents
+      );
 
-    if (!Array.isArray(spots)) {
+    if (
+      !Array.isArray(
+        spots
+      )
+    ) {
       throw new Error(
         "map/spots.json は配列である必要があります。"
       );
     }
 
     return spots;
-  } catch (error) {
+
+  } catch (
+    error
+  ) {
     if (
       error.code === "ENOENT"
     ) {
@@ -1038,6 +2294,21 @@ async function readExistingSpots() {
 
     throw error;
   }
+}
+
+function areaFromAddress(
+  address
+) {
+  const match =
+    String(
+      address || ""
+    ).match(
+      TAMA_AREA_PATTERN
+    );
+
+  return match
+    ? match[0]
+    : "";
 }
 
 async function convertMessageToSpot(
@@ -1056,39 +2327,89 @@ async function convertMessageToSpot(
     return previousSpot;
   }
 
-  const urls = extractUrls(
-    message
-  );
+  const urls =
+    extractUrls(
+      message
+    );
 
-  const originalMapsUrl = urls.find(
-    isGoogleMapsUrl
-  );
+  const originalMapsUrl =
+    urls.find(
+      isGoogleMapsUrl
+    );
 
-  const mapsUrl = originalMapsUrl
-    ? await expandMapsUrl(
-        originalMapsUrl
+  const mapsUrl =
+    originalMapsUrl
+      ? await expandMapsUrl(
+          originalMapsUrl
+        )
+      : "";
+
+  const sourceUrls =
+    urls
+      .filter(
+        (url) =>
+          !isGoogleMapsUrl(
+            url
+          )
       )
-    : "";
+      .slice(
+        0,
+        2
+      );
+
+  const pageInformation = [];
+
+  for (
+    const sourceUrl
+    of sourceUrls
+  ) {
+    const information =
+      await fetchPageInformation(
+        sourceUrl
+      );
+
+    if (
+      information
+    ) {
+      pageInformation.push(
+        information
+      );
+    }
+  }
 
   const candidates =
     extractPlaceCandidates(
       message,
-      mapsUrl
+      mapsUrl,
+      pageInformation
     );
 
-  const address =
-    extractAddress(
-      message
-    );
+  const addresses = [
+    ...new Set(
+      [
+        ...pageInformation.map(
+          (information) =>
+            information.address
+        ),
+
+        extractAddress(
+          message
+        )
+      ].filter(
+        Boolean
+      )
+    )
+  ];
 
   const areaHint =
     extractAreaHint(
-      message
+      message,
+      pageInformation
     );
 
   if (
     candidates.length === 0 &&
-    !address
+    addresses.length === 0
   ) {
     console.warn(
       `投稿 ${message.id} は店名や住所を特定できませんでした。`
@@ -1099,33 +2420,62 @@ async function convertMessageToSpot(
 
   let name =
     candidates[0] ||
-    address;
+    addresses[0];
 
-  let position = mapsUrl
-    ? extractCoordinatesFromUrl(
-        mapsUrl
-      )
-    : null;
+  let position =
+    mapsUrl
+      ? extractCoordinatesFromUrl(
+          mapsUrl
+        )
+      : null;
+
+  if (
+    position &&
+    !isWithinTamaRegion(
+      position[0],
+      position[1]
+    )
+  ) {
+    position =
+      null;
+  }
+
+  if (
+    !position
+  ) {
+    position =
+      pageInformation.find(
+        (information) =>
+          information.position
+      )?.position ||
+      null;
+  }
 
   let area =
     previousSpot?.area ||
+    areaFromAddress(
+      addresses[0]
+    ) ||
     areaHint ||
     "多摩地域";
 
-  if (!position) {
+  if (
+    !position
+  ) {
     const place =
       await findPlaceFromCandidates(
         candidates,
-        address,
+        addresses,
         areaHint
       );
 
-    if (!place) {
+    if (
+      !place
+    ) {
       console.warn(
-        `投稿 ${message.id} は場所を特定できませんでした。` +
-        ` 候補: ${candidates.join(" / ") || "なし"}` +
-        ` 住所: ${address || "なし"}` +
-        ` GoogleマップのURLまたは住所を投稿に追加してください。`
+        `投稿 ${message.id} は場所を特定できませんでした。 ` +
+        `候補: ${candidates.join(" / ") || "なし"} / ` +
+        `住所: ${addresses.join(" / ") || "なし"}`
       );
 
       return null;
@@ -1143,15 +2493,12 @@ async function convertMessageToSpot(
   }
 
   const sourceUrl =
-    urls.find(
-      (url) =>
-        !isGoogleMapsUrl(url)
-    ) ||
+    sourceUrls[0] ||
     mapsUrl ||
     "";
 
   console.log(
-    `掲載: ${name} / ${area}`
+    `掲載: ${name} / ${area} / ${position.join(",")}`
   );
 
   return {
@@ -1232,7 +2579,10 @@ async function main() {
     `地図リアクション付きの${selectedMessages.length}件を確認します。`
   );
 
-  for (const message of selectedMessages) {
+  for (
+    const message
+    of selectedMessages
+  ) {
     const reaction =
       getMapReaction(
         message
@@ -1247,7 +2597,9 @@ async function main() {
         approverId
       );
 
-    if (!approved) {
+    if (
+      !approved
+    ) {
       console.log(
         `投稿 ${message.id} は投稿者本人または管理者の承認がありません。`
       );
@@ -1257,7 +2609,9 @@ async function main() {
 
     if (
       !message.content &&
-      !(message.embeds || []).length
+      !(
+        message.embeds || []
+      ).length
     ) {
       console.warn(
         `投稿 ${message.id} の本文を取得できません。` +
@@ -1271,17 +2625,23 @@ async function main() {
       const spot =
         await convertMessageToSpot(
           message,
+
           previousSpotsById.get(
             message.id
           )
         );
 
-      if (spot) {
+      if (
+        spot
+      ) {
         approvedSpots.push(
           spot
         );
       }
-    } catch (error) {
+
+    } catch (
+      error
+    ) {
       console.warn(
         `投稿 ${message.id} の処理に失敗しました: ${error.message}`
       );
@@ -1291,7 +2651,9 @@ async function main() {
           message.id
         );
 
-      if (previousSpot) {
+      if (
+        previousSpot
+      ) {
         approvedSpots.push(
           previousSpot
         );
@@ -1300,15 +2662,21 @@ async function main() {
   }
 
   approvedSpots.sort(
-    (left, right) => {
+    (
+      left,
+      right
+    ) => {
       if (
         left.id === right.id
       ) {
         return 0;
       }
 
-      return BigInt(left.id) >
-        BigInt(right.id)
+      return BigInt(
+        left.id
+      ) > BigInt(
+        right.id
+      )
         ? -1
         : 1;
     }
@@ -1316,11 +2684,13 @@ async function main() {
 
   await fs.writeFile(
     SPOTS_PATH,
+
     `${JSON.stringify(
       approvedSpots,
       null,
       2
     )}\n`,
+
     "utf8"
   );
 
@@ -1338,7 +2708,8 @@ if (
         error.message
       );
 
-      process.exitCode = 1;
+      process.exitCode =
+        1;
     }
   );
 }
@@ -1346,15 +2717,20 @@ if (
 module.exports = {
   classifySpot,
   extractAddress,
+  extractAddressFromHtml,
+  extractAddressFromText,
   extractAreaHint,
+  extractCoordinatesFromHtml,
   extractCoordinatesFromUrl,
   extractDescription,
+  extractJsonLdBlocks,
   extractPlaceCandidates,
   extractPlaceName,
   extractUrls,
+  findStructuredPlace,
   getMapReaction,
   isGoogleMapsUrl,
-  normalizeEmbedTitle,
   normalizeEmoji,
+  normalizePlaceName,
   parseCoordinatePair
 };
