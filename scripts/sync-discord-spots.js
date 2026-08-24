@@ -1347,7 +1347,7 @@ function extractDescription(
       (line) =>
         line &&
         line !== name &&
-        !/^(場所|施設|会場|店名|名称|スポット|種類|分類)\s*[：:]/u.test(
+        !/^(場所|施設|会場|店名|名称|スポット|ジャンル|種類|分類)\s*[：:]/u.test(
           line
         )
     );
@@ -1376,7 +1376,133 @@ function extractDescription(
     160
   );
 }
+const GENRES = [
+  "中華",
+  "ラーメン",
+  "うどん・そば",
+  "和食",
+  "洋食",
+  "カレー",
+  "パン",
+  "スイーツ",
+  "コーヒー",
+  "カフェ",
+  "居酒屋",
+  "書店・図書館",
+  "公園・レジャー",
+  "その他"
+];
 
+function classifyGenre(
+  message,
+  ...additionalTexts
+) {
+  const messageText = [
+    message.content || "",
+
+    ...(message.embeds || []).flatMap(
+      (embed) => [
+        embed.title || "",
+        embed.description || ""
+      ]
+    ),
+
+    ...additionalTexts
+  ].join(" ");
+
+  // Discord投稿で明示されていれば最優先。
+  // 例:
+  // ジャンル：中華
+  // 分類: コーヒー
+  const explicitGenre =
+    messageText.match(
+      /(?:ジャンル|種類|分類)\s*[：:]\s*([^\s、,]+)/u
+    )?.[1];
+
+  if (explicitGenre) {
+    const matched =
+      GENRES.find(
+        (genre) =>
+          genre === explicitGenre
+      );
+
+    if (matched) {
+      return matched;
+    }
+  }
+
+  const genrePatterns = [
+    [
+      "中華",
+      /中華|中国料理|四川|広東|上海料理|台湾料理|餃子|点心/u
+    ],
+    [
+      "ラーメン",
+      /ラーメン|らーめん|拉麺|つけ麺|中華そば/u
+    ],
+    [
+      "うどん・そば",
+      /うどん|饂飩|そば|蕎麦/u
+    ],
+    [
+      "カレー",
+      /カレー|咖喱/u
+    ],
+    [
+      "パン",
+      /パン屋|ベーカリー|bakery|bread/u
+    ],
+    [
+      "コーヒー",
+      /コーヒー|珈琲|coffee|roaster|焙煎/u
+    ],
+    [
+      "カフェ",
+      /カフェ|cafe|喫茶|茶店/u
+    ],
+    [
+      "スイーツ",
+      /ケーキ|洋菓子|和菓子|スイーツ|ジェラート|アイス|パフェ/u
+    ],
+    [
+      "居酒屋",
+      /居酒屋|酒場|ビール|beer|日本酒|焼鳥|焼き鳥/u
+    ],
+    [
+      "和食",
+      /和食|寿司|鮨|天ぷら|天麩羅|とんかつ|定食|おにぎり|おむすび/u
+    ],
+    [
+      "洋食",
+      /洋食|イタリアン|フレンチ|パスタ|ピザ|ハンバーグ/u
+    ],
+    [
+      "書店・図書館",
+      /書店|本屋|図書館|ブック/u
+    ],
+    [
+      "公園・レジャー",
+      /公園|動物園|水族館|遊園地|レジャー|博物館|美術館/u
+    ]
+  ];
+
+  for (
+    const [
+      genre,
+      pattern
+    ] of genrePatterns
+  ) {
+    if (
+      pattern.test(
+        messageText
+      )
+    ) {
+      return genre;
+    }
+  }
+
+  return "その他";
+}
 function classifySpot(message) {
   const text = [
     message.content || "",
