@@ -881,18 +881,19 @@
         statusParagraph
       );
 
-      const description =
-        document.createElement(
-          "p"
+      if (venue.description) {
+        const description =
+          document.createElement(
+            "p"
+          );
+      
+        description.textContent =
+          venue.description;
+      
+        popup.appendChild(
+          description
         );
-
-      description.textContent =
-        venue.description;
-
-      popup.appendChild(
-        description
-      );
-
+      }
       const links =
         document.createElement(
           "div"
@@ -987,17 +988,19 @@
         area
       );
 
-      const description =
-        document.createElement(
-          "p"
+      if (venue.description) {
+        const description =
+          document.createElement(
+            "p"
+          );
+      
+        description.textContent =
+          venue.description;
+      
+        popup.appendChild(
+          description
         );
-
-      description.textContent =
-        venue.description;
-
-      card.appendChild(
-        description
-      );
+      }
 
       const links =
         document.createElement(
@@ -1352,10 +1355,8 @@
             status:
               "spot",
 
-            description:
-              spot.description ||
-              "コミュニティで紹介されたスポット。",
-
+            description: "",
+            
             eventUrl:
               spot.sourceUrl ||
               undefined
