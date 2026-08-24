@@ -13,7 +13,8 @@
     "revision": "2026-06-07T13:28:53.587000+00:00"
   },
   {
-    "id": "1505200461106385027",
+    "id": "1505200461106385027-1",
+    "messageId": "1505200461106385027",
     "name": "〒183",
     "type": "shop",
     "area": "府中市",
@@ -21,8 +22,39 @@
       35.6693751,
       139.4774094
     ],
-    "description": "府中市情報です😆 （北府中駅？）（どの駅からも離れてます） わたしの好きなカフェ 遠方からわざわざ来る人がいると聞いてます🙂‍↕️ （府中本町駅）最近できたこちらもとても良いです （東府中駅）営業日少なくてなかなか行けないんですけどここの紅茶が美味しい お近くに御用のある際はぜひ寄ってみてください😆",
-    "sourceUrl": "https://www.google.com/maps/place/%E3%80%92183-0051+Tokyo,+Fuchu,+Sakaecho,+2+Chome%E2%88%92%EF%BC%92%EF%BC%97%E2%88%9210+%E3%82%B3%E3%83%BC%E3%83%9D%E3%83%A9%E3%82%B9%E3%81%A8%E3%81%93%E3%82%8D+TAILWIND+coffee+brewers/data=!4m2!3m1!1s0x6018e5b4e56947e1:0x302c586fe2a675e7!18m1!1e1?utm_source=mstt_1&entry=gps&coh=192189&g_ep=CAESBzI2LjE4LjQYACCenQoqlAEsOTQyNjc3MjcsOTQyOTIxOTUsOTQyOTk1MzIsMTAwNzk2NDk4LDEwMDc5Nzc2MSwxMDA3OTY1MzUsMTAwODE1MDM2LDk0Mjg0NDU3LDk0MjgwNTc2LDk0MjA3Mzk0LDk0MjA3NTA2LDk0MjA4NTA2LDk0MjE4NjUzLDk0MjI5ODM5LDk0Mjc1MTY4LDk0Mjc5NjE5QgJKUA%3D%3D&skid=375f043a-afc3-484d-90a8-d02b38c50482",
+    "description": "府中市情報です😆 （北府中駅？）（どの駅からも離れてます） わたしの好きなカフェ 遠方からわざわざ来る人がいると聞いてます🙂‍↕️",
+    "sourceUrl": "https://maps.app.goo.gl/714BFKV2E36krs4D9",
+    "mapUrl": "https://maps.app.goo.gl/714BFKV2E36krs4D9",
+    "revision": "2026-05-16T13:29:56.498000+00:00"
+  },
+  {
+    "id": "1505200461106385027-2",
+    "messageId": "1505200461106385027",
+    "name": "〒183",
+    "type": "spot",
+    "area": "府中市",
+    "position": [
+      35.672219,
+      139.4800091
+    ],
+    "description": "（府中本町駅）最近できたこちらもとても良いです",
+    "sourceUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
+    "mapUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
+    "revision": "2026-05-16T13:29:56.498000+00:00"
+  },
+  {
+    "id": "1505200461106385027-3",
+    "messageId": "1505200461106385027",
+    "name": "〒183",
+    "type": "spot",
+    "area": "府中市",
+    "position": [
+      35.672219,
+      139.4800091
+    ],
+    "description": "（東府中駅）営業日少なくてなかなか行けないんですけどここの紅茶が美味しい お近くに御用のある際はぜひ寄ってみてください😆",
+    "sourceUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
+    "mapUrl": "https://maps.app.goo.gl/hL8Y8k5MaHQ6SQvb6",
     "revision": "2026-05-16T13:29:56.498000+00:00"
   },
   {
