@@ -2,7 +2,11 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
 
   <title>開催地・おすすめスポットマップ | 多摩.dev</title>
 
@@ -11,10 +15,11 @@
     content="多摩.devの開催会場、候補会場、コミュニティで紹介された多摩地域のおすすめスポットを紹介します。"
   />
 
-  <!-- 多摩.dev共通スタイル -->
-  <link rel="stylesheet" href="/style.css" />
+  <link
+    rel="stylesheet"
+    href="/style.css"
+  />
 
-  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -167,7 +172,10 @@
 
     .venue-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+      );
       gap: 16px;
       margin-top: 20px;
     }
@@ -283,7 +291,9 @@
 
 <body>
   <main class="map-page">
-    <h1>多摩.dev 開催地・おすすめスポットマップ</h1>
+    <h1>
+      多摩.dev 開催地・おすすめスポットマップ
+    </h1>
 
     <p class="map-description">
       多摩.devは、多摩地域のさまざまな場所を巡りながら、
@@ -394,7 +404,9 @@
       id="venue-section"
       class="venue-section"
     >
-      <h2>開催会場・候補会場</h2>
+      <h2>
+        開催会場・候補会場
+      </h2>
 
       <div
         id="venue-list"
@@ -406,7 +418,9 @@
       id="community-section"
       class="venue-section"
     >
-      <h2>コミュニティのおすすめスポット</h2>
+      <h2>
+        コミュニティのおすすめスポット
+      </h2>
 
       <p
         id="community-status"
@@ -423,208 +437,373 @@
     </section>
 
     <p>
-      <a href="/">トップページへ戻る</a>
+      <a href="/">
+        トップページへ戻る
+      </a>
     </p>
   </main>
 
-  <!-- Leaflet本体 -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // positionには会場の緯度・経度を指定します。
-    // 必要に応じて実際の施設の位置に合わせてください。
     const venues = [
       {
-        name: "多摩市立関戸公民館",
-        area: "聖蹟桜ヶ丘・多摩市",
-        position: [35.6502, 139.4475],
-        status: "held",
-        description: "多摩.dev #1、#2 などを開催。",
-        eventUrl: "/events/"
+        name:
+          "多摩市立関戸公民館",
+
+        area:
+          "聖蹟桜ヶ丘・多摩市",
+
+        position: [
+          35.6502,
+          139.4475
+        ],
+
+        status:
+          "held",
+
+        description:
+          "多摩.dev #1、#2 などを開催。",
+
+        eventUrl:
+          "/events/"
       },
+
       {
-        name: "せいせきカワマチ",
-        area: "聖蹟桜ヶ丘・多摩市",
-        position: [35.6544, 139.4505],
-        status: "candidate",
-        description: "屋外でのLT会など、今後の開催候補。"
+        name:
+          "せいせきカワマチ",
+
+        area:
+          "聖蹟桜ヶ丘・多摩市",
+
+        position: [
+          35.6544,
+          139.4505
+        ],
+
+        status:
+          "candidate",
+
+        description:
+          "屋外でのLT会など、今後の開催候補。"
       },
+
       {
-        name: "パルテノン多摩",
-        area: "多摩センター・多摩市",
-        position: [35.6248, 139.4241],
-        status: "held",
-        description: "多摩.dev #3 を開催。",
-        eventUrl: "/events/"
+        name:
+          "パルテノン多摩",
+
+        area:
+          "多摩センター・多摩市",
+
+        position: [
+          35.6248,
+          139.4241
+        ],
+
+        status:
+          "held",
+
+        description:
+          "多摩.dev #3 を開催。",
+
+        eventUrl:
+          "/events/"
       },
+
       {
-        name: "八王子市生涯学習センター クリエイトホール",
-        area: "八王子・八王子市",
-        position: [35.6574, 139.3402],
-        status: "held",
-        description: "多摩.dev #4 を開催。",
-        eventUrl: "/events/20260807/"
+        name:
+          "八王子市生涯学習センター クリエイトホール",
+
+        area:
+          "八王子・八王子市",
+
+        position: [
+          35.6574,
+          139.3402
+        ],
+
+        status:
+          "held",
+
+        description:
+          "多摩.dev #4 を開催。",
+
+        eventUrl:
+          "/events/20260807/"
       },
+
       {
-        name: "たましんRISURUホール",
-        area: "立川・立川市",
-        position: [35.6950, 139.4213],
-        status: "scheduled",
-        description: "2026年10月16日：多摩.dev #5",
-        eventUrl: "https://tamadev.connpass.com/event/401154/"
+        name:
+          "たましんRISURUホール",
+
+        area:
+          "立川・立川市",
+
+        position: [
+          35.6950,
+          139.4213
+        ],
+
+        status:
+          "scheduled",
+
+        description:
+          "2026年10月16日：多摩.dev #5",
+
+        eventUrl:
+          "https://tamadev.connpass.com/event/401154/"
       },
+
       {
-        name: "調布市文化会館たづくり",
-        area: "調布・調布市",
-        position: [35.6501, 139.5431],
-        status: "candidate",
-        description: "今後の開催候補。"
+        name:
+          "調布市文化会館たづくり",
+
+        area:
+          "調布・調布市",
+
+        position: [
+          35.6501,
+          139.5431
+        ],
+
+        status:
+          "candidate",
+
+        description:
+          "今後の開催候補。"
       },
+
       {
-        name: "八王子市生涯学習センター 南大沢分館",
-        area: "南大沢・八王子市",
-        position: [35.6143, 139.3800],
-        status: "candidate",
-        description: "今後の開催候補。"
+        name:
+          "八王子市生涯学習センター 南大沢分館",
+
+        area:
+          "南大沢・八王子市",
+
+        position: [
+          35.6143,
+          139.3800
+        ],
+
+        status:
+          "candidate",
+
+        description:
+          "今後の開催候補。"
       },
+
       {
-        name: "稲城市立地域振興プラザ",
-        area: "稲城・稲城市",
-        position: [35.6360, 139.5024],
-        status: "candidate",
-        description: "今後の開催候補。"
+        name:
+          "稲城市立地域振興プラザ",
+
+        area:
+          "稲城・稲城市",
+
+        position: [
+          35.6360,
+          139.5024
+        ],
+
+        status:
+          "candidate",
+
+        description:
+          "今後の開催候補。"
       }
     ];
 
     const statusLabels = {
-      held: "開催済み",
-      scheduled: "開催予定",
-      candidate: "開催候補",
-      spot: "おすすめスポット"
+      held:
+        "開催済み",
+
+      scheduled:
+        "開催予定",
+
+      candidate:
+        "開催候補",
+
+      spot:
+        "おすすめスポット"
     };
 
     const statusColors = {
-      held: "#16a34a",
-      scheduled: "#2563eb",
-      candidate: "#f59e0b",
-      spot: "#db2777"
+      held:
+        "#16a34a",
+
+      scheduled:
+        "#2563eb",
+
+      candidate:
+        "#f59e0b",
+
+      spot:
+        "#db2777"
     };
 
-    const venueList = document.getElementById(
-      "venue-list"
-    );
+    const venueList =
+      document.getElementById(
+        "venue-list"
+      );
 
-    const communitySpotList = document.getElementById(
-      "community-spot-list"
-    );
+    const communitySpotList =
+      document.getElementById(
+        "community-spot-list"
+      );
 
-    const communityStatus = document.getElementById(
-      "community-status"
-    );
+    const communityStatus =
+      document.getElementById(
+        "community-status"
+      );
 
-    const venueSection = document.getElementById(
-      "venue-section"
-    );
+    const venueSection =
+      document.getElementById(
+        "venue-section"
+      );
 
-    const communitySection = document.getElementById(
-      "community-section"
-    );
+    const communitySection =
+      document.getElementById(
+        "community-section"
+      );
 
-    const locationButton = document.getElementById(
-      "show-current-location"
-    );
+    const locationButton =
+      document.getElementById(
+        "show-current-location"
+      );
 
-    const statusElement = document.getElementById(
-      "map-status"
-    );
+    const statusElement =
+      document.getElementById(
+        "map-status"
+      );
 
-    const filterInputs = document.querySelectorAll(
-      ".map-filters input[type='checkbox']"
-    );
+    const filterInputs =
+      document.querySelectorAll(
+        ".map-filters input[type='checkbox']"
+      );
 
-    // GitHub Actionsが更新するJSONを直接読み込みます。
     const communitySpotsUrl =
       "https://raw.githubusercontent.com/naoki-takahashi01/tamadev-site/main/map/spots.json";
 
-    // 地図上のマーカーと一覧カードをまとめて管理します。
     const places = [];
 
-    const map = L.map("event-map", {
-      scrollWheelZoom: false
-    }).setView(
-      [35.6500, 139.4300],
+    const map = L.map(
+      "event-map",
+      {
+        scrollWheelZoom:
+          false
+      }
+    ).setView(
+      [
+        35.6500,
+        139.4300
+      ],
       11
     );
 
     L.tileLayer(
       "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
-        maxZoom: 19,
+        maxZoom:
+          19,
+
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }
-    ).addTo(map);
+    ).addTo(
+      map
+    );
 
-    function createDirectionsUrl(venueName) {
-      const directionsUrl = new URL(
+    function createDirectionsUrl(
+      venueName
+    ) {
+      const url = new URL(
         "https://www.google.com/maps/dir/"
       );
 
-      directionsUrl.searchParams.set(
+      url.searchParams.set(
         "api",
         "1"
       );
 
-      directionsUrl.searchParams.set(
+      url.searchParams.set(
         "destination",
         venueName
       );
 
-      directionsUrl.searchParams.set(
+      url.searchParams.set(
         "travelmode",
         "transit"
       );
 
-      return directionsUrl.toString();
+      return url.toString();
     }
 
-    function createExternalLink(url, label) {
-      const link = document.createElement(
-        "a"
-      );
+    function createExternalLink(
+      url,
+      label
+    ) {
+      const link =
+        document.createElement(
+          "a"
+        );
 
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = label;
+      link.href =
+        url;
+
+      link.target =
+        "_blank";
+
+      link.rel =
+        "noopener noreferrer";
+
+      link.textContent =
+        label;
 
       return link;
     }
 
-    function createEventLink(venue) {
-      if (!venue.eventUrl) {
+    function createEventLink(
+      venue
+    ) {
+      if (
+        !venue.eventUrl
+      ) {
         return null;
       }
 
-      const link = document.createElement(
-        "a"
-      );
+      const link =
+        document.createElement(
+          "a"
+        );
 
-      link.href = venue.eventUrl;
+      link.href =
+        venue.eventUrl;
 
-      if (/^https?:\/\//.test(venue.eventUrl)) {
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
+      if (
+        /^https?:\/\//i.test(
+          venue.eventUrl
+        )
+      ) {
+        link.target =
+          "_blank";
+
+        link.rel =
+          "noopener noreferrer";
       }
 
-      if (venue.status === "spot") {
+      if (
+        venue.status === "spot"
+      ) {
         link.textContent =
           "紹介記事・公式サイトを見る";
+
       } else if (
-        venue.eventUrl.includes("connpass.com")
+        venue.eventUrl.includes(
+          "connpass.com"
+        )
       ) {
         link.textContent =
           "connpassでイベント情報を見る";
+
       } else {
         link.textContent =
           "イベント情報を見る";
@@ -633,31 +812,40 @@
       return link;
     }
 
-    function createStatusBadge(venue) {
-      const badge = document.createElement(
-        "span"
-      );
+    function createStatusBadge(
+      venue
+    ) {
+      const badge =
+        document.createElement(
+          "span"
+        );
 
       badge.className =
         `venue-status venue-status--${venue.status}`;
 
       badge.textContent =
-        statusLabels[venue.status];
+        statusLabels[
+          venue.status
+        ];
 
       return badge;
     }
 
-    function createPopup(venue) {
-      const popup = document.createElement(
-        "div"
-      );
+    function createPopup(
+      venue
+    ) {
+      const popup =
+        document.createElement(
+          "div"
+        );
 
       popup.className =
         "map-popup";
 
-      const title = document.createElement(
-        "h2"
-      );
+      const title =
+        document.createElement(
+          "h2"
+        );
 
       title.textContent =
         venue.name;
@@ -666,9 +854,10 @@
         title
       );
 
-      const area = document.createElement(
-        "p"
-      );
+      const area =
+        document.createElement(
+          "p"
+        );
 
       area.textContent =
         venue.area;
@@ -677,9 +866,10 @@
         area
       );
 
-      const statusParagraph = document.createElement(
-        "p"
-      );
+      const statusParagraph =
+        document.createElement(
+          "p"
+        );
 
       statusParagraph.appendChild(
         createStatusBadge(
@@ -691,9 +881,10 @@
         statusParagraph
       );
 
-      const description = document.createElement(
-        "p"
-      );
+      const description =
+        document.createElement(
+          "p"
+        );
 
       description.textContent =
         venue.description;
@@ -702,18 +893,22 @@
         description
       );
 
-      const links = document.createElement(
-        "div"
-      );
+      const links =
+        document.createElement(
+          "div"
+        );
 
       links.className =
         "map-popup-links";
 
-      const eventLink = createEventLink(
-        venue
-      );
+      const eventLink =
+        createEventLink(
+          venue
+        );
 
-      if (eventLink) {
+      if (
+        eventLink
+      ) {
         links.appendChild(
           eventLink
         );
@@ -739,9 +934,10 @@
       venue,
       marker
     ) {
-      const card = document.createElement(
-        "article"
-      );
+      const card =
+        document.createElement(
+          "article"
+        );
 
       card.className =
         "venue-card";
@@ -749,9 +945,10 @@
       card.dataset.status =
         venue.status;
 
-      const title = document.createElement(
-        "h3"
-      );
+      const title =
+        document.createElement(
+          "h3"
+        );
 
       title.textContent =
         venue.name;
@@ -760,9 +957,10 @@
         title
       );
 
-      const statusParagraph = document.createElement(
-        "p"
-      );
+      const statusParagraph =
+        document.createElement(
+          "p"
+        );
 
       statusParagraph.appendChild(
         createStatusBadge(
@@ -774,9 +972,10 @@
         statusParagraph
       );
 
-      const area = document.createElement(
-        "p"
-      );
+      const area =
+        document.createElement(
+          "p"
+        );
 
       area.className =
         "venue-area";
@@ -788,9 +987,10 @@
         area
       );
 
-      const description = document.createElement(
-        "p"
-      );
+      const description =
+        document.createElement(
+          "p"
+        );
 
       description.textContent =
         venue.description;
@@ -799,16 +999,18 @@
         description
       );
 
-      const links = document.createElement(
-        "div"
-      );
+      const links =
+        document.createElement(
+          "div"
+        );
 
       links.className =
         "venue-links";
 
-      const mapButton = document.createElement(
-        "button"
-      );
+      const mapButton =
+        document.createElement(
+          "button"
+        );
 
       mapButton.type =
         "button";
@@ -825,8 +1027,11 @@
           document.getElementById(
             "event-map"
           ).scrollIntoView({
-            behavior: "smooth",
-            block: "center"
+            behavior:
+              "smooth",
+
+            block:
+              "center"
           });
 
           map.setView(
@@ -842,11 +1047,14 @@
         mapButton
       );
 
-      const eventLink = createEventLink(
-        venue
-      );
+      const eventLink =
+        createEventLink(
+          venue
+        );
 
-      if (eventLink) {
+      if (
+        eventLink
+      ) {
         links.appendChild(
           eventLink
         );
@@ -872,18 +1080,31 @@
       venue,
       listElement
     ) {
-      const marker = L.circleMarker(
-        venue.position,
-        {
-          radius: 10,
-          fillColor:
-            statusColors[venue.status],
-          color: "#ffffff",
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.95
-        }
-      );
+      const marker =
+        L.circleMarker(
+          venue.position,
+          {
+            radius:
+              10,
+
+            fillColor:
+              statusColors[
+                venue.status
+              ],
+
+            color:
+              "#ffffff",
+
+            weight:
+              2,
+
+            opacity:
+              1,
+
+            fillOpacity:
+              0.95
+          }
+        );
 
       marker.bindPopup(
         createPopup(
@@ -891,10 +1112,11 @@
         )
       );
 
-      const card = createVenueCard(
-        venue,
-        marker
-      );
+      const card =
+        createVenueCard(
+          venue,
+          marker
+        );
 
       listElement.appendChild(
         card
@@ -915,10 +1137,12 @@
           filterInputs
         )
           .filter(
-            (input) => input.checked
+            (input) =>
+              input.checked
           )
           .map(
-            (input) => input.value
+            (input) =>
+              input.value
           )
       );
     }
@@ -929,23 +1153,28 @@
       const visibleStatuses =
         getVisibleStatuses();
 
-      const visiblePositions =
-        [];
+      const visiblePositions = [];
 
       let visibleVenueCount =
         0;
 
       for (const place of places) {
-        const isVisible =
+        const visible =
           visibleStatuses.has(
             place.venue.status
           );
 
         place.card.hidden =
-          !isVisible;
+          !visible;
 
-        if (isVisible) {
-          if (!map.hasLayer(place.marker)) {
+        if (
+          visible
+        ) {
+          if (
+            !map.hasLayer(
+              place.marker
+            )
+          ) {
             place.marker.addTo(
               map
             );
@@ -962,7 +1191,9 @@
           }
 
         } else if (
-          map.hasLayer(place.marker)
+          map.hasLayer(
+            place.marker
+          )
         ) {
           map.removeLayer(
             place.marker
@@ -985,8 +1216,13 @@
         map.fitBounds(
           visiblePositions,
           {
-            padding: [40, 40],
-            maxZoom: 15
+            padding: [
+              35,
+              35
+            ],
+
+            maxZoom:
+              15
           }
         );
       }
@@ -1015,26 +1251,35 @@
     ) {
       return (
         spot &&
+
         typeof spot.name === "string" &&
+
         spot.name.trim().length > 0 &&
+
         Array.isArray(
           spot.position
         ) &&
+
         spot.position.length === 2 &&
+
         spot.position.every(
           (coordinate) =>
             Number.isFinite(
               coordinate
             )
         ) &&
+
         Math.abs(
           spot.position[0]
         ) <= 90 &&
+
         Math.abs(
           spot.position[1]
         ) <= 180 &&
+
         (
           !spot.sourceUrl ||
+
           /^https?:\/\//i.test(
             spot.sourceUrl
           )
@@ -1044,13 +1289,20 @@
 
     async function loadCommunitySpots() {
       try {
+        const latestJsonUrl =
+          `${communitySpotsUrl}?v=${Date.now()}`;
+
         const response = await fetch(
-          `${communitySpotsUrl}?v=${Date.now()}`,
+          latestJsonUrl,
           {
-            cache: "no-store"
+            cache:
+              "no-store"
           }
         );
-        if (!response.ok) {
+
+        if (
+          !response.ok
+        ) {
           throw new Error(
             `スポット情報の取得に失敗しました: ${response.status}`
           );
@@ -1059,7 +1311,11 @@
         const spots =
           await response.json();
 
-        if (!Array.isArray(spots)) {
+        if (
+          !Array.isArray(
+            spots
+          )
+        ) {
           throw new Error(
             "スポット情報の形式が正しくありません。"
           );
@@ -1074,6 +1330,11 @@
               spot
             )
           ) {
+            console.warn(
+              "形式が正しくないスポットを除外しました。",
+              spot
+            );
+
             continue;
           }
 
@@ -1121,7 +1382,9 @@
 
         updateVisiblePlaces();
 
-      } catch (error) {
+      } catch (
+        error
+      ) {
         console.error(
           "おすすめスポットの読み込みに失敗しました。",
           error
@@ -1137,33 +1400,8 @@
     let currentLocationMarker =
       null;
 
-    let currentLocationCircle =
+    let currentLocationAccuracy =
       null;
-
-    function showStatus(
-      message,
-      isError = false
-    ) {
-      statusElement.textContent =
-        message;
-
-      statusElement.classList.toggle(
-        "map-status--error",
-        isError
-      );
-    }
-
-    function setLocationLoading(
-      isLoading
-    ) {
-      locationButton.disabled =
-        isLoading;
-
-      locationButton.textContent =
-        isLoading
-          ? "現在地を取得中..."
-          : "現在地を表示";
-    }
 
     locationButton.addEventListener(
       "click",
@@ -1171,136 +1409,158 @@
         if (
           !navigator.geolocation
         ) {
-          showStatus(
-            "お使いのブラウザでは位置情報を利用できません。",
-            true
+          statusElement.classList.add(
+            "map-status--error"
           );
+
+          statusElement.textContent =
+            "この端末では現在地を取得できません。";
 
           return;
         }
 
-        setLocationLoading(
-          true
+        locationButton.disabled =
+          true;
+
+        statusElement.classList.remove(
+          "map-status--error"
         );
 
-        showStatus(
-          "現在地を取得しています。位置情報の利用を許可してください。"
-        );
+        statusElement.textContent =
+          "現在地を確認しています。";
 
-        map.locate({
-          setView: true,
-          maxZoom: 13,
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 60000
-        });
-      }
-    );
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude =
+              position.coords.latitude;
 
-    map.on(
-      "locationfound",
-      (event) => {
-        setLocationLoading(
-          false
-        );
+            const longitude =
+              position.coords.longitude;
 
-        if (
-          currentLocationMarker
-        ) {
-          map.removeLayer(
-            currentLocationMarker
-          );
-        }
+            const accuracy =
+              position.coords.accuracy;
 
-        if (
-          currentLocationCircle
-        ) {
-          map.removeLayer(
-            currentLocationCircle
-          );
-        }
+            const coordinates = [
+              latitude,
+              longitude
+            ];
 
-        currentLocationCircle =
-          L.circle(
-            event.latlng,
-            {
-              radius:
-                event.accuracy,
-
-              color:
-                "#7c3aed",
-
-              fillColor:
-                "#7c3aed",
-
-              fillOpacity:
-                0.08,
-
-              weight:
-                1
+            if (
+              currentLocationMarker
+            ) {
+              map.removeLayer(
+                currentLocationMarker
+              );
             }
-          ).addTo(
-            map
-          );
 
-        currentLocationMarker =
-          L.circleMarker(
-            event.latlng,
-            {
-              radius: 9,
-              fillColor: "#7c3aed",
-              color: "#ffffff",
-              weight: 3,
-              opacity: 1,
-              fillOpacity: 1
+            if (
+              currentLocationAccuracy
+            ) {
+              map.removeLayer(
+                currentLocationAccuracy
+              );
             }
-          )
-            .addTo(
-              map
-            )
-            .bindPopup(
+
+            currentLocationMarker =
+              L.circleMarker(
+                coordinates,
+                {
+                  radius:
+                    9,
+
+                  fillColor:
+                    "#7c3aed",
+
+                  color:
+                    "#ffffff",
+
+                  weight:
+                    2,
+
+                  fillOpacity:
+                    1
+                }
+              ).addTo(
+                map
+              );
+
+            currentLocationMarker.bindPopup(
               "現在地"
-            )
-            .openPopup();
+            );
 
-        showStatus(
-          "現在地を表示しました。"
-        );
-      }
-    );
+            currentLocationAccuracy =
+              L.circle(
+                coordinates,
+                {
+                  radius:
+                    accuracy,
 
-    map.on(
-      "locationerror",
-      (event) => {
-        setLocationLoading(
-          false
-        );
+                  color:
+                    "#7c3aed",
 
-        if (
-          event.code === 1
-        ) {
-          showStatus(
-            "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。",
-            true
-          );
+                  weight:
+                    1,
 
-          return;
-        }
+                  fillColor:
+                    "#7c3aed",
 
-        if (
-          event.code === 3
-        ) {
-          showStatus(
-            "現在地の取得に時間がかかりました。もう一度お試しください。",
-            true
-          );
+                  fillOpacity:
+                    0.08
+                }
+              ).addTo(
+                map
+              );
 
-          return;
-        }
+            map.setView(
+              coordinates,
+              14
+            );
 
-        showStatus(
-          "現在地を取得できませんでした。端末の位置情報設定をご確認ください。",
-          true
+            currentLocationMarker.openPopup();
+
+            locationButton.disabled =
+              false;
+
+            statusElement.textContent =
+              "現在地を表示しました。";
+          },
+
+          (error) => {
+            locationButton.disabled =
+              false;
+
+            statusElement.classList.add(
+              "map-status--error"
+            );
+
+            if (
+              error.code === 1
+            ) {
+              statusElement.textContent =
+                "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。";
+
+            } else if (
+              error.code === 2
+            ) {
+              statusElement.textContent =
+                "現在地を取得できませんでした。";
+
+            } else {
+              statusElement.textContent =
+                "現在地の取得がタイムアウトしました。";
+            }
+          },
+
+          {
+            enableHighAccuracy:
+              true,
+
+            timeout:
+              10000,
+
+            maximumAge:
+              60000
+          }
         );
       }
     );
