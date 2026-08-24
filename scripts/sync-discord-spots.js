@@ -8,7 +8,7 @@ const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT =
   "tamadev-discord-spots/6.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "6";
+const DATA_VERSION = "7";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -2322,9 +2322,20 @@ async function convertMessageToSpot(
       classifySpot(
         message
       ),
-
+    
+    genre:
+      classifyGenre(
+        message,
+        name,
+        ...pages.flatMap(
+          (page) => [
+            page.name || "",
+            page.description || ""
+          ]
+        )
+      ),
+    
     area,
-
     position,
 
     description:
@@ -2497,7 +2508,14 @@ async function convertMessageToSpots(
         classifySpot(
           sectionMessage
         ),
-
+      
+      genre:
+        classifyGenre(
+          sectionMessage,
+          name,
+          mapsInformation.name || ""
+        ),
+      
       area,
 
       position,
