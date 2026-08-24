@@ -6,7 +6,9 @@ const path = require("node:path");
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT =
-  "tamadev-discord-spots/4.0 (+https://tamadev.jp/map/)";
+  "tamadev-discord-spots/5.0 (+https://tamadev.jp/map/)";
+
+const DATA_VERSION = "5";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -38,6 +40,8 @@ const GOOGLE_HOSTS = new Set([
 ]);
 
 let previousGeocodingAt = 0;
+
+const googleMapsInformationCache = new Map();
 
 function requiredEnvironmentVariable(name) {
   const value = process.env[name]?.trim();
@@ -370,6 +374,10 @@ function normalizePlaceName(value) {
       ""
     )
     .replace(
+      /\s*[-–—]\s*(Google Maps|Google マップ|グーグルマップ)\s*$/iu,
+      ""
+    )
+    .replace(
       /\s*[（(][@＠][^)）]+[)）].*$/u,
       ""
     )
@@ -408,10 +416,24 @@ function normalizePlaceName(value) {
         : quoted[2].trim();
   }
 
-  return cleanText(
+  name = cleanText(
     name,
     80
   );
+
+  if (/^(?:〒\s*)?\d{3}(?:[-−ー]\d{4})?(?:\s|$)/u.test(name)) {
+    return "";
+  }
+
+  if (/^〒/u.test(name)) {
+    return "";
+  }
+
+  if (/^(?:日本[、,\s]*)?(?:東京都)?(?:多摩市|府中市|八王子市|立川市|調布市|稲城市|日野市|町田市)[^\s]*\d/u.test(name)) {
+    return "";
+  }
+
+  return name;
 }
 
 function extractAddressFromText(value) {
@@ -1596,43 +1618,108 @@ async function wasApprovedByOwner(
 }
 
 async function expandMapsUrl(url) {
-  if (
-    !url ||
-    !isGoogleMapsUrl(url)
-  ) {
-    return url;
+  const information = await fetchGoogleMapsInformation(url);
+  return information.url || url;
+}
+
+async function fetchGoogleMapsInformation(originalUrl) {
+  if (!originalUrl || !isGoogleMapsUrl(originalUrl)) {
+    return { url: originalUrl || "", name: "", position: null };
   }
+
+  if (googleMapsInformationCache.has(originalUrl)) {
+    return googleMapsInformationCache.get(originalUrl);
+  }
+
+  const information = {
+    url: originalUrl,
+    name: "",
+    address: "",
+    position: extractCoordinatesFromUrl(originalUrl)
+  };
 
   try {
-    const response =
-      await fetch(
-        url,
-        {
-          redirect:
-            "follow",
+    const response = await fetch(originalUrl, {
+      redirect: "follow",
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "ja,en;q=0.8",
+        Accept: "text/html,application/xhtml+xml"
+      },
+      signal: AbortSignal.timeout(20000)
+    });
 
-          headers: {
-            "User-Agent":
-              USER_AGENT
-          },
+    information.url = response.url || originalUrl;
+    information.position =
+      extractCoordinatesFromUrl(information.url) || information.position;
 
-          signal:
-            AbortSignal.timeout(
-              15000
-            )
-        }
-      );
-
-    await response.body?.cancel();
-
-    return (
-      response.url ||
-      url
+    const parsedUrl = new URL(information.url);
+    const pathMatch = decodeURIComponent(parsedUrl.pathname).match(
+      /\/place\/([^/]+)/
     );
 
-  } catch {
-    return url;
+    if (pathMatch) {
+      information.name = normalizePlaceName(
+        pathMatch[1].replace(/\+/g, " ")
+      );
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+
+    if (
+      response.ok &&
+      /text\/html|application\/xhtml\+xml/i.test(contentType)
+    ) {
+      const html = decodePage(
+        await response.arrayBuffer(),
+        contentType
+      ).slice(0, 1800000);
+
+      const title =
+        getMeta(html, ["og:title", "twitter:title"]) ||
+        html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] ||
+        "";
+
+      const titleCandidates = [
+        title.split(/\s*[·•]\s*/u)[0],
+        title,
+        ...jsonLdEntries(html).map((entry) => entry.name || "")
+      ];
+
+      for (const candidate of titleCandidates) {
+        const normalized = normalizePlaceName(candidate);
+
+        if (
+          normalized &&
+          !/^(?:Google Maps|Google マップ|グーグルマップ)$/iu.test(normalized)
+        ) {
+          information.name = normalized;
+          break;
+        }
+      }
+
+      information.position =
+        information.position || extractCoordinatesFromHtml(html);
+
+      information.address = extractAddressFromText(
+        getMeta(html, ["og:description", "description"])
+      );
+    } else {
+      await response.body?.cancel();
+    }
+
+    console.log(
+      `Googleマップ: 店名=${information.name || "不明"} / ` +
+      `座標=${information.position?.join(",") || "不明"}`
+    );
+  } catch (error) {
+    console.warn(
+      `Googleマップの解析に失敗しました: ${originalUrl} / ${error.message}`
+    );
   }
+
+  googleMapsInformationCache.set(originalUrl, information);
+  return information;
 }
 
 async function findPlace(query) {
@@ -1908,9 +1995,7 @@ async function convertMessageToSpot(
   previousSpot
 ) {
   const revision =
-    message.edited_timestamp ||
-    message.timestamp ||
-    "";
+    `${message.edited_timestamp || message.timestamp || ""}:v${DATA_VERSION}`;
 
   if (
     previousSpot &&
@@ -1929,12 +2014,11 @@ async function convertMessageToSpot(
       isGoogleMapsUrl
     );
 
-  const mapsUrl =
-    originalMapsUrl
-      ? await expandMapsUrl(
-          originalMapsUrl
-        )
-      : "";
+  const mapsInformation = originalMapsUrl
+    ? await fetchGoogleMapsInformation(originalMapsUrl)
+    : null;
+
+  const mapsUrl = mapsInformation?.url || "";
 
   const sourceUrls =
     urls
@@ -1960,17 +2044,22 @@ async function convertMessageToSpot(
     }
   }
 
+  const candidatePages = [
+    ...(mapsInformation?.name ? [mapsInformation] : []),
+    ...pages
+  ];
+
   const candidates =
     extractPlaceCandidates(
       message,
       mapsUrl,
-      pages
+      candidatePages
     );
 
   const addresses = [
     ...new Set(
       [
-        ...pages.map(
+        ...candidatePages.map(
           (page) =>
             page.address
         ),
@@ -2004,6 +2093,8 @@ async function convertMessageToSpot(
     addresses[0];
 
   let position =
+    mapsInformation?.position ||
+
     (
       mapsUrl &&
       extractCoordinatesFromUrl(
@@ -2123,9 +2214,7 @@ async function convertMessageToSpots(
   }
 
   const revision =
-    message.edited_timestamp ||
-    message.timestamp ||
-    "";
+    `${message.edited_timestamp || message.timestamp || ""}:v${DATA_VERSION}`;
 
   const spots = [];
 
@@ -2161,10 +2250,12 @@ async function convertMessageToSpots(
       continue;
     }
 
-    const mapsUrl =
-      await expandMapsUrl(
+    const mapsInformation =
+      await fetchGoogleMapsInformation(
         section.url
       );
+
+    const mapsUrl = mapsInformation.url;
 
     const sectionMessage = {
       ...message,
@@ -2180,7 +2271,7 @@ async function convertMessageToSpots(
       extractPlaceCandidates(
         sectionMessage,
         mapsUrl,
-        []
+        mapsInformation.name ? [mapsInformation] : []
       );
 
     const areaHint =
@@ -2190,10 +2281,12 @@ async function convertMessageToSpots(
       );
 
     let name =
+      mapsInformation.name ||
       candidates[0] ||
-      `おすすめスポット ${index + 1}`;
+      `${areaHint || "多摩地域"}のおすすめスポット ${index + 1}`;
 
     let position =
+      mapsInformation.position ||
       extractCoordinatesFromUrl(
         mapsUrl
       );
