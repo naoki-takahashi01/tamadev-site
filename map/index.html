@@ -14,6 +14,12 @@
   <!-- 多摩.dev共通スタイル -->
   <link rel="stylesheet" href="/style.css" />
 
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
   <style>
     .map-page {
       max-width: 1080px;
@@ -57,12 +63,12 @@
       background-color: #f59e0b;
     }
 
-    .map-frame {
-      display: block;
+    #event-map {
       width: 100%;
       height: 560px;
-      border: 0;
+      border: 1px solid #e5e7eb;
       border-radius: 12px;
+      overflow: hidden;
     }
 
     .map-note {
@@ -70,6 +76,29 @@
       color: #666666;
       font-size: 14px;
       line-height: 1.8;
+    }
+
+    .map-popup {
+      min-width: 200px;
+      max-width: 280px;
+    }
+
+    .map-popup h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .map-popup p {
+      margin: 6px 0;
+      line-height: 1.6;
+    }
+
+    .map-popup-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
     }
 
     .venue-section {
@@ -140,8 +169,23 @@
       width: fit-content;
     }
 
+    .venue-map-button {
+      width: fit-content;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: #2563eb;
+      cursor: pointer;
+      font: inherit;
+      text-decoration: underline;
+    }
+
+    .venue-map-button:hover {
+      color: #1d4ed8;
+    }
+
     @media (max-width: 640px) {
-      .map-frame {
+      #event-map {
         height: 440px;
       }
 
@@ -192,13 +236,11 @@
       </span>
     </div>
 
-    <!-- YOUR_MAP_IDをGoogleマイマップの地図IDに置き換えてください -->
-    <iframe
-      class="map-frame"
-      src="https://www.google.com/maps/d/embed?mid=1xJcufupZJomNo1cMHJtc0u5z9fVl67Q"
-      loading="lazy"
-      title="多摩.dev 開催会場マップ"
-    ></iframe>
+    <div
+      id="event-map"
+      role="region"
+      aria-label="多摩.devの開催会場と候補会場を示した地図"
+    ></div>
 
     <p class="map-note">
       開催候補として掲載している会場は、
@@ -217,11 +259,18 @@
     </p>
   </main>
 
+  <!-- Leaflet本体 -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
+    // positionには会場の緯度・経度を設定します。
+    // 掲載している座標は目安のため、
+    // 公開前に各会場の正確な位置を確認してください。
     const venues = [
       {
         name: "多摩市立関戸公民館",
         area: "聖蹟桜ヶ丘・多摩市",
+        position: [35.6502, 139.4475],
         status: "held",
         description: "多摩.dev #1、#2 などを開催。",
         eventUrl: "/events/"
@@ -229,6 +278,7 @@
       {
         name: "パルテノン多摩",
         area: "多摩センター・多摩市",
+        position: [35.6248, 139.4241],
         status: "held",
         description: "多摩.dev #3 を開催。",
         eventUrl: "/events/"
@@ -236,6 +286,7 @@
       {
         name: "八王子市生涯学習センター クリエイトホール",
         area: "八王子・八王子市",
+        position: [35.6574, 139.3402],
         status: "held",
         description: "多摩.dev #4 を開催。",
         eventUrl: "/events/20260807/"
@@ -243,6 +294,7 @@
       {
         name: "たましんRISURUホール",
         area: "立川・立川市",
+        position: [35.6950, 139.4213],
         status: "scheduled",
         description: "2026年10月16日：多摩.dev #5",
         eventUrl: "https://tamadev.connpass.com/event/401154/"
@@ -250,18 +302,21 @@
       {
         name: "調布市文化会館たづくり",
         area: "調布・調布市",
+        position: [35.6501, 139.5431],
         status: "candidate",
         description: "今後の開催候補。"
       },
       {
         name: "八王子市生涯学習センター 南大沢分館",
         area: "南大沢・八王子市",
+        position: [35.6143, 139.3800],
         status: "candidate",
         description: "今後の開催候補。"
       },
       {
         name: "稲城市立地域振興プラザ",
         area: "稲城・稲城市",
+        position: [35.6360, 139.5024],
         status: "candidate",
         description: "今後の開催候補。"
       }
@@ -273,9 +328,119 @@
       candidate: "開催候補"
     };
 
+    const statusColors = {
+      held: "#16a34a",
+      scheduled: "#2563eb",
+      candidate: "#f59e0b"
+    };
+
+    const map = L.map("event-map", {
+      scrollWheelZoom: false
+    }).setView([35.6500, 139.4300], 11);
+
+    L.tileLayer(
+      "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }
+    ).addTo(map);
+
     const venueList = document.getElementById("venue-list");
 
-    for (const venue of venues) {
+    function createDirectionsUrl(venueName) {
+      const directionsUrl = new URL(
+        "https://www.google.com/maps/dir/"
+      );
+
+      directionsUrl.searchParams.set("api", "1");
+      directionsUrl.searchParams.set("destination", venueName);
+      directionsUrl.searchParams.set("travelmode", "transit");
+
+      return directionsUrl.toString();
+    }
+
+    function createExternalLink(url, label) {
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = label;
+
+      return link;
+    }
+
+    function createEventLink(venue) {
+      if (!venue.eventUrl) {
+        return null;
+      }
+
+      const link = document.createElement("a");
+      link.href = venue.eventUrl;
+
+      const isExternal = /^https?:\/\//.test(venue.eventUrl);
+
+      if (isExternal) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+
+      link.textContent = venue.eventUrl.includes("connpass.com")
+        ? "connpassでイベント情報を見る"
+        : "イベント情報を見る";
+
+      return link;
+    }
+
+    function createPopup(venue) {
+      const popup = document.createElement("div");
+      popup.className = "map-popup";
+
+      const title = document.createElement("h2");
+      title.textContent = venue.name;
+      popup.appendChild(title);
+
+      const area = document.createElement("p");
+      area.textContent = venue.area;
+      popup.appendChild(area);
+
+      const statusParagraph = document.createElement("p");
+
+      const status = document.createElement("span");
+      status.className = `venue-status venue-status--${venue.status}`;
+      status.textContent = statusLabels[venue.status];
+
+      statusParagraph.appendChild(status);
+      popup.appendChild(statusParagraph);
+
+      const description = document.createElement("p");
+      description.textContent = venue.description;
+      popup.appendChild(description);
+
+      const links = document.createElement("div");
+      links.className = "map-popup-links";
+
+      const eventLink = createEventLink(venue);
+
+      if (eventLink) {
+        links.appendChild(eventLink);
+      }
+
+      links.appendChild(
+        createExternalLink(
+          createDirectionsUrl(venue.name),
+          "Googleマップでアクセス方法を見る"
+        )
+      );
+
+      popup.appendChild(links);
+
+      return popup;
+    }
+
+    function createVenueCard(venue, marker) {
       const card = document.createElement("article");
       card.className = "venue-card";
 
@@ -304,41 +469,65 @@
       const links = document.createElement("div");
       links.className = "venue-links";
 
-      if (venue.eventUrl) {
-        const eventLink = document.createElement("a");
-        eventLink.href = venue.eventUrl;
+      const mapButton = document.createElement("button");
+      mapButton.type = "button";
+      mapButton.className = "venue-map-button";
+      mapButton.textContent = "地図で場所を見る";
 
-        if (venue.eventUrl.startsWith("http")) {
-          eventLink.target = "_blank";
-          eventLink.rel = "noopener noreferrer";
-        }
+      mapButton.addEventListener("click", () => {
+        document.getElementById("event-map").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
 
-        eventLink.textContent = venue.eventUrl.includes("connpass.com")
-          ? "connpassでイベント情報を見る"
-          : "イベント情報を見る";
+        map.setView(venue.position, 15);
+        marker.openPopup();
+      });
 
+      links.appendChild(mapButton);
+
+      const eventLink = createEventLink(venue);
+
+      if (eventLink) {
         links.appendChild(eventLink);
       }
 
-      const directionsUrl = new URL(
-        "https://www.google.com/maps/dir/"
+      links.appendChild(
+        createExternalLink(
+          createDirectionsUrl(venue.name),
+          "Googleマップでアクセス方法を見る"
+        )
       );
 
-      directionsUrl.searchParams.set("api", "1");
-      directionsUrl.searchParams.set("destination", venue.name);
-      directionsUrl.searchParams.set("travelmode", "transit");
-
-      const directionsLink = document.createElement("a");
-      directionsLink.href = directionsUrl.toString();
-      directionsLink.target = "_blank";
-      directionsLink.rel = "noopener noreferrer";
-      directionsLink.textContent =
-        "Googleマップでアクセス方法を見る";
-
-      links.appendChild(directionsLink);
-
       card.appendChild(links);
-      venueList.appendChild(card);
+
+      return card;
+    }
+
+    for (const venue of venues) {
+      const marker = L.circleMarker(venue.position, {
+        radius: 10,
+        fillColor: statusColors[venue.status],
+        color: "#ffffff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.95
+      }).addTo(map);
+
+      marker.bindPopup(createPopup(venue));
+
+      venueList.appendChild(
+        createVenueCard(venue, marker)
+      );
+    }
+
+    if (venues.length > 0) {
+      map.fitBounds(
+        venues.map((venue) => venue.position),
+        {
+          padding: [40, 40]
+        }
+      );
     }
   </script>
 </body>
