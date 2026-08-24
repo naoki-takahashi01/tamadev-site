@@ -151,6 +151,7 @@ function cleanText(value, maximumLength) {
 
 function extractPlaceName(message, mapsUrl) {
   const content = message.content || "";
+
   const explicitName = content.match(
     /(?:場所|施設|会場|店名|名称|スポット)\s*[：:]\s*([^\n]+)/u
   );
@@ -162,12 +163,16 @@ function extractPlaceName(message, mapsUrl) {
   if (mapsUrl) {
     try {
       const parsedUrl = new URL(mapsUrl);
-      const placePath = decodeURIComponent(parsedUrl.pathname).match(
-        /\/place\/([^/]+)/
-      );
+
+      const placePath = decodeURIComponent(
+        parsedUrl.pathname
+      ).match(/\/place\/([^/]+)/);
 
       if (placePath && !parseCoordinatePair(placePath[1])) {
-        return cleanText(placePath[1].replace(/\+/g, " "), 80);
+        return cleanText(
+          placePath[1].replace(/\+/g, " "),
+          80
+        );
       }
 
       for (const key of ["query", "q", "destination"]) {
@@ -178,35 +183,71 @@ function extractPlaceName(message, mapsUrl) {
         }
       }
     } catch {
-      // 地図URLを読み取れない場合は投稿本文から場所を探します。
+      // URLから場所を取得できない場合は本文や記事を確認します。
     }
+  }
+
+  const facilityPattern =
+    /メッセ|ホール|センター|公園|広場|美術館|博物館|図書館|カフェ|珈琲|コーヒー|書店|駅|会館|プラザ|食堂|レストラン|うどん|そば|パン/u;
+
+  // 記事タイトルの「多摩うどん『ぽんぽこ』」などから店名を取得。
+  for (const embed of message.embeds || []) {
+    const title = cleanText(embed.title, 160);
+
+    const titledPlace = title.match(
+      /^([^「」『』|｜]{1,30})[「『]([^」』]{1,50})[」』]/u
+    );
+
+    if (titledPlace && facilityPattern.test(titledPlace[1])) {
+      return cleanText(
+        titledPlace[1].trim() + " " + titledPlace[2].trim(),
+        80
+      );
+    }
+  }
+
+  // 投稿本文や記事説明にある「東京たま未来メッセ」などを取得。
+  const texts = [
+    ...(message.embeds || []).map((embed) =>
+      [embed.title, embed.description].filter(Boolean).join("\n")
+    ),
+    content
+  ];
+
+  const quotedNames = texts.flatMap((text) =>
+    [...text.matchAll(/[「『]([^」』]{1,60})[」』]/gu)]
+      .map((match) => cleanText(match[1], 80))
+      .filter(Boolean)
+  );
+
+  const facilityName = quotedNames.find((name) =>
+    facilityPattern.test(name)
+  );
+
+  if (facilityName) {
+    return facilityName;
+  }
+
+  if (quotedNames.length > 0) {
+    return quotedNames[0];
   }
 
   const nonUrlLines = content
     .split(/\r?\n/)
     .map((line) => cleanText(line, 100))
     .filter(Boolean)
-    .filter((line) => !/^(種類|分類|説明|紹介|日時|開催日)\s*[：:]/u.test(line));
+    .filter(
+      (line) =>
+        !/^(種類|分類|説明|紹介|日時|開催日)\s*[：:]/u.test(line)
+    );
 
   if (nonUrlLines.length > 0) {
     return nonUrlLines[0].slice(0, 80);
   }
 
-  const embedText = (message.embeds || [])
-    .map((embed) => [embed.title, embed.description].filter(Boolean).join("\n"))
-    .join("\n");
-
-  const quotedPlaces = [...embedText.matchAll(/[「『]([^」』]+)[」』]/gu)]
-    .map((match) => match[1])
-    .filter((value) =>
-      /メッセ|ホール|センター|公園|広場|美術館|博物館|図書館|カフェ|珈琲|書店|駅|会館|プラザ|食堂|レストラン/u.test(value)
-    );
-
-  if (quotedPlaces.length > 0) {
-    return cleanText(quotedPlaces[0], 80);
-  }
-
-  const embedTitle = (message.embeds || []).find((embed) => embed.title);
+  const embedTitle = (message.embeds || []).find(
+    (embed) => embed.title
+  );
 
   return embedTitle ? cleanText(embedTitle.title, 80) : "";
 }
