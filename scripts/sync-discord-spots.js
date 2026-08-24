@@ -6,9 +6,9 @@ const path = require("node:path");
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT =
-  "tamadev-discord-spots/5.0 (+https://tamadev.jp/map/)";
+  "tamadev-discord-spots/6.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "5";
+const DATA_VERSION = "6";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -426,6 +426,10 @@ function normalizePlaceName(value) {
   }
 
   if (/^〒/u.test(name)) {
+    return "";
+  }
+
+  if (/^(?:トップ|ホーム|Google|Google Maps|Google マップ|地図)$/iu.test(name)) {
     return "";
   }
 
@@ -1698,9 +1702,6 @@ async function fetchGoogleMapsInformation(originalUrl) {
         }
       }
 
-      information.position =
-        information.position || extractCoordinatesFromHtml(html);
-
       information.address = extractAddressFromText(
         getMeta(html, ["og:description", "description"])
       );
@@ -2004,15 +2005,15 @@ async function convertMessageToSpot(
     return previousSpot;
   }
 
-  const urls =
-    extractUrls(
-      message
-    );
+  const urls = extractUrls(message);
 
-  const originalMapsUrl =
-    urls.find(
-      isGoogleMapsUrl
-    );
+  // GoogleマップURLはDiscordの埋め込み情報ではなく、投稿者が本文へ
+  // 明示的に貼ったものだけを使用する。紹介記事のプレビューに含まれる
+  // 無関係なマップURLを拾うと、別の店や座標になることがあるため。
+  const contentUrls = ((message.content || "").match(/https?:\/\/[^\s<>]+/g) || [])
+    .map((url) => url.replace(/[),。、]+$/, ""));
+
+  const originalMapsUrl = contentUrls.find(isGoogleMapsUrl);
 
   const mapsInformation = originalMapsUrl
     ? await fetchGoogleMapsInformation(originalMapsUrl)
@@ -2044,9 +2045,10 @@ async function convertMessageToSpot(
     }
   }
 
+  // 店名は紹介記事・投稿本文を優先し、Googleマップは補助情報にする。
   const candidatePages = [
-    ...(mapsInformation?.name ? [mapsInformation] : []),
-    ...pages
+    ...pages,
+    ...(mapsInformation?.name ? [mapsInformation] : [])
   ];
 
   const candidates =
@@ -2110,8 +2112,6 @@ async function convertMessageToSpot(
     null;
 
   let area =
-    previousSpot?.area ||
-
     addresses[0]?.match(
       AREAS
     )?.[0] ||
@@ -2255,7 +2255,7 @@ async function convertMessageToSpots(
         section.url
       );
 
-    const mapsUrl = mapsInformation.url;
+    const mapsUrl = mapsInformation.url || section.url;
 
     const sectionMessage = {
       ...message,
@@ -2285,11 +2285,9 @@ async function convertMessageToSpots(
       candidates[0] ||
       `${areaHint || "多摩地域"}のおすすめスポット ${index + 1}`;
 
-    let position =
-      mapsInformation.position ||
-      extractCoordinatesFromUrl(
-        mapsUrl
-      );
+    // GoogleマップHTML本文には画面中心など無関係な座標も多数ある。
+    // リダイレクト後URLに明記された座標だけを信頼する。
+    let position = extractCoordinatesFromUrl(mapsUrl);
 
     let area =
       areaHint ||
@@ -2466,9 +2464,29 @@ async function main() {
           previous
         );
 
-      spots.push(
-        ...messageSpots
-      );
+      if (messageSpots.length > 0) {
+        spots.push(...messageSpots);
+      } else {
+        // リアクションが付いている投稿を、外部サイトの一時的な取得失敗で
+        // 地図から消さない。リアクション自体が外れた投稿はselectedに入らず、
+        // 従来どおり削除される。
+        const previousMessageSpots = [...previous.values()].filter(
+          (spot) =>
+            spot.id === message.id ||
+            spot.messageId === message.id ||
+            String(spot.id).startsWith(`${message.id}-`)
+        );
+
+        const safePreviousSpots = previousMessageSpots.filter(
+          (spot) => normalizePlaceName(spot.name) && spot.name !== "トップ"
+        );
+
+        console.warn(
+          `投稿 ${message.id} を再取得できなかったため、` +
+          `既存の${safePreviousSpots.length}件を維持します。`
+        );
+        spots.push(...safePreviousSpots);
+      }
 
     } catch (
       error
