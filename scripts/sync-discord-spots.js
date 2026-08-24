@@ -1663,11 +1663,39 @@ async function fetchGoogleMapsInformation(originalUrl) {
     );
 
     if (pathMatch) {
-      information.name = normalizePlaceName(
-        pathMatch[1].replace(/\+/g, " ")
-      );
+      const raw = pathMatch[1].replace(/\+/g, " ");
+      const directName = normalizePlaceName(raw);
+    
+      if (directName) {
+        information.name = directName;
+      } else {
+        const englishName = raw.match(
+          /(?:^|[\s\u3000])([A-Za-z][A-Za-z0-9&.'’ -]{2,})$/u
+        )?.[1];
+    
+        const trailingName = raw.match(
+          /(?:丁目|番地|番|号|Chome|[−ー-]\d+)\s+([^,]+)$/iu
+        )?.[1];
+    
+        information.name = normalizePlaceName(
+          englishName || trailingName || ""
+        );
+    
+        information.address = raw
+          .replace(/^〒\s*\d{3}[-−ー]?\d{0,4}\s*/u, "")
+          .trim();
+    
+        if (
+          information.name &&
+          information.address.endsWith(information.name)
+        ) {
+          information.address = information.address
+            .slice(0, -information.name.length)
+            .trim();
+        }
+      }
     }
-
+    
     const contentType = response.headers.get("content-type") || "";
 
     if (
@@ -1702,9 +1730,10 @@ async function fetchGoogleMapsInformation(originalUrl) {
         }
       }
 
-      information.address = extractAddressFromText(
+    information.address =
+      extractAddressFromText(
         getMeta(html, ["og:description", "description"])
-      );
+      ) || information.address;
     } else {
       await response.body?.cancel();
     }
@@ -2296,10 +2325,14 @@ async function convertMessageToSpots(
     if (
       !position
     ) {
+      const addresses = mapsInformation.address
+        ? [mapsInformation.address]
+        : [];
+      
       const place =
         await findPlaceFromCandidates(
           candidates,
-          [],
+          addresses,
           areaHint
         );
 
