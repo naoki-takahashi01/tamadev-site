@@ -40,43 +40,52 @@
       margin: 24px 0 16px;
     }
 
-    .map-legend {
+    .map-filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 12px 16px;
+      margin: 0;
+      padding: 0;
+      border: 0;
     }
 
-    .map-legend-item {
+    .map-filter {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
+      min-height: 32px;
+      color: #111827;
+      cursor: pointer;
       font-size: 14px;
     }
 
-    .map-legend-dot {
-      width: 14px;
-      height: 14px;
+    .map-filter input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .map-filter-dot {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
     }
 
-    .map-legend-dot--held {
+    .map-filter-dot--held {
       background-color: #16a34a;
     }
 
-    .map-legend-dot--scheduled {
+    .map-filter-dot--scheduled {
       background-color: #2563eb;
     }
 
-    .map-legend-dot--candidate {
+    .map-filter-dot--candidate {
       background-color: #f59e0b;
     }
 
-    .map-legend-dot--spot {
+    .map-filter-dot--spot {
       background-color: #db2777;
-    }
-
-    .map-legend-dot--current {
-      background-color: #7c3aed;
     }
 
     .map-location-button {
@@ -170,6 +179,11 @@
       background-color: #ffffff;
     }
 
+    .venue-card[hidden],
+    .venue-section[hidden] {
+      display: none;
+    }
+
     .venue-card h3 {
       margin: 0 0 8px;
       font-size: 18px;
@@ -252,6 +266,10 @@
         flex-direction: column;
       }
 
+      .map-filters {
+        gap: 8px 14px;
+      }
+
       #event-map {
         height: 440px;
       }
@@ -279,47 +297,70 @@
     </p>
 
     <div class="map-controls">
-      <div class="map-legend" aria-label="地図の凡例">
-        <span class="map-legend-item">
+      <fieldset
+        class="map-filters"
+        aria-label="地図に表示する場所を選択"
+      >
+        <label class="map-filter">
+          <input
+            type="checkbox"
+            value="held"
+            checked
+          />
+
           <span
-            class="map-legend-dot map-legend-dot--held"
+            class="map-filter-dot map-filter-dot--held"
             aria-hidden="true"
           ></span>
+
           開催済み
-        </span>
+        </label>
 
-        <span class="map-legend-item">
+        <label class="map-filter">
+          <input
+            type="checkbox"
+            value="scheduled"
+            checked
+          />
+
           <span
-            class="map-legend-dot map-legend-dot--scheduled"
+            class="map-filter-dot map-filter-dot--scheduled"
             aria-hidden="true"
           ></span>
+
           開催予定
-        </span>
+        </label>
 
-        <span class="map-legend-item">
+        <label class="map-filter">
+          <input
+            type="checkbox"
+            value="candidate"
+            checked
+          />
+
           <span
-            class="map-legend-dot map-legend-dot--candidate"
+            class="map-filter-dot map-filter-dot--candidate"
             aria-hidden="true"
           ></span>
+
           開催候補
-        </span>
+        </label>
 
-        <span class="map-legend-item">
+        <label class="map-filter">
+          <input
+            type="checkbox"
+            value="spot"
+            checked
+          />
+
           <span
-            class="map-legend-dot map-legend-dot--spot"
+            class="map-filter-dot map-filter-dot--spot"
             aria-hidden="true"
           ></span>
+
           おすすめスポット
-        </span>
-
-        <span class="map-legend-item">
-          <span
-            class="map-legend-dot map-legend-dot--current"
-            aria-hidden="true"
-          ></span>
-          現在地
-        </span>
-      </div>
+        </label>
+      </fieldset>
 
       <button
         id="show-current-location"
@@ -349,13 +390,22 @@
       イベントの開催や施設の予約が確定しているものではありません。
     </p>
 
-    <section class="venue-section">
+    <section
+      id="venue-section"
+      class="venue-section"
+    >
       <h2>開催会場・候補会場</h2>
 
-      <div id="venue-list" class="venue-list"></div>
+      <div
+        id="venue-list"
+        class="venue-list"
+      ></div>
     </section>
 
-    <section class="venue-section">
+    <section
+      id="community-section"
+      class="venue-section"
+    >
       <h2>コミュニティのおすすめスポット</h2>
 
       <p
@@ -382,7 +432,6 @@
 
   <script>
     // positionには会場の緯度・経度を指定します。
-    // 以下には概算の座標を含むため、
     // 必要に応じて実際の施設の位置に合わせてください。
     const venues = [
       {
@@ -473,6 +522,14 @@
       "community-status"
     );
 
+    const venueSection = document.getElementById(
+      "venue-section"
+    );
+
+    const communitySection = document.getElementById(
+      "community-section"
+    );
+
     const locationButton = document.getElementById(
       "show-current-location"
     );
@@ -481,14 +538,16 @@
       "map-status"
     );
 
-    // GitHub Actionsで更新されたJSONを直接取得します。
-    // GitHub Pagesの再公開を待たずに最新情報を反映できます。
+    const filterInputs = document.querySelectorAll(
+      ".map-filters input[type='checkbox']"
+    );
+
+    // GitHub Actionsが更新するJSONを直接読み込みます。
     const communitySpotsUrl =
       "https://raw.githubusercontent.com/naoki-takahashi01/tamadev-site/main/map/spots.json";
 
-    const allMapPositions = venues.map(
-      (venue) => venue.position
-    );
+    // 地図上のマーカーと一覧カードをまとめて管理します。
+    const places = [];
 
     const map = L.map("event-map", {
       scrollWheelZoom: false
@@ -593,28 +652,39 @@
         "div"
       );
 
-      popup.className = "map-popup";
+      popup.className =
+        "map-popup";
 
       const title = document.createElement(
         "h2"
       );
 
-      title.textContent = venue.name;
-      popup.appendChild(title);
+      title.textContent =
+        venue.name;
+
+      popup.appendChild(
+        title
+      );
 
       const area = document.createElement(
         "p"
       );
 
-      area.textContent = venue.area;
-      popup.appendChild(area);
+      area.textContent =
+        venue.area;
+
+      popup.appendChild(
+        area
+      );
 
       const statusParagraph = document.createElement(
         "p"
       );
 
       statusParagraph.appendChild(
-        createStatusBadge(venue)
+        createStatusBadge(
+          venue
+        )
       );
 
       popup.appendChild(
@@ -665,13 +735,19 @@
       return popup;
     }
 
-    function createVenueCard(venue, marker) {
+    function createVenueCard(
+      venue,
+      marker
+    ) {
       const card = document.createElement(
         "article"
       );
 
       card.className =
         "venue-card";
+
+      card.dataset.status =
+        venue.status;
 
       const title = document.createElement(
         "h3"
@@ -807,7 +883,7 @@
           opacity: 1,
           fillOpacity: 0.95
         }
-      ).addTo(map);
+      );
 
       marker.bindPopup(
         createPopup(
@@ -815,14 +891,114 @@
         )
       );
 
-      listElement.appendChild(
-        createVenueCard(
-          venue,
-          marker
-        )
+      const card = createVenueCard(
+        venue,
+        marker
       );
 
+      listElement.appendChild(
+        card
+      );
+
+      places.push({
+        venue,
+        marker,
+        card
+      });
+
       return marker;
+    }
+
+    function getVisibleStatuses() {
+      return new Set(
+        Array.from(
+          filterInputs
+        )
+          .filter(
+            (input) => input.checked
+          )
+          .map(
+            (input) => input.value
+          )
+      );
+    }
+
+    function updateVisiblePlaces(
+      adjustBounds = true
+    ) {
+      const visibleStatuses =
+        getVisibleStatuses();
+
+      const visiblePositions =
+        [];
+
+      let visibleVenueCount =
+        0;
+
+      for (const place of places) {
+        const isVisible =
+          visibleStatuses.has(
+            place.venue.status
+          );
+
+        place.card.hidden =
+          !isVisible;
+
+        if (isVisible) {
+          if (!map.hasLayer(place.marker)) {
+            place.marker.addTo(
+              map
+            );
+          }
+
+          visiblePositions.push(
+            place.venue.position
+          );
+
+          if (
+            place.venue.status !== "spot"
+          ) {
+            visibleVenueCount += 1;
+          }
+
+        } else if (
+          map.hasLayer(place.marker)
+        ) {
+          map.removeLayer(
+            place.marker
+          );
+        }
+      }
+
+      venueSection.hidden =
+        visibleVenueCount === 0;
+
+      communitySection.hidden =
+        !visibleStatuses.has(
+          "spot"
+        );
+
+      if (
+        adjustBounds &&
+        visiblePositions.length > 0
+      ) {
+        map.fitBounds(
+          visiblePositions,
+          {
+            padding: [40, 40],
+            maxZoom: 15
+          }
+        );
+      }
+    }
+
+    for (const input of filterInputs) {
+      input.addEventListener(
+        "change",
+        () => {
+          updateVisiblePlaces();
+        }
+      );
     }
 
     for (const venue of venues) {
@@ -832,21 +1008,18 @@
       );
     }
 
-    if (venues.length > 0) {
-      map.fitBounds(
-        allMapPositions,
-        {
-          padding: [40, 40]
-        }
-      );
-    }
+    updateVisiblePlaces();
 
-    function isValidCommunitySpot(spot) {
+    function isValidCommunitySpot(
+      spot
+    ) {
       return (
         spot &&
         typeof spot.name === "string" &&
         spot.name.trim().length > 0 &&
-        Array.isArray(spot.position) &&
+        Array.isArray(
+          spot.position
+        ) &&
         spot.position.length === 2 &&
         spot.position.every(
           (coordinate) =>
@@ -893,15 +1066,21 @@
           );
         }
 
-        let spotCount = 0;
+        let spotCount =
+          0;
 
         for (const spot of spots) {
-          if (!isValidCommunitySpot(spot)) {
+          if (
+            !isValidCommunitySpot(
+              spot
+            )
+          ) {
             continue;
           }
 
-          const place = {
-            name: spot.name,
+          const venue = {
+            name:
+              spot.name,
 
             area:
               spot.area ||
@@ -923,33 +1102,25 @@
           };
 
           addPlaceToMap(
-            place,
+            venue,
             communitySpotList
-          );
-
-          allMapPositions.push(
-            place.position
           );
 
           spotCount += 1;
         }
 
-        if (spotCount === 0) {
+        if (
+          spotCount === 0
+        ) {
           communityStatus.textContent =
             "おすすめスポットはまだ登録されていません。";
 
-          return;
+        } else {
+          communityStatus.textContent =
+            `Discordで紹介された${spotCount}件のスポットを掲載しています。`;
         }
 
-        communityStatus.textContent =
-          `Discordで紹介された${spotCount}件のスポットを掲載しています。`;
-
-        map.fitBounds(
-          allMapPositions,
-          {
-            padding: [40, 40]
-          }
-        );
+        updateVisiblePlaces();
 
       } catch (error) {
         console.error(
@@ -998,7 +1169,9 @@
     locationButton.addEventListener(
       "click",
       () => {
-        if (!navigator.geolocation) {
+        if (
+          !navigator.geolocation
+        ) {
           showStatus(
             "お使いのブラウザでは位置情報を利用できません。",
             true
@@ -1032,54 +1205,64 @@
           false
         );
 
-        if (currentLocationMarker) {
+        if (
+          currentLocationMarker
+        ) {
           map.removeLayer(
             currentLocationMarker
           );
         }
 
-        if (currentLocationCircle) {
+        if (
+          currentLocationCircle
+        ) {
           map.removeLayer(
             currentLocationCircle
           );
         }
 
-        currentLocationCircle = L.circle(
-          event.latlng,
-          {
-            radius:
-              event.accuracy,
+        currentLocationCircle =
+          L.circle(
+            event.latlng,
+            {
+              radius:
+                event.accuracy,
 
-            color:
-              "#7c3aed",
+              color:
+                "#7c3aed",
 
-            fillColor:
-              "#7c3aed",
+              fillColor:
+                "#7c3aed",
 
-            fillOpacity:
-              0.08,
+              fillOpacity:
+                0.08,
 
-            weight:
-              1
-          }
-        ).addTo(map);
+              weight:
+                1
+            }
+          ).addTo(
+            map
+          );
 
-        currentLocationMarker = L.circleMarker(
-          event.latlng,
-          {
-            radius: 9,
-            fillColor: "#7c3aed",
-            color: "#ffffff",
-            weight: 3,
-            opacity: 1,
-            fillOpacity: 1
-          }
-        )
-          .addTo(map)
-          .bindPopup(
-            "現在地"
+        currentLocationMarker =
+          L.circleMarker(
+            event.latlng,
+            {
+              radius: 9,
+              fillColor: "#7c3aed",
+              color: "#ffffff",
+              weight: 3,
+              opacity: 1,
+              fillOpacity: 1
+            }
           )
-          .openPopup();
+            .addTo(
+              map
+            )
+            .bindPopup(
+              "現在地"
+            )
+            .openPopup();
 
         showStatus(
           "現在地を表示しました。"
@@ -1094,7 +1277,9 @@
           false
         );
 
-        if (event.code === 1) {
+        if (
+          event.code === 1
+        ) {
           showStatus(
             "位置情報の利用が許可されていません。ブラウザの設定をご確認ください。",
             true
@@ -1103,7 +1288,9 @@
           return;
         }
 
-        if (event.code === 3) {
+        if (
+          event.code === 3
+        ) {
           showStatus(
             "現在地の取得に時間がかかりました。もう一度お試しください。",
             true
