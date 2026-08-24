@@ -4,10 +4,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 const DISCORD_API = "https://discord.com/api/v10";
-
-const NOMINATIM =
-  "https://nominatim.openstreetmap.org/search";
-
+const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 const USER_AGENT =
   "tamadev-discord-spots/4.0 (+https://tamadev.jp/map/)";
 
@@ -73,19 +70,27 @@ function decodeHtmlEntities(value) {
     .replace(/&nbsp;/gi, " ")
     .replace(
       /&#(\d+);/g,
-      (_, code) => String.fromCodePoint(Number(code))
+      (_, code) =>
+        String.fromCodePoint(
+          Number(code)
+        )
     )
     .replace(
       /&#x([\da-f]+);/gi,
-      (_, code) => {
-        return String.fromCodePoint(
-          Number.parseInt(code, 16)
-        );
-      }
+      (_, code) =>
+        String.fromCodePoint(
+          Number.parseInt(
+            code,
+            16
+          )
+        )
     );
 }
 
-function isValidPosition(latitude, longitude) {
+function isValidPosition(
+  latitude,
+  longitude
+) {
   return (
     Number.isFinite(latitude) &&
     Number.isFinite(longitude) &&
@@ -96,22 +101,41 @@ function isValidPosition(latitude, longitude) {
   );
 }
 
-function makePosition(latitude, longitude) {
-  const lat = Number(latitude);
-  const lon = Number(longitude);
+function makePosition(
+  latitude,
+  longitude
+) {
+  const lat = Number(
+    latitude
+  );
 
-  return isValidPosition(lat, lon)
-    ? [lat, lon]
+  const lon = Number(
+    longitude
+  );
+
+  return isValidPosition(
+    lat,
+    lon
+  )
+    ? [
+        lat,
+        lon
+      ]
     : null;
 }
 
 function parseCoordinatePair(value) {
-  const match = String(value || "").match(
+  const match = String(
+    value || ""
+  ).match(
     /(-?\d{1,2}(?:\.\d+)?)\s*[,;]\s*(-?\d{1,3}(?:\.\d+)?)/
   );
 
   return match
-    ? makePosition(match[1], match[2])
+    ? makePosition(
+        match[1],
+        match[2]
+      )
     : null;
 }
 
@@ -140,10 +164,15 @@ function extractCoordinatesFromUrl(value) {
   ];
 
   for (const pattern of patterns) {
-    const match = decoded.match(pattern);
+    const match = decoded.match(
+      pattern
+    );
 
     const position = match
-      ? makePosition(match[1], match[2])
+      ? makePosition(
+          match[1],
+          match[2]
+        )
       : null;
 
     if (position) {
@@ -158,9 +187,12 @@ function extractCoordinatesFromUrl(value) {
     "ll",
     "center"
   ]) {
-    const position = parseCoordinatePair(
-      url.searchParams.get(key)
-    );
+    const position =
+      parseCoordinatePair(
+        url.searchParams.get(
+          key
+        )
+      );
 
     if (position) {
       return position;
@@ -191,16 +223,108 @@ function extractUrls(message) {
   const matches =
     values
       .join("\n")
-      .match(/https?:\/\/[^\s<>]+/g) || [];
+      .match(
+        /https?:\/\/[^\s<>]+/g
+      ) || [];
 
   return [
     ...new Set(
       matches.map(
         (url) =>
-          url.replace(/[),。、]+$/, "")
+          url.replace(
+            /[),。、]+$/,
+            ""
+          )
       )
     )
   ];
+}
+
+function extractMapSections(message) {
+  const content =
+    message.content || "";
+
+  const matches = [
+    ...content.matchAll(
+      /https?:\/\/[^\s<>]+/g
+    )
+  ]
+    .map(
+      (match) => ({
+        match,
+
+        url:
+          match[0].replace(
+            /[),。、]+$/,
+            ""
+          )
+      })
+    )
+    .filter(
+      (item) =>
+        isGoogleMapsUrl(
+          item.url
+        )
+    );
+
+  if (
+    matches.length === 0
+  ) {
+    return [];
+  }
+
+  const sections = [];
+
+  let previousUrlEnd =
+    0;
+
+  for (const item of matches) {
+    sections.push({
+      url:
+        item.url,
+
+      description:
+        cleanText(
+          content.slice(
+            previousUrlEnd,
+            item.match.index
+          ),
+          300
+        )
+    });
+
+    previousUrlEnd =
+      item.match.index +
+      item.match[0].length;
+  }
+
+  const trailingText =
+    cleanText(
+      content.slice(
+        previousUrlEnd
+      ),
+      200
+    );
+
+  if (
+    trailingText
+  ) {
+    const last =
+      sections.at(-1);
+
+    last.description =
+      cleanText(
+        [
+          last.description,
+          trailingText
+        ]
+          .filter(Boolean)
+          .join(" "),
+        300
+      );
+  }
+
+  return sections;
 }
 
 function isGoogleMapsUrl(value) {
@@ -208,12 +332,23 @@ function isGoogleMapsUrl(value) {
     const url = new URL(value);
 
     return (
-      GOOGLE_HOSTS.has(url.hostname) &&
+      GOOGLE_HOSTS.has(
+        url.hostname
+      ) &&
       (
-        url.hostname === "maps.app.goo.gl" ||
-        url.hostname === "maps.google.com" ||
-        url.pathname.startsWith("/maps") ||
-        url.pathname.startsWith("/place/")
+        url.hostname ===
+          "maps.app.goo.gl" ||
+
+        url.hostname ===
+          "maps.google.com" ||
+
+        url.pathname.startsWith(
+          "/maps"
+        ) ||
+
+        url.pathname.startsWith(
+          "/place/"
+        )
       )
     );
   } catch {
@@ -297,11 +432,11 @@ function extractAddressFromText(value) {
     )
     .replace(
       /[０-９]/g,
-      (character) => {
-        return String.fromCharCode(
-          character.charCodeAt(0) - 0xfee0
-        );
-      }
+      (character) =>
+        String.fromCharCode(
+          character.charCodeAt(0) -
+          0xfee0
+        )
     );
 
   const patterns = [
@@ -317,7 +452,10 @@ function extractAddressFromText(value) {
   ];
 
   for (const pattern of patterns) {
-    const match = text.match(pattern);
+    const match =
+      text.match(
+        pattern
+      );
 
     if (match) {
       return cleanText(
@@ -336,12 +474,15 @@ function extractAddressFromText(value) {
 function getMeta(html, names) {
   const wanted = new Set(
     names.map(
-      (name) => name.toLowerCase()
+      (name) =>
+        name.toLowerCase()
     )
   );
 
   const tags =
-    html.match(/<meta\b[^>]*>/gi) || [];
+    html.match(
+      /<meta\b[^>]*>/gi
+    ) || [];
 
   for (const tag of tags) {
     const key = tag
@@ -350,7 +491,9 @@ function getMeta(html, names) {
       )?.[1]
       ?.toLowerCase();
 
-    if (!wanted.has(key)) {
+    if (
+      !wanted.has(key)
+    ) {
       continue;
     }
 
@@ -360,7 +503,8 @@ function getMeta(html, names) {
 
     if (content) {
       return decodeHtmlEntities(
-        content[1] || content[2]
+        content[1] ||
+        content[2]
       );
     }
   }
@@ -386,10 +530,11 @@ function jsonLdEntries(html) {
       Array.isArray(value)
     ) {
       value.forEach(
-        (item) => visit(
-          item,
-          depth + 1
-        )
+        (item) =>
+          visit(
+            item,
+            depth + 1
+          )
       );
 
       return;
@@ -421,18 +566,21 @@ function jsonLdEntries(html) {
   const pattern =
     /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
 
-  for (const match of html.matchAll(pattern)) {
+  for (
+    const match
+    of html.matchAll(pattern)
+  ) {
     try {
-      const json = JSON.parse(
-        match[1]
-          .trim()
-          .replace(
-            /^<!--|-->$/g,
-            ""
-          )
+      visit(
+        JSON.parse(
+          match[1]
+            .trim()
+            .replace(
+              /^<!--|-->$/g,
+              ""
+            )
+        )
       );
-
-      visit(json);
 
     } catch {
       continue;
@@ -447,8 +595,14 @@ function structuredAddress(value) {
     typeof value === "string"
   ) {
     return (
-      extractAddressFromText(value) ||
-      cleanText(value, 100)
+      extractAddressFromText(
+        value
+      ) ||
+
+      cleanText(
+        value,
+        100
+      )
     );
   }
 
@@ -468,31 +622,39 @@ function structuredAddress(value) {
     .join("");
 
   return (
-    extractAddressFromText(address) ||
+    extractAddressFromText(
+      address
+    ) ||
+
     (
       /\d/.test(address)
-        ? cleanText(address, 100)
+        ? cleanText(
+            address,
+            100
+          )
         : ""
     )
   );
 }
 
 function extractCoordinatesFromHtml(html) {
-  const latitude = getMeta(
-    html,
-    [
-      "place:location:latitude",
-      "latitude"
-    ]
-  );
+  const latitude =
+    getMeta(
+      html,
+      [
+        "place:location:latitude",
+        "latitude"
+      ]
+    );
 
-  const longitude = getMeta(
-    html,
-    [
-      "place:location:longitude",
-      "longitude"
-    ]
-  );
+  const longitude =
+    getMeta(
+      html,
+      [
+        "place:location:longitude",
+        "longitude"
+      ]
+    );
 
   const metaPosition =
     latitude &&
@@ -506,15 +668,16 @@ function extractCoordinatesFromHtml(html) {
     return metaPosition;
   }
 
-  const geoPosition = parseCoordinatePair(
-    getMeta(
-      html,
-      [
-        "geo.position",
-        "icbm"
-      ]
-    )
-  );
+  const geoPosition =
+    parseCoordinatePair(
+      getMeta(
+        html,
+        [
+          "geo.position",
+          "icbm"
+        ]
+      )
+    );
 
   if (geoPosition) {
     return geoPosition;
@@ -531,7 +694,10 @@ function extractCoordinatesFromHtml(html) {
   ];
 
   for (const pattern of patterns) {
-    const match = html.match(pattern);
+    const match =
+      html.match(
+        pattern
+      );
 
     const position = match
       ? makePosition(
@@ -548,12 +714,18 @@ function extractCoordinatesFromHtml(html) {
   const mapPattern =
     /(?:src|href)\s*=\s*["']([^"']+(?:google\.com\/maps|google\.co\.jp\/maps)[^"']*)["']/gi;
 
-  for (const match of html.matchAll(mapPattern)) {
-    const position = extractCoordinatesFromUrl(
-      decodeHtmlEntities(
-        match[1]
-      )
-    );
+  for (
+    const match
+    of html.matchAll(
+      mapPattern
+    )
+  ) {
+    const position =
+      extractCoordinatesFromUrl(
+        decodeHtmlEntities(
+          match[1]
+        )
+      );
 
     if (position) {
       return position;
@@ -567,18 +739,20 @@ function decodePage(
   buffer,
   contentType
 ) {
-  const bytes = new Uint8Array(
-    buffer
-  );
+  const bytes =
+    new Uint8Array(
+      buffer
+    );
 
-  const initial = new TextDecoder(
-    "ascii"
-  ).decode(
-    bytes.slice(
-      0,
-      8192
-    )
-  );
+  const initial =
+    new TextDecoder(
+      "ascii"
+    ).decode(
+      bytes.slice(
+        0,
+        8192
+      )
+    );
 
   const charset =
     contentType.match(
@@ -598,18 +772,20 @@ function decodePage(
   let decoded;
 
   try {
-    decoded = new TextDecoder(
-      charset
-    ).decode(
-      bytes
-    );
+    decoded =
+      new TextDecoder(
+        charset
+      ).decode(
+        bytes
+      );
 
   } catch {
-    decoded = new TextDecoder(
-      "utf-8"
-    ).decode(
-      bytes
-    );
+    decoded =
+      new TextDecoder(
+        "utf-8"
+      ).decode(
+        bytes
+      );
   }
 
   const replacementCount = (
@@ -627,11 +803,12 @@ function decodePage(
       "utf-8"
     ]) {
       try {
-        const candidate = new TextDecoder(
-          encoding
-        ).decode(
-          bytes
-        );
+        const candidate =
+          new TextDecoder(
+            encoding
+          ).decode(
+            bytes
+          );
 
         const errors = (
           candidate.match(
@@ -640,7 +817,8 @@ function decodePage(
         ).length;
 
         if (
-          errors < replacementCount
+          errors <
+          replacementCount
         ) {
           console.log(
             `文字コードを補正: ${encoding}`
@@ -724,17 +902,19 @@ async function fetchPageInformation(url) {
       return null;
     }
 
-    const html = decodePage(
-      await response.arrayBuffer(),
-      contentType
-    ).slice(
-      0,
-      1200000
-    );
+    const html =
+      decodePage(
+        await response.arrayBuffer(),
+        contentType
+      ).slice(
+        0,
+        1200000
+      );
 
-    const entries = jsonLdEntries(
-      html
-    );
+    const entries =
+      jsonLdEntries(
+        html
+      );
 
     const preferred = entries
       .map(
@@ -744,23 +924,26 @@ async function fetchPageInformation(url) {
             entry.location?.geo ||
             {};
 
-          const position = makePosition(
-            geo.latitude ??
-            geo.lat,
+          const position =
+            makePosition(
+              geo.latitude ??
+              geo.lat,
 
-            geo.longitude ??
-            geo.lng ??
-            geo.lon
-          );
+              geo.longitude ??
+              geo.lng ??
+              geo.lon
+            );
 
-          const address = structuredAddress(
-            entry.address ||
-            entry.location?.address
-          );
+          const address =
+            structuredAddress(
+              entry.address ||
+              entry.location?.address
+            );
 
-          const type = String(
-            entry["@type"] || ""
-          );
+          const type =
+            String(
+              entry["@type"] || ""
+            );
 
           const score =
             (
@@ -821,14 +1004,15 @@ async function fetchPageInformation(url) {
 
       "";
 
-    const description = getMeta(
-      html,
-      [
-        "description",
-        "og:description",
-        "twitter:description"
-      ]
-    );
+    const description =
+      getMeta(
+        html,
+        [
+          "description",
+          "og:description",
+          "twitter:description"
+        ]
+      );
 
     const address =
       preferred?.address ||
@@ -915,9 +1099,10 @@ function extractAddress(message) {
   ];
 
   for (const value of values) {
-    const address = extractAddressFromText(
-      value
-    );
+    const address =
+      extractAddressFromText(
+        value
+      );
 
     if (address) {
       return address;
@@ -934,9 +1119,7 @@ function extractPlaceCandidates(
 ) {
   const candidates = [];
 
-  const add = (
-    value
-  ) => {
+  const add = (value) => {
     const name =
       normalizePlaceName(
         value
@@ -965,15 +1148,17 @@ function extractPlaceCandidates(
 
   if (mapsUrl) {
     try {
-      const url = new URL(
-        mapsUrl
-      );
+      const url =
+        new URL(
+          mapsUrl
+        );
 
-      const match = decodeURIComponent(
-        url.pathname
-      ).match(
-        /\/place\/([^/]+)/
-      );
+      const match =
+        decodeURIComponent(
+          url.pathname
+        ).match(
+          /\/place\/([^/]+)/
+        );
 
       if (match) {
         add(
@@ -996,14 +1181,16 @@ function extractPlaceCandidates(
 
         if (
           value &&
-          !parseCoordinatePair(value)
+          !parseCoordinatePair(
+            value
+          )
         ) {
           add(value);
         }
       }
 
     } catch {
-      // GoogleマップのURLを解析できない場合は他の情報を使用。
+      // URL解析に失敗した場合は、ほかの情報を使用します。
     }
   }
 
@@ -1031,11 +1218,12 @@ function extractPlaceCandidates(
   ];
 
   for (const text of texts) {
-    const quotedNames = text.matchAll(
-      /[「『]([^」』]{1,60})[」』]/gu
-    );
+    const matches =
+      text.matchAll(
+        /[「『]([^」』]{1,60})[」』]/gu
+      );
 
-    for (const match of quotedNames) {
+    for (const match of matches) {
       add(
         match[1]
       );
@@ -1055,9 +1243,7 @@ function extractPlaceCandidates(
           100
         )
     )
-    .filter(
-      Boolean
-    );
+    .filter(Boolean);
 
   for (const line of lines) {
     if (
@@ -1103,9 +1289,7 @@ function extractAreaHint(
         page.name || ""
       ]
     )
-  ].join(
-    " "
-  );
+  ].join(" ");
 
   return (
     text.match(
@@ -1142,7 +1326,9 @@ function extractDescription(
         )
     );
 
-  if (lines.length > 0) {
+  if (
+    lines.length > 0
+  ) {
     return cleanText(
       lines.join(" "),
       160
@@ -1161,7 +1347,6 @@ function extractDescription(
     embed?.description ||
     embed?.title ||
     "コミュニティで紹介されたスポット。",
-
     160
   );
 }
@@ -1174,9 +1359,7 @@ function classifySpot(message) {
       (embed) =>
         `${embed.title || ""} ${embed.description || ""}`
     )
-  ].join(
-    " "
-  );
+  ].join(" ");
 
   if (
     /イベント|開催|お祭り|祭り|フェス|展示|ワークショップ|勉強会|体験会/u.test(
@@ -1219,7 +1402,6 @@ async function requestDiscord(
   ) {
     const response = await fetch(
       DISCORD_API + endpoint,
-
       {
         headers: {
           Authorization:
@@ -1240,18 +1422,18 @@ async function requestDiscord(
       response.status === 429 &&
       attempt < 2
     ) {
-      const body = await response
-        .json()
-        .catch(
-          () => ({})
-        );
+      const body =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
 
       await wait(
         Math.max(
           Number(
             body.retry_after || 1
           ) * 1000,
-
           1000
         )
       );
@@ -1301,11 +1483,11 @@ async function fetchChannelMessages(
       );
     }
 
-    const batch = await requestDiscord(
-      `/channels/${encodeURIComponent(channelId)}/messages?${parameters}`,
-
-      token
-    );
+    const batch =
+      await requestDiscord(
+        `/channels/${encodeURIComponent(channelId)}/messages?${parameters}`,
+        token
+      );
 
     if (
       !Array.isArray(batch)
@@ -1382,13 +1564,13 @@ async function wasApprovedByOwner(
       );
     }
 
-    const users = await requestDiscord(
-      `/channels/${encodeURIComponent(channelId)}` +
-      `/messages/${encodeURIComponent(message.id)}` +
-      `/reactions/${encodeURIComponent(reaction.emoji.name)}?${parameters}`,
-
-      token
-    );
+    const users =
+      await requestDiscord(
+        `/channels/${encodeURIComponent(channelId)}` +
+        `/messages/${encodeURIComponent(message.id)}` +
+        `/reactions/${encodeURIComponent(reaction.emoji.name)}?${parameters}`,
+        token
+      );
 
     if (
       users.some(
@@ -1422,24 +1604,24 @@ async function expandMapsUrl(url) {
   }
 
   try {
-    const response = await fetch(
-      url,
+    const response =
+      await fetch(
+        url,
+        {
+          redirect:
+            "follow",
 
-      {
-        redirect:
-          "follow",
+          headers: {
+            "User-Agent":
+              USER_AGENT
+          },
 
-        headers: {
-          "User-Agent":
-            USER_AGENT
-        },
-
-        signal:
-          AbortSignal.timeout(
-            15000
-          )
-      }
-    );
+          signal:
+            AbortSignal.timeout(
+              15000
+            )
+        }
+      );
 
     await response.body?.cancel();
 
@@ -1469,9 +1651,10 @@ async function findPlace(query) {
   previousGeocodingAt =
     Date.now();
 
-  const url = new URL(
-    NOMINATIM
-  );
+  const url =
+    new URL(
+      NOMINATIM
+    );
 
   const parameters = {
     format:
@@ -1496,34 +1679,36 @@ async function findPlace(query) {
       "1"
   };
 
-  for (const [
-    key,
-    value
-  ] of Object.entries(parameters)) {
+  for (
+    const [
+      key,
+      value
+    ] of Object.entries(parameters)
+  ) {
     url.searchParams.set(
       key,
       value
     );
   }
 
-  const response = await fetch(
-    url,
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          "User-Agent":
+            USER_AGENT,
 
-    {
-      headers: {
-        "User-Agent":
-          USER_AGENT,
+          "Accept-Language":
+            "ja"
+        },
 
-        "Accept-Language":
-          "ja"
-      },
-
-      signal:
-        AbortSignal.timeout(
-          15000
-        )
-    }
-  );
+        signal:
+          AbortSignal.timeout(
+            15000
+          )
+      }
+    );
 
   if (
     !response.ok
@@ -1579,10 +1764,11 @@ async function findPlaceFromCandidates(
     query,
     name
   ) => {
-    const normalized = cleanText(
-      query,
-      120
-    );
+    const normalized =
+      cleanText(
+        query,
+        120
+      );
 
     if (
       normalized &&
@@ -1609,24 +1795,28 @@ async function findPlaceFromCandidates(
     );
   }
 
-  for (const candidate of candidates.slice(
-    0,
-    4
-  )) {
-    const simplified = candidate
-      .replace(
-        /\s*[-–—]\s*.+$/u,
-        ""
-      )
-      .replace(
-        /\s*[（(].*?[)）]\s*/gu,
-        ""
-      )
-      .replace(
-        /\s+(?:クーポン|公式|店舗情報).*$/u,
-        ""
-      )
-      .trim();
+  for (
+    const candidate
+    of candidates.slice(
+      0,
+      4
+    )
+  ) {
+    const simplified =
+      candidate
+        .replace(
+          /\s*[-–—]\s*.+$/u,
+          ""
+        )
+        .replace(
+          /\s*[（(].*?[)）]\s*/gu,
+          ""
+        )
+        .replace(
+          /\s+(?:クーポン|公式|店舗情報).*$/u,
+          ""
+        )
+        .trim();
 
     for (const name of new Set([
       candidate,
@@ -1634,7 +1824,9 @@ async function findPlaceFromCandidates(
     ])) {
       if (
         areaHint &&
-        !name.includes(areaHint)
+        !name.includes(
+          areaHint
+        )
       ) {
         add(
           `${areaHint} ${name}`,
@@ -1649,17 +1841,21 @@ async function findPlaceFromCandidates(
     }
   }
 
-  for (const search of searches.slice(
-    0,
-    10
-  )) {
+  for (
+    const search
+    of searches.slice(
+      0,
+      10
+    )
+  ) {
     console.log(
       `場所を検索: ${search.query}`
     );
 
-    const result = await findPlace(
-      search.query
-    );
+    const result =
+      await findPlace(
+        search.query
+      );
 
     if (result) {
       return {
@@ -1676,15 +1872,13 @@ async function findPlaceFromCandidates(
 
 async function readExistingSpots() {
   try {
-    const contents =
-      await fs.readFile(
-        SPOTS_PATH,
-        "utf8"
+    const value =
+      JSON.parse(
+        await fs.readFile(
+          SPOTS_PATH,
+          "utf8"
+        )
       );
-
-    const value = JSON.parse(
-      contents
-    );
 
     if (
       !Array.isArray(value)
@@ -1725,9 +1919,10 @@ async function convertMessageToSpot(
     return previousSpot;
   }
 
-  const urls = extractUrls(
-    message
-  );
+  const urls =
+    extractUrls(
+      message
+    );
 
   const originalMapsUrl =
     urls.find(
@@ -1741,15 +1936,16 @@ async function convertMessageToSpot(
         )
       : "";
 
-  const sourceUrls = urls
-    .filter(
-      (url) =>
-        !isGoogleMapsUrl(url)
-    )
-    .slice(
-      0,
-      2
-    );
+  const sourceUrls =
+    urls
+      .filter(
+        (url) =>
+          !isGoogleMapsUrl(url)
+      )
+      .slice(
+        0,
+        2
+      );
 
   const pages = [];
 
@@ -1782,9 +1978,7 @@ async function convertMessageToSpot(
         extractAddress(
           message
         )
-      ].filter(
-        Boolean
-      )
+      ].filter(Boolean)
     )
   ];
 
@@ -1902,6 +2096,187 @@ async function convertMessageToSpot(
   };
 }
 
+async function convertMessageToSpots(
+  message,
+  previousSpotsById
+) {
+  const sections =
+    extractMapSections(
+      message
+    );
+
+  if (
+    sections.length <= 1
+  ) {
+    const spot =
+      await convertMessageToSpot(
+        message,
+
+        previousSpotsById.get(
+          message.id
+        )
+      );
+
+    return spot
+      ? [spot]
+      : [];
+  }
+
+  const revision =
+    message.edited_timestamp ||
+    message.timestamp ||
+    "";
+
+  const spots = [];
+
+  console.log(
+    `投稿 ${message.id} から${sections.length}件のGoogleマップURLを確認します。`
+  );
+
+  for (
+    let index = 0;
+    index < sections.length;
+    index += 1
+  ) {
+    const section =
+      sections[index];
+
+    const id =
+      `${message.id}-${index + 1}`;
+
+    const previousSpot =
+      previousSpotsById.get(
+        id
+      );
+
+    if (
+      previousSpot &&
+      previousSpot.revision === revision &&
+      previousSpot.mapUrl === section.url
+    ) {
+      spots.push(
+        previousSpot
+      );
+
+      continue;
+    }
+
+    const mapsUrl =
+      await expandMapsUrl(
+        section.url
+      );
+
+    const sectionMessage = {
+      ...message,
+
+      content:
+        section.description,
+
+      embeds:
+        []
+    };
+
+    const candidates =
+      extractPlaceCandidates(
+        sectionMessage,
+        mapsUrl,
+        []
+      );
+
+    const areaHint =
+      extractAreaHint(
+        sectionMessage,
+        []
+      );
+
+    let name =
+      candidates[0] ||
+      `おすすめスポット ${index + 1}`;
+
+    let position =
+      extractCoordinatesFromUrl(
+        mapsUrl
+      );
+
+    let area =
+      areaHint ||
+      "多摩地域";
+
+    if (
+      !position
+    ) {
+      const place =
+        await findPlaceFromCandidates(
+          candidates,
+          [],
+          areaHint
+        );
+
+      if (
+        !place
+      ) {
+        console.warn(
+          `投稿 ${message.id} の${index + 1}件目は場所を特定できませんでした。 ` +
+          `候補: ${candidates.join(" / ") || "なし"} / ` +
+          `URL: ${section.url}`
+        );
+
+        continue;
+      }
+
+      name =
+        place.name ||
+        name;
+
+      position =
+        place.position;
+
+      area =
+        place.area;
+    }
+
+    const spot = {
+      id,
+
+      messageId:
+        message.id,
+
+      name,
+
+      type:
+        classifySpot(
+          sectionMessage
+        ),
+
+      area,
+
+      position,
+
+      description:
+        section.description ||
+        "コミュニティで紹介されたスポット。",
+
+      sourceUrl:
+        section.url,
+
+      mapUrl:
+        section.url,
+
+      revision
+    };
+
+    console.log(
+      `掲載: ${spot.name} / ${spot.area} / ${spot.position.join(",")}`
+    );
+
+    spots.push(
+      spot
+    );
+  }
+
+  return spots;
+}
+
 async function main() {
   const token =
     requiredEnvironmentVariable(
@@ -1918,16 +2293,17 @@ async function main() {
       "DISCORD_APPROVER_USER_ID"
     );
 
-  const previous = new Map(
-    (
-      await readExistingSpots()
-    ).map(
-      (spot) => [
-        spot.id,
-        spot
-      ]
-    )
-  );
+  const previous =
+    new Map(
+      (
+        await readExistingSpots()
+      ).map(
+        (spot) => [
+          spot.id,
+          spot
+        ]
+      )
+    );
 
   const messages =
     await fetchChannelMessages(
@@ -1935,13 +2311,14 @@ async function main() {
       token
     );
 
-  const selected = messages.filter(
-    (message) =>
-      !message.author?.bot &&
-      getMapReaction(
-        message
-      )
-  );
+  const selected =
+    messages.filter(
+      (message) =>
+        !message.author?.bot &&
+        getMapReaction(
+          message
+        )
+    );
 
   const spots = [];
 
@@ -1951,18 +2328,17 @@ async function main() {
   );
 
   for (const message of selected) {
+    const reaction =
+      getMapReaction(
+        message
+      );
+
     const approved =
       await wasApprovedByOwner(
         message,
-
-        getMapReaction(
-          message
-        ),
-
+        reaction,
         channelId,
-
         token,
-
         approverId
       );
 
@@ -1991,22 +2367,15 @@ async function main() {
     }
 
     try {
-      const spot =
-        await convertMessageToSpot(
+      const messageSpots =
+        await convertMessageToSpots(
           message,
-
-          previous.get(
-            message.id
-          )
+          previous
         );
 
-      if (
-        spot
-      ) {
-        spots.push(
-          spot
-        );
-      }
+      spots.push(
+        ...messageSpots
+      );
 
     } catch (
       error
@@ -2015,17 +2384,22 @@ async function main() {
         `投稿 ${message.id} の処理に失敗しました: ${error.message}`
       );
 
-      if (
-        previous.has(
-          message.id
-        )
-      ) {
-        spots.push(
-          previous.get(
-            message.id
+      const previousMessageSpots = [
+        ...previous.values()
+      ].filter(
+        (spot) =>
+          spot.id === message.id ||
+          spot.messageId === message.id ||
+          String(
+            spot.id
+          ).startsWith(
+            `${message.id}-`
           )
-        );
-      }
+      );
+
+      spots.push(
+        ...previousMessageSpots
+      );
     }
   }
 
@@ -2034,19 +2408,36 @@ async function main() {
       left,
       right
     ) => {
+      const [
+        leftMessageId,
+        leftIndex = "0"
+      ] = String(
+        left.id
+      ).split("-");
+
+      const [
+        rightMessageId,
+        rightIndex = "0"
+      ] = String(
+        right.id
+      ).split("-");
+
       if (
-        left.id === right.id
+        leftMessageId !==
+        rightMessageId
       ) {
-        return 0;
+        return (
+          BigInt(leftMessageId) >
+          BigInt(rightMessageId)
+        )
+          ? -1
+          : 1;
       }
 
-      return BigInt(
-        left.id
-      ) > BigInt(
-        right.id
-      )
-        ? -1
-        : 1;
+      return (
+        Number(leftIndex) -
+        Number(rightIndex)
+      );
     }
   );
 
@@ -2090,6 +2481,7 @@ module.exports = {
   extractCoordinatesFromHtml,
   extractCoordinatesFromUrl,
   extractDescription,
+  extractMapSections,
   extractPlaceCandidates,
   extractUrls,
   getMapReaction,
