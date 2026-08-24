@@ -3,18 +3,13 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const DISCORD_API_BASE = "https://discord.com/api/v10";
+const DISCORD_API = "https://discord.com/api/v10";
 
-const MAP_REACTION = "🗺️";
-
-const MAX_MESSAGE_PAGES = 5;
-const MAX_REACTION_PAGES = 5;
-
-const NOMINATIM_BASE =
+const NOMINATIM =
   "https://nominatim.openstreetmap.org/search";
 
 const USER_AGENT =
-  "tamadev-discord-spots/3.0 (+https://tamadev.jp/map/)";
+  "tamadev-discord-spots/4.0 (+https://tamadev.jp/map/)";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -23,7 +18,19 @@ const SPOTS_PATH = path.join(
   "spots.json"
 );
 
-const GOOGLE_MAPS_HOSTS = new Set([
+const MAX_MESSAGE_PAGES = 5;
+const MAX_REACTION_PAGES = 5;
+const MAP_REACTION = "🗺️";
+
+const CITIES =
+  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市";
+
+const AREAS = new RegExp(
+  `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子`,
+  "u"
+);
+
+const GOOGLE_HOSTS = new Set([
   "maps.app.goo.gl",
   "goo.gl",
   "google.com",
@@ -33,35 +40,27 @@ const GOOGLE_MAPS_HOSTS = new Set([
   "www.google.co.jp"
 ]);
 
-const TAMA_AREA_PATTERN =
-  /多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子/u;
-
 let previousGeocodingAt = 0;
 
 function requiredEnvironmentVariable(name) {
-  const value = process.env[name];
+  const value = process.env[name]?.trim();
 
-  if (!value || !value.trim()) {
+  if (!value) {
     throw new Error(
       `${name} が未設定です。GitHub Secretsを確認してください。`
     );
   }
 
-  return value.trim();
+  return value;
 }
 
-function normalizeEmoji(value) {
-  return String(value || "")
-    .replace(/\uFE0F/g, "");
-}
-
-function cleanText(value, maximumLength = 160) {
+function cleanText(value, length = 160) {
   return String(value || "")
     .replace(/https?:\/\/[^\s<>]+/g, "")
     .replace(/<@!?\d+>/g, "")
     .replace(/\s+/g, " ")
     .trim()
-    .slice(0, maximumLength);
+    .slice(0, length);
 }
 
 function decodeHtmlEntities(value) {
@@ -74,83 +73,22 @@ function decodeHtmlEntities(value) {
     .replace(/&nbsp;/gi, " ")
     .replace(
       /&#(\d+);/g,
-      (_, code) => {
-        const value = Number(code);
-
-        return (
-          Number.isInteger(value) &&
-          value >= 0 &&
-          value <= 0x10ffff
-        )
-          ? String.fromCodePoint(value)
-          : "";
-      }
+      (_, code) => String.fromCodePoint(Number(code))
     )
     .replace(
-      /&#x([0-9a-f]+);/gi,
+      /&#x([\da-f]+);/gi,
       (_, code) => {
-        const value = Number.parseInt(
-          code,
-          16
+        return String.fromCodePoint(
+          Number.parseInt(code, 16)
         );
-
-        return (
-          Number.isInteger(value) &&
-          value >= 0 &&
-          value <= 0x10ffff
-        )
-          ? String.fromCodePoint(value)
-          : "";
       }
     );
 }
 
-function stripHtml(value) {
-  return cleanText(
-    decodeHtmlEntities(
-      String(value || "")
-        .replace(
-          /<script\b[^>]*>[\s\S]*?<\/script>/gi,
-          " "
-        )
-        .replace(
-          /<style\b[^>]*>[\s\S]*?<\/style>/gi,
-          " "
-        )
-        .replace(
-          /<br\s*\/?>/gi,
-          " "
-        )
-        .replace(
-          /<[^>]+>/g,
-          " "
-        )
-    ),
-    1200
-  );
-}
-
-function isValidPosition(
-  latitude,
-  longitude
-) {
+function isValidPosition(latitude, longitude) {
   return (
     Number.isFinite(latitude) &&
     Number.isFinite(longitude) &&
-    Math.abs(latitude) <= 90 &&
-    Math.abs(longitude) <= 180
-  );
-}
-
-function isWithinTamaRegion(
-  latitude,
-  longitude
-) {
-  return (
-    isValidPosition(
-      latitude,
-      longitude
-    ) &&
     latitude >= 35.42 &&
     latitude <= 35.90 &&
     longitude >= 138.95 &&
@@ -158,73 +96,59 @@ function isWithinTamaRegion(
   );
 }
 
-function parseCoordinatePair(value) {
-  const match = String(value || "").match(
-    /(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)/
-  );
+function makePosition(latitude, longitude) {
+  const lat = Number(latitude);
+  const lon = Number(longitude);
 
-  if (!match) {
-    return null;
-  }
-
-  const latitude = Number(
-    match[1]
-  );
-
-  const longitude = Number(
-    match[2]
-  );
-
-  return isValidPosition(
-    latitude,
-    longitude
-  )
-    ? [
-        latitude,
-        longitude
-      ]
+  return isValidPosition(lat, lon)
+    ? [lat, lon]
     : null;
 }
 
-function extractCoordinatesFromUrl(urlString) {
-  let parsedUrl;
+function parseCoordinatePair(value) {
+  const match = String(value || "").match(
+    /(-?\d{1,2}(?:\.\d+)?)\s*[,;]\s*(-?\d{1,3}(?:\.\d+)?)/
+  );
+
+  return match
+    ? makePosition(match[1], match[2])
+    : null;
+}
+
+function extractCoordinatesFromUrl(value) {
+  let url;
 
   try {
-    parsedUrl = new URL(
-      urlString
-    );
+    url = new URL(value);
   } catch {
     return null;
   }
 
-  let decodedUrl;
+  let decoded;
 
   try {
-    decodedUrl = decodeURIComponent(
-      parsedUrl.toString()
+    decoded = decodeURIComponent(
+      url.toString()
     );
   } catch {
-    decodedUrl = parsedUrl.toString();
+    decoded = url.toString();
   }
 
-  const atCoordinates = decodedUrl.match(
-    /@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/
-  );
-
-  if (atCoordinates) {
-    return parseCoordinatePair(
-      `${atCoordinates[1]},${atCoordinates[2]}`
-    );
-  }
-
-  const placeCoordinates = decodedUrl.match(
+  const patterns = [
+    /@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/,
     /!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/
-  );
+  ];
 
-  if (placeCoordinates) {
-    return parseCoordinatePair(
-      `${placeCoordinates[1]},${placeCoordinates[2]}`
-    );
+  for (const pattern of patterns) {
+    const match = decoded.match(pattern);
+
+    const position = match
+      ? makePosition(match[1], match[2])
+      : null;
+
+    if (position) {
+      return position;
+    }
   }
 
   for (const key of [
@@ -235,9 +159,7 @@ function extractCoordinatesFromUrl(urlString) {
     "center"
   ]) {
     const position = parseCoordinatePair(
-      parsedUrl.searchParams.get(
-        key
-      )
+      url.searchParams.get(key)
     );
 
     if (position) {
@@ -245,77 +167,53 @@ function extractCoordinatesFromUrl(urlString) {
     }
   }
 
-  return parseCoordinatePair(
-    parsedUrl.pathname
-  );
+  return null;
 }
 
 function extractUrls(message) {
-  const texts = [
+  const values = [
     message.content || ""
   ];
 
   for (const embed of message.embeds || []) {
-    if (embed.url) {
-      texts.push(
-        embed.url
-      );
-    }
-
-    if (embed.description) {
-      texts.push(
-        embed.description
-      );
-    }
+    values.push(
+      embed.url || "",
+      embed.description || ""
+    );
 
     for (const field of embed.fields || []) {
-      if (field.value) {
-        texts.push(
-          field.value
-        );
-      }
+      values.push(
+        field.value || ""
+      );
     }
   }
 
   const matches =
-    texts
+    values
       .join("\n")
-      .match(
-        /https?:\/\/[^\s<>]+/g
-      ) || [];
+      .match(/https?:\/\/[^\s<>]+/g) || [];
 
   return [
     ...new Set(
       matches.map(
         (url) =>
-          url.replace(
-            /[),。、]+$/,
-            ""
-          )
+          url.replace(/[),。、]+$/, "")
       )
     )
   ];
 }
 
-function isGoogleMapsUrl(urlString) {
+function isGoogleMapsUrl(value) {
   try {
-    const url = new URL(
-      urlString
-    );
+    const url = new URL(value);
 
     return (
-      GOOGLE_MAPS_HOSTS.has(
-        url.hostname
-      ) &&
+      GOOGLE_HOSTS.has(url.hostname) &&
       (
         url.hostname === "maps.app.goo.gl" ||
         url.hostname === "maps.google.com" ||
-        url.pathname.startsWith(
-          "/maps"
-        ) ||
-        url.pathname.startsWith(
-          "/place/"
-        )
+        url.pathname.startsWith("/maps") ||
+        url.pathname.startsWith("/place/")
       )
     );
   } catch {
@@ -323,81 +221,11 @@ function isGoogleMapsUrl(urlString) {
   }
 }
 
-function extractPlaceNameFromMapsUrl(
-  mapsUrl
-) {
-  if (!mapsUrl) {
-    return "";
-  }
-
-  try {
-    const parsedUrl = new URL(
-      mapsUrl
-    );
-
-    const placePath = decodeURIComponent(
-      parsedUrl.pathname
-    ).match(
-      /\/place\/([^/]+)/
-    );
-
-    if (
-      placePath &&
-      !parseCoordinatePair(
-        placePath[1]
-      )
-    ) {
-      return cleanText(
-        placePath[1].replace(
-          /\+/g,
-          " "
-        ),
-        80
-      );
-    }
-
-    for (const key of [
-      "query",
-      "q",
-      "destination"
-    ]) {
-      const value =
-        parsedUrl.searchParams.get(
-          key
-        );
-
-      if (
-        value &&
-        !parseCoordinatePair(
-          value
-        )
-      ) {
-        return cleanText(
-          value,
-          80
-        );
-      }
-    }
-  } catch {
-    return "";
-  }
-
-  return "";
-}
-
 function normalizePlaceName(value) {
-  let title = cleanText(
-    decodeHtmlEntities(
-      value
-    ),
+  let name = cleanText(
+    decodeHtmlEntities(value),
     160
-  );
-
-  if (!title) {
-    return "";
-  }
-
-  title = title
+  )
     .replace(
       /\s*[|｜]\s*(食べログ|Instagram|インスタグラム|note|Google マップ|Google Maps|ラーメンデータベース).*$/iu,
       ""
@@ -432,286 +260,645 @@ function normalizePlaceName(value) {
     )
     .trim();
 
-  const quotedTitle = title.match(
+  const quoted = name.match(
     /^([^「」『』|｜]{1,30})[「『]([^」』]{1,50})[」』]/u
   );
 
-  if (quotedTitle) {
-    const prefix = cleanText(
-      quotedTitle[1],
-      40
-    );
-
-    const name = cleanText(
-      quotedTitle[2],
-      50
-    );
-
-    if (
+  if (quoted) {
+    name =
       /うどん|そば|カフェ|珈琲|書店|食堂|レストラン|パン/u.test(
-        prefix
+        quoted[1]
       )
-    ) {
-      return cleanText(
-        `${prefix} ${name}`,
-        80
-      );
-    }
-
-    return name;
+        ? `${quoted[1].trim()} ${quoted[2].trim()}`
+        : quoted[2].trim();
   }
 
   return cleanText(
-    title,
+    name,
     80
-  );
-}
-
-function extractQuotedNames(message) {
-  const texts = [
-    message.content || "",
-
-    ...(message.embeds || []).flatMap(
-      (embed) => [
-        embed.title || "",
-        embed.description || ""
-      ]
-    )
-  ];
-
-  return [
-    ...new Set(
-      texts.flatMap(
-        (text) =>
-          [...text.matchAll(
-            /[「『]([^」』]{1,60})[」』]/gu
-          )]
-            .map(
-              (match) =>
-                cleanText(
-                  match[1],
-                  80
-                )
-            )
-            .filter(
-              Boolean
-            )
-      )
-    )
-  ];
-}
-
-function extractPlaceCandidates(
-  message,
-  mapsUrl,
-  pageInformation = []
-) {
-  const candidates = [];
-
-  const addCandidate = (
-    value
-  ) => {
-    const normalized =
-      normalizePlaceName(
-        value
-      );
-
-    if (
-      normalized &&
-      !candidates.includes(
-        normalized
-      )
-    ) {
-      candidates.push(
-        normalized
-      );
-    }
-  };
-
-  const content =
-    message.content || "";
-
-  const explicitName = content.match(
-    /(?:場所|施設|会場|店名|名称|スポット)\s*[：:]\s*([^\n]+)/u
-  );
-
-  if (explicitName) {
-    addCandidate(
-      explicitName[1]
-    );
-  }
-
-  addCandidate(
-    extractPlaceNameFromMapsUrl(
-      mapsUrl
-    )
-  );
-
-  for (
-    const information
-    of pageInformation
-  ) {
-    if (
-      information.name
-    ) {
-      addCandidate(
-        information.name
-      );
-    }
-  }
-
-  for (
-    const embed
-    of message.embeds || []
-  ) {
-    addCandidate(
-      embed.title
-    );
-  }
-
-  for (
-    const quotedName
-    of extractQuotedNames(
-      message
-    )
-  ) {
-    addCandidate(
-      quotedName
-    );
-  }
-
-  const placeInSentence = content.match(
-    /(?:ある|あるのは|あるのが|お店は|店は|施設は)\s*[「『]?([A-Za-z][A-Za-z0-9 .&'-]{2,40}|[一-龠ぁ-んァ-ヶー]{2,30})[」』]?(?:という|です|で、|。)/u
-  );
-
-  if (
-    placeInSentence
-  ) {
-    addCandidate(
-      placeInSentence[1]
-    );
-  }
-
-  const contentLines = content
-    .split(
-      /\r?\n/
-    )
-    .map(
-      (line) =>
-        cleanText(
-          line,
-          100
-        )
-    )
-    .filter(
-      Boolean
-    )
-    .filter(
-      (line) =>
-        !/^(種類|分類|説明|紹介|日時|開催日)\s*[：:]/u.test(
-          line
-        )
-    );
-
-  for (
-    const line
-    of contentLines
-  ) {
-    if (
-      line.length <= 40 &&
-      !/おすすめです|美味しいです|おいしいです|ある.*です/u.test(
-        line
-      )
-    ) {
-      addCandidate(
-        line
-      );
-    }
-  }
-
-  if (
-    candidates.length === 0 &&
-    contentLines.length > 0
-  ) {
-    addCandidate(
-      contentLines[0]
-    );
-  }
-
-  return candidates;
-}
-
-function extractPlaceName(
-  message,
-  mapsUrl
-) {
-  return (
-    extractPlaceCandidates(
-      message,
-      mapsUrl
-    )[0] || ""
   );
 }
 
 function extractAddressFromText(value) {
   const text = decodeHtmlEntities(
-    String(
-      value || ""
-    )
+    String(value || "")
   )
     .replace(
+      /<\/(?:p|div|li|td|th|address)>/gi,
+      "\n"
+    )
+    .replace(
       /<br\s*\/?>/gi,
-      " "
+      "\n"
     )
     .replace(
       /<[^>]+>/g,
       " "
     )
     .replace(
-      /[ \t]+/g,
-      " "
+      /[０-９]/g,
+      (character) => {
+        return String.fromCharCode(
+          character.charCodeAt(0) - 0xfee0
+        );
+      }
     );
 
-  const addressMatch = text.match(
-    /(?:〒\s*\d{3}[-ー]\d{4}\s*)?(?:東京都)?(?:多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市)(?:[一-龠ぁ-んァ-ヶーA-Za-z0-9０-９丁目番地号\-−ー\s]{2,60})/u
+  const patterns = [
+    new RegExp(
+      `(?:〒\\s*\\d{3}[-ー]\\d{4}\\s*)?((?:東京都)?(?:${CITIES})[一-龠ぁ-んァ-ヶー]{1,20}(?:\\d{1,4}丁目)?\\d{1,4}(?:[-−ー丁目番地号]\\d{1,4}){1,4}(?:号)?)`,
+      "u"
+    ),
+
+    new RegExp(
+      `(?:〒\\s*\\d{3}[-ー]\\d{4}\\s*)?((?:東京都)?(?:${CITIES})[一-龠ぁ-んァ-ヶー]{1,20}\\d{1,4}丁目\\d{1,4}(?:番(?:地)?\\d{1,4})?(?:号)?)`,
+      "u"
+    )
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+
+    if (match) {
+      return cleanText(
+        match[1],
+        100
+      ).replace(
+        /[−ー]/g,
+        "-"
+      );
+    }
+  }
+
+  return "";
+}
+
+function getMeta(html, names) {
+  const wanted = new Set(
+    names.map(
+      (name) => name.toLowerCase()
+    )
   );
 
+  const tags =
+    html.match(/<meta\b[^>]*>/gi) || [];
+
+  for (const tag of tags) {
+    const key = tag
+      .match(
+        /\b(?:property|name|itemprop)\s*=\s*["']([^"']+)["']/i
+      )?.[1]
+      ?.toLowerCase();
+
+    if (!wanted.has(key)) {
+      continue;
+    }
+
+    const content = tag.match(
+      /\bcontent\s*=\s*(?:"([^"]*)"|'([^']*)')/i
+    );
+
+    if (content) {
+      return decodeHtmlEntities(
+        content[1] || content[2]
+      );
+    }
+  }
+
+  return "";
+}
+
+function jsonLdEntries(html) {
+  const results = [];
+
+  const visit = (
+    value,
+    depth = 0
+  ) => {
+    if (
+      !value ||
+      depth > 7
+    ) {
+      return;
+    }
+
+    if (
+      Array.isArray(value)
+    ) {
+      value.forEach(
+        (item) => visit(
+          item,
+          depth + 1
+        )
+      );
+
+      return;
+    }
+
+    if (
+      typeof value !== "object"
+    ) {
+      return;
+    }
+
+    results.push(value);
+
+    for (const key of [
+      "@graph",
+      "mainEntity",
+      "itemListElement",
+      "item",
+      "location",
+      "about"
+    ]) {
+      visit(
+        value[key],
+        depth + 1
+      );
+    }
+  };
+
+  const pattern =
+    /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+
+  for (const match of html.matchAll(pattern)) {
+    try {
+      const json = JSON.parse(
+        match[1]
+          .trim()
+          .replace(
+            /^<!--|-->$/g,
+            ""
+          )
+      );
+
+      visit(json);
+
+    } catch {
+      continue;
+    }
+  }
+
+  return results;
+}
+
+function structuredAddress(value) {
   if (
-    !addressMatch
+    typeof value === "string"
+  ) {
+    return (
+      extractAddressFromText(value) ||
+      cleanText(value, 100)
+    );
+  }
+
+  if (
+    !value ||
+    typeof value !== "object"
   ) {
     return "";
   }
 
-  let address = addressMatch[0]
-    .replace(
-      /^〒\s*\d{3}[-ー]\d{4}\s*/u,
-      ""
+  const address = [
+    value.addressRegion,
+    value.addressLocality,
+    value.streetAddress
+  ]
+    .filter(Boolean)
+    .join("");
+
+  return (
+    extractAddressFromText(address) ||
+    (
+      /\d/.test(address)
+        ? cleanText(address, 100)
+        : ""
     )
-    .replace(
-      /\s+(?:TEL|電話|営業時間|定休日|アクセス|地図|店舗情報).*$/iu,
-      ""
-    )
-    .trim();
-
-  const numberedAddress = address.match(
-    /^(.{2,50}?(?:\d|[０-９])(?:丁目|番地|番|号|[-−ー]\d|[-−ー][０-９])?.{0,20})/u
-  );
-
-  if (
-    numberedAddress
-  ) {
-    address =
-      numberedAddress[1].trim();
-  }
-
-  return cleanText(
-    address,
-    100
   );
 }
 
+function extractCoordinatesFromHtml(html) {
+  const latitude = getMeta(
+    html,
+    [
+      "place:location:latitude",
+      "latitude"
+    ]
+  );
+
+  const longitude = getMeta(
+    html,
+    [
+      "place:location:longitude",
+      "longitude"
+    ]
+  );
+
+  const metaPosition =
+    latitude &&
+    longitude &&
+    makePosition(
+      latitude,
+      longitude
+    );
+
+  if (metaPosition) {
+    return metaPosition;
+  }
+
+  const geoPosition = parseCoordinatePair(
+    getMeta(
+      html,
+      [
+        "geo.position",
+        "icbm"
+      ]
+    )
+  );
+
+  if (geoPosition) {
+    return geoPosition;
+  }
+
+  const patterns = [
+    /"latitude"\s*:\s*"?(-?\d+(?:\.\d+)?)"?[\s\S]{0,120}?"longitude"\s*:\s*"?(-?\d+(?:\.\d+)?)/i,
+
+    /"lat"\s*:\s*"?(-?\d+(?:\.\d+)?)"?[\s\S]{0,100}?"(?:lng|lon)"\s*:\s*"?(-?\d+(?:\.\d+)?)/i,
+
+    /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
+
+    /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+
+    const position = match
+      ? makePosition(
+          match[1],
+          match[2]
+        )
+      : null;
+
+    if (position) {
+      return position;
+    }
+  }
+
+  const mapPattern =
+    /(?:src|href)\s*=\s*["']([^"']+(?:google\.com\/maps|google\.co\.jp\/maps)[^"']*)["']/gi;
+
+  for (const match of html.matchAll(mapPattern)) {
+    const position = extractCoordinatesFromUrl(
+      decodeHtmlEntities(
+        match[1]
+      )
+    );
+
+    if (position) {
+      return position;
+    }
+  }
+
+  return null;
+}
+
+function decodePage(
+  buffer,
+  contentType
+) {
+  const bytes = new Uint8Array(
+    buffer
+  );
+
+  const initial = new TextDecoder(
+    "ascii"
+  ).decode(
+    bytes.slice(
+      0,
+      8192
+    )
+  );
+
+  const charset =
+    contentType.match(
+      /charset\s*=\s*([^;\s]+)/i
+    )?.[1] ||
+
+    initial.match(
+      /charset\s*=\s*["']?([\w-]+)/i
+    )?.[1] ||
+
+    initial.match(
+      /encoding\s*=\s*["']([^"']+)/i
+    )?.[1] ||
+
+    "utf-8";
+
+  let decoded;
+
+  try {
+    decoded = new TextDecoder(
+      charset
+    ).decode(
+      bytes
+    );
+
+  } catch {
+    decoded = new TextDecoder(
+      "utf-8"
+    ).decode(
+      bytes
+    );
+  }
+
+  const replacementCount = (
+    decoded.match(
+      /\uFFFD/g
+    ) || []
+  ).length;
+
+  if (
+    replacementCount > 5
+  ) {
+    for (const encoding of [
+      "shift_jis",
+      "euc-jp",
+      "utf-8"
+    ]) {
+      try {
+        const candidate = new TextDecoder(
+          encoding
+        ).decode(
+          bytes
+        );
+
+        const errors = (
+          candidate.match(
+            /\uFFFD/g
+          ) || []
+        ).length;
+
+        if (
+          errors < replacementCount
+        ) {
+          console.log(
+            `文字コードを補正: ${encoding}`
+          );
+
+          return candidate;
+        }
+
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  console.log(
+    `文字コード: ${charset}`
+  );
+
+  return decoded;
+}
+
+async function fetchPageInformation(url) {
+  if (
+    !url ||
+    isGoogleMapsUrl(url)
+  ) {
+    return null;
+  }
+
+  try {
+    console.log(
+      `リンク先を確認: ${url}`
+    );
+
+    const response = await fetch(
+      url,
+      {
+        redirect:
+          "follow",
+
+        headers: {
+          "User-Agent":
+            USER_AGENT,
+
+          "Accept":
+            "text/html,application/xhtml+xml",
+
+          "Accept-Language":
+            "ja,en;q=0.8"
+        },
+
+        signal:
+          AbortSignal.timeout(
+            15000
+          )
+      }
+    );
+
+    if (
+      !response.ok
+    ) {
+      console.warn(
+        `リンク先を取得できませんでした: ${response.status} / ${url}`
+      );
+
+      return null;
+    }
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !/text\/html|application\/xhtml\+xml/i.test(
+        contentType
+      )
+    ) {
+      await response.body?.cancel();
+
+      return null;
+    }
+
+    const html = decodePage(
+      await response.arrayBuffer(),
+      contentType
+    ).slice(
+      0,
+      1200000
+    );
+
+    const entries = jsonLdEntries(
+      html
+    );
+
+    const preferred = entries
+      .map(
+        (entry) => {
+          const geo =
+            entry.geo ||
+            entry.location?.geo ||
+            {};
+
+          const position = makePosition(
+            geo.latitude ??
+            geo.lat,
+
+            geo.longitude ??
+            geo.lng ??
+            geo.lon
+          );
+
+          const address = structuredAddress(
+            entry.address ||
+            entry.location?.address
+          );
+
+          const type = String(
+            entry["@type"] || ""
+          );
+
+          const score =
+            (
+              position
+                ? 5
+                : 0
+            ) +
+
+            (
+              address
+                ? 4
+                : 0
+            ) +
+
+            (
+              /Restaurant|Store|LocalBusiness|Place|Cafe|FoodEstablishment/i.test(
+                type
+              )
+                ? 3
+                : 0
+            ) +
+
+            (
+              entry.name
+                ? 1
+                : 0
+            );
+
+          return {
+            entry,
+            position,
+            address,
+            score
+          };
+        }
+      )
+      .sort(
+        (
+          left,
+          right
+        ) =>
+          right.score -
+          left.score
+      )[0];
+
+    const title =
+      getMeta(
+        html,
+        [
+          "og:title",
+          "twitter:title"
+        ]
+      ) ||
+
+      html.match(
+        /<title\b[^>]*>([\s\S]*?)<\/title>/i
+      )?.[1] ||
+
+      "";
+
+    const description = getMeta(
+      html,
+      [
+        "description",
+        "og:description",
+        "twitter:description"
+      ]
+    );
+
+    const address =
+      preferred?.address ||
+
+      extractAddressFromText(
+        getMeta(
+          html,
+          [
+            "og:street-address",
+            "street-address",
+            "streetaddress"
+          ]
+        )
+      ) ||
+
+      extractAddressFromText(
+        description
+      ) ||
+
+      extractAddressFromText(
+        html.slice(
+          0,
+          500000
+        )
+      );
+
+    const information = {
+      name:
+        normalizePlaceName(
+          preferred?.entry?.name ||
+          title
+        ),
+
+      address,
+
+      position:
+        preferred?.position ||
+        extractCoordinatesFromHtml(
+          html
+        ),
+
+      description:
+        cleanText(
+          description,
+          200
+        )
+    };
+
+    console.log(
+      `リンク先の情報: ` +
+      `店名=${information.name || "不明"} / ` +
+      `住所=${information.address || "不明"} / ` +
+      `座標=${information.position?.join(",") || "不明"}`
+    );
+
+    return information;
+
+  } catch (
+    error
+  ) {
+    console.warn(
+      `リンク先の取得に失敗しました: ${url} / ${error.message}`
+    );
+
+    return null;
+  }
+}
+
 function extractAddress(message) {
-  const texts = [
+  const values = [
     message.content || "",
 
     ...(message.embeds || []).flatMap(
@@ -727,18 +914,12 @@ function extractAddress(message) {
     )
   ];
 
-  for (
-    const text
-    of texts
-  ) {
-    const address =
-      extractAddressFromText(
-        text
-      );
+  for (const value of values) {
+    const address = extractAddressFromText(
+      value
+    );
 
-    if (
-      address
-    ) {
+    if (address) {
       return address;
     }
   }
@@ -746,11 +927,166 @@ function extractAddress(message) {
   return "";
 }
 
+function extractPlaceCandidates(
+  message,
+  mapsUrl,
+  pages = []
+) {
+  const candidates = [];
+
+  const add = (
+    value
+  ) => {
+    const name =
+      normalizePlaceName(
+        value
+      );
+
+    if (
+      name &&
+      !candidates.includes(name) &&
+      !name.includes("�")
+    ) {
+      candidates.push(name);
+    }
+  };
+
+  const explicit = (
+    message.content || ""
+  ).match(
+    /(?:場所|施設|会場|店名|名称|スポット)\s*[：:]\s*([^\n]+)/u
+  );
+
+  if (explicit) {
+    add(
+      explicit[1]
+    );
+  }
+
+  if (mapsUrl) {
+    try {
+      const url = new URL(
+        mapsUrl
+      );
+
+      const match = decodeURIComponent(
+        url.pathname
+      ).match(
+        /\/place\/([^/]+)/
+      );
+
+      if (match) {
+        add(
+          match[1].replace(
+            /\+/g,
+            " "
+          )
+        );
+      }
+
+      for (const key of [
+        "query",
+        "q",
+        "destination"
+      ]) {
+        const value =
+          url.searchParams.get(
+            key
+          );
+
+        if (
+          value &&
+          !parseCoordinatePair(value)
+        ) {
+          add(value);
+        }
+      }
+
+    } catch {
+      // GoogleマップのURLを解析できない場合は他の情報を使用。
+    }
+  }
+
+  for (const page of pages) {
+    add(
+      page.name
+    );
+  }
+
+  for (const embed of message.embeds || []) {
+    add(
+      embed.title
+    );
+  }
+
+  const texts = [
+    message.content || "",
+
+    ...(message.embeds || []).flatMap(
+      (embed) => [
+        embed.title || "",
+        embed.description || ""
+      ]
+    )
+  ];
+
+  for (const text of texts) {
+    const quotedNames = text.matchAll(
+      /[「『]([^」』]{1,60})[」』]/gu
+    );
+
+    for (const match of quotedNames) {
+      add(
+        match[1]
+      );
+    }
+  }
+
+  const lines = (
+    message.content || ""
+  )
+    .split(
+      /\r?\n/
+    )
+    .map(
+      (line) =>
+        cleanText(
+          line,
+          100
+        )
+    )
+    .filter(
+      Boolean
+    );
+
+  for (const line of lines) {
+    if (
+      line.length <= 40 &&
+      !/おすすめです|美味しいです|おいしいです|ある.*です/u.test(
+        line
+      )
+    ) {
+      add(line);
+    }
+  }
+
+  if (
+    candidates.length === 0 &&
+    lines.length > 0
+  ) {
+    add(
+      lines[0]
+    );
+  }
+
+  return candidates;
+}
+
 function extractAreaHint(
   message,
-  pageInformation = []
+  pages = []
 ) {
-  const texts = [
+  const text = [
     message.content || "",
 
     ...(message.embeds || []).flatMap(
@@ -760,29 +1096,29 @@ function extractAreaHint(
       ]
     ),
 
-    ...pageInformation.flatMap(
-      (information) => [
-        information.address || "",
-        information.description || "",
-        information.name || ""
+    ...pages.flatMap(
+      (page) => [
+        page.address || "",
+        page.description || "",
+        page.name || ""
       ]
     )
   ].join(
     " "
   );
 
-  const match = texts.match(
-    TAMA_AREA_PATTERN
-  );
+  return (
+    text.match(
+      AREAS
+    )?.[0] ||
 
-  return match
-    ? match[0]
-    : "";
+    ""
+  );
 }
 
 function extractDescription(
   message,
-  placeName
+  name
 ) {
   const lines = (
     message.content || ""
@@ -798,26 +1134,17 @@ function extractDescription(
         )
     )
     .filter(
-      Boolean
-    )
-    .filter(
       (line) =>
-        line !== placeName
-    )
-    .filter(
-      (line) =>
+        line &&
+        line !== name &&
         !/^(場所|施設|会場|店名|名称|スポット|種類|分類)\s*[：:]/u.test(
           line
         )
     );
 
-  if (
-    lines.length > 0
-  ) {
+  if (lines.length > 0) {
     return cleanText(
-      lines.join(
-        " "
-      ),
+      lines.join(" "),
       160
     );
   }
@@ -831,35 +1158,21 @@ function extractDescription(
   );
 
   return cleanText(
-    embed
-      ? (
-          embed.description ||
-          embed.title
-        )
-      : "コミュニティで紹介されたスポット。",
+    embed?.description ||
+    embed?.title ||
+    "コミュニティで紹介されたスポット。",
 
     160
   );
 }
 
-function classifySpot(
-  message
-) {
+function classifySpot(message) {
   const text = [
     message.content || "",
 
     ...(message.embeds || []).map(
       (embed) =>
-        [
-          embed.title,
-          embed.description
-        ]
-          .filter(
-            Boolean
-          )
-          .join(
-            " "
-          )
+        `${embed.title || ""} ${embed.description || ""}`
     )
   ].join(
     " "
@@ -884,9 +1197,7 @@ function classifySpot(
   return "spot";
 }
 
-function wait(
-  milliseconds
-) {
+function wait(milliseconds) {
   return new Promise(
     (resolve) => {
       setTimeout(
@@ -906,43 +1217,41 @@ async function requestDiscord(
     attempt < 3;
     attempt += 1
   ) {
-    const response =
-      await fetch(
-        DISCORD_API_BASE + endpoint,
+    const response = await fetch(
+      DISCORD_API + endpoint,
 
-        {
-          headers: {
-            Authorization:
-              `Bot ${token}`,
+      {
+        headers: {
+          Authorization:
+            `Bot ${token}`,
 
-            "User-Agent":
-              USER_AGENT
-          },
+          "User-Agent":
+            USER_AGENT
+        },
 
-          signal:
-            AbortSignal.timeout(
-              15000
-            )
-        }
-      );
+        signal:
+          AbortSignal.timeout(
+            15000
+          )
+      }
+    );
 
     if (
       response.status === 429 &&
       attempt < 2
     ) {
-      const body =
-        await response.json()
-          .catch(
-            () => ({})
-          );
-
-      const retryAfter = Number(
-        body.retry_after || 1
-      );
+      const body = await response
+        .json()
+        .catch(
+          () => ({})
+        );
 
       await wait(
         Math.max(
-          retryAfter * 1000,
+          Number(
+            body.retry_after || 1
+          ) * 1000,
+
           1000
         )
       );
@@ -985,29 +1294,21 @@ async function fetchChannelMessages(
           "100"
       });
 
-    if (
-      before
-    ) {
+    if (before) {
       parameters.set(
         "before",
         before
       );
     }
 
-    const endpoint =
-      `/channels/${encodeURIComponent(channelId)}` +
-      `/messages?${parameters.toString()}`;
+    const batch = await requestDiscord(
+      `/channels/${encodeURIComponent(channelId)}/messages?${parameters}`,
 
-    const batch =
-      await requestDiscord(
-        endpoint,
-        token
-      );
+      token
+    );
 
     if (
-      !Array.isArray(
-        batch
-      )
+      !Array.isArray(batch)
     ) {
       throw new Error(
         "Discordの投稿一覧の形式が正しくありません。"
@@ -1025,24 +1326,28 @@ async function fetchChannelMessages(
     }
 
     before =
-      batch[
-        batch.length - 1
-      ].id;
+      batch.at(-1).id;
   }
 
   return messages;
 }
 
-function getMapReaction(
-  message
-) {
+function normalizeEmoji(value) {
+  return String(
+    value || ""
+  ).replace(
+    /\uFE0F/g,
+    ""
+  );
+}
+
+function getMapReaction(message) {
   return (
     message.reactions || []
   ).find(
     (reaction) =>
       normalizeEmoji(
-        reaction.emoji &&
-        reaction.emoji.name
+        reaction.emoji?.name
       ) ===
       normalizeEmoji(
         MAP_REACTION
@@ -1059,11 +1364,6 @@ async function wasApprovedByOwner(
 ) {
   let after = "";
 
-  const emoji =
-    encodeURIComponent(
-      reaction.emoji.name
-    );
-
   for (
     let page = 0;
     page < MAX_REACTION_PAGES;
@@ -1075,25 +1375,20 @@ async function wasApprovedByOwner(
           "100"
       });
 
-    if (
-      after
-    ) {
+    if (after) {
       parameters.set(
         "after",
         after
       );
     }
 
-    const endpoint =
+    const users = await requestDiscord(
       `/channels/${encodeURIComponent(channelId)}` +
       `/messages/${encodeURIComponent(message.id)}` +
-      `/reactions/${emoji}?${parameters.toString()}`;
+      `/reactions/${encodeURIComponent(reaction.emoji.name)}?${parameters}`,
 
-    const users =
-      await requestDiscord(
-        endpoint,
-        token
-      );
+      token
+    );
 
     if (
       users.some(
@@ -1112,46 +1407,39 @@ async function wasApprovedByOwner(
     }
 
     after =
-      users[
-        users.length - 1
-      ].id;
+      users.at(-1).id;
   }
 
   return false;
 }
 
-async function expandMapsUrl(
-  url
-) {
+async function expandMapsUrl(url) {
   if (
     !url ||
-    !isGoogleMapsUrl(
-      url
-    )
+    !isGoogleMapsUrl(url)
   ) {
     return url;
   }
 
   try {
-    const response =
-      await fetch(
-        url,
+    const response = await fetch(
+      url,
 
-        {
-          redirect:
-            "follow",
+      {
+        redirect:
+          "follow",
 
-          headers: {
-            "User-Agent":
-              USER_AGENT
-          },
+        headers: {
+          "User-Agent":
+            USER_AGENT
+        },
 
-          signal:
-            AbortSignal.timeout(
-              15000
-            )
-        }
-      );
+        signal:
+          AbortSignal.timeout(
+            15000
+          )
+      }
+    );
 
     await response.body?.cancel();
 
@@ -1159,829 +1447,13 @@ async function expandMapsUrl(
       response.url ||
       url
     );
+
   } catch {
     return url;
   }
 }
 
-function extractTagAttribute(
-  tag,
-  attributeName
-) {
-  const pattern =
-    new RegExp(
-      `\\b${attributeName}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
-
-      "i"
-    );
-
-  const match =
-    String(
-      tag || ""
-    ).match(
-      pattern
-    );
-
-  if (
-    !match
-  ) {
-    return "";
-  }
-
-  return decodeHtmlEntities(
-    match[1] ||
-    match[2] ||
-    match[3] ||
-    ""
-  );
-}
-
-function extractMetaContent(
-  html,
-  keys
-) {
-  const tags =
-    html.match(
-      /<meta\b[^>]*>/gi
-    ) || [];
-
-  const normalizedKeys =
-    new Set(
-      keys.map(
-        (key) =>
-          key.toLowerCase()
-      )
-    );
-
-  for (
-    const tag
-    of tags
-  ) {
-    const property =
-      extractTagAttribute(
-        tag,
-        "property"
-      ).toLowerCase();
-
-    const name =
-      extractTagAttribute(
-        tag,
-        "name"
-      ).toLowerCase();
-
-    const itemprop =
-      extractTagAttribute(
-        tag,
-        "itemprop"
-      ).toLowerCase();
-
-    if (
-      normalizedKeys.has(
-        property
-      ) ||
-      normalizedKeys.has(
-        name
-      ) ||
-      normalizedKeys.has(
-        itemprop
-      )
-    ) {
-      const content =
-        extractTagAttribute(
-          tag,
-          "content"
-        );
-
-      if (
-        content
-      ) {
-        return content;
-      }
-    }
-  }
-
-  return "";
-}
-
-function extractHtmlTitle(
-  html
-) {
-  const match =
-    html.match(
-      /<title\b[^>]*>([\s\S]*?)<\/title>/i
-    );
-
-  if (
-    !match
-  ) {
-    return "";
-  }
-
-  return stripHtml(
-    match[1]
-  );
-}
-
-function extractJsonLdBlocks(
-  html
-) {
-  const blocks = [];
-
-  const pattern =
-    /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-
-  for (
-    const match
-    of html.matchAll(
-      pattern
-    )
-  ) {
-    const raw =
-      match[1]
-        .trim()
-        .replace(
-          /^<!--/,
-          ""
-        )
-        .replace(
-          /-->$/,
-          ""
-        )
-        .trim();
-
-    try {
-      blocks.push(
-        JSON.parse(
-          raw
-        )
-      );
-    } catch {
-      continue;
-    }
-  }
-
-  return blocks;
-}
-
-function flattenJsonLd(
-  value,
-  results = [],
-  depth = 0
-) {
-  if (
-    !value ||
-    depth > 8
-  ) {
-    return results;
-  }
-
-  if (
-    Array.isArray(
-      value
-    )
-  ) {
-    for (
-      const item
-      of value
-    ) {
-      flattenJsonLd(
-        item,
-        results,
-        depth + 1
-      );
-    }
-
-    return results;
-  }
-
-  if (
-    typeof value !== "object"
-  ) {
-    return results;
-  }
-
-  results.push(
-    value
-  );
-
-  for (
-    const key
-    of [
-      "@graph",
-      "mainEntity",
-      "itemListElement",
-      "item",
-      "location",
-      "subjectOf",
-      "about"
-    ]
-  ) {
-    if (
-      value[key]
-    ) {
-      flattenJsonLd(
-        value[key],
-        results,
-        depth + 1
-      );
-    }
-  }
-
-  return results;
-}
-
-function formatStructuredAddress(
-  address
-) {
-  if (
-    !address
-  ) {
-    return "";
-  }
-
-  if (
-    typeof address === "string"
-  ) {
-    return cleanText(
-      address,
-      100
-    );
-  }
-
-  if (
-    typeof address !== "object"
-  ) {
-    return "";
-  }
-
-  return cleanText(
-    [
-      address.addressRegion,
-      address.addressLocality,
-      address.streetAddress
-    ]
-      .filter(
-        Boolean
-      )
-      .join(
-        ""
-      ),
-    100
-  );
-}
-
-function extractStructuredPosition(
-  value
-) {
-  if (
-    !value ||
-    typeof value !== "object"
-  ) {
-    return null;
-  }
-
-  const geo =
-    value.geo ||
-    value.location?.geo ||
-    value;
-
-  const latitude =
-    Number(
-      geo.latitude ??
-      geo.lat
-    );
-
-  const longitude =
-    Number(
-      geo.longitude ??
-      geo.lon ??
-      geo.lng
-    );
-
-  if (
-    isWithinTamaRegion(
-      latitude,
-      longitude
-    )
-  ) {
-    return [
-      latitude,
-      longitude
-    ];
-  }
-
-  return null;
-}
-
-function findStructuredPlace(
-  html
-) {
-  const entries =
-    extractJsonLdBlocks(
-      html
-    ).flatMap(
-      (block) =>
-        flattenJsonLd(
-          block
-        )
-    );
-
-  const placeTypes =
-    /Restaurant|FoodEstablishment|CafeOrCoffeeShop|Store|LocalBusiness|Place|TouristAttraction|Organization|Event|Bakery|BarOrPub/u;
-
-  const scoredEntries =
-    entries
-      .map(
-        (entry) => {
-          const type =
-            Array.isArray(
-              entry["@type"]
-            )
-              ? entry["@type"].join(
-                  " "
-                )
-              : String(
-                  entry["@type"] || ""
-                );
-
-          const position =
-            extractStructuredPosition(
-              entry
-            );
-
-          const address =
-            formatStructuredAddress(
-              entry.address ||
-              entry.location?.address
-            );
-
-          let score = 0;
-
-          if (
-            placeTypes.test(
-              type
-            )
-          ) {
-            score += 5;
-          }
-
-          if (
-            position
-          ) {
-            score += 4;
-          }
-
-          if (
-            address
-          ) {
-            score += 3;
-          }
-
-          if (
-            entry.name
-          ) {
-            score += 1;
-          }
-
-          return {
-            entry,
-            score,
-            position,
-            address
-          };
-        }
-      )
-      .sort(
-        (left, right) =>
-          right.score -
-          left.score
-      );
-
-  const best =
-    scoredEntries[0];
-
-  if (
-    !best ||
-    best.score === 0
-  ) {
-    return {
-      name:
-        "",
-
-      address:
-        "",
-
-      position:
-        null
-    };
-  }
-
-  return {
-    name:
-      normalizePlaceName(
-        best.entry.name ||
-        best.entry.headline ||
-        ""
-      ),
-
-    address:
-      best.address,
-
-    position:
-      best.position
-  };
-}
-
-function extractCoordinatesFromHtml(
-  html
-) {
-  const latitudeMeta =
-    extractMetaContent(
-      html,
-      [
-        "place:location:latitude",
-        "geo.position",
-        "icbm",
-        "latitude"
-      ]
-    );
-
-  const longitudeMeta =
-    extractMetaContent(
-      html,
-      [
-        "place:location:longitude",
-        "longitude"
-      ]
-    );
-
-  if (
-    latitudeMeta &&
-    longitudeMeta
-  ) {
-    const latitude =
-      Number(
-        latitudeMeta
-      );
-
-    const longitude =
-      Number(
-        longitudeMeta
-      );
-
-    if (
-      isWithinTamaRegion(
-        latitude,
-        longitude
-      )
-    ) {
-      return [
-        latitude,
-        longitude
-      ];
-    }
-  }
-
-  if (
-    latitudeMeta
-  ) {
-    const position =
-      parseCoordinatePair(
-        latitudeMeta.replace(
-          ";",
-          ","
-        )
-      );
-
-    if (
-      position &&
-      isWithinTamaRegion(
-        position[0],
-        position[1]
-      )
-    ) {
-      return position;
-    }
-  }
-
-  const patterns = [
-    /["']latitude["']\s*:\s*["']?(-?\d{1,2}(?:\.\d+)?)["']?[\s\S]{0,120}?["']longitude["']\s*:\s*["']?(-?\d{1,3}(?:\.\d+)?)/i,
-
-    /["']lat["']\s*:\s*["']?(-?\d{1,2}(?:\.\d+)?)["']?[\s\S]{0,100}?["'](?:lng|lon)["']\s*:\s*["']?(-?\d{1,3}(?:\.\d+)?)/i,
-
-    /@(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/,
-
-    /!3d(-?\d{1,2}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/
-  ];
-
-  for (
-    const pattern
-    of patterns
-  ) {
-    const match =
-      html.match(
-        pattern
-      );
-
-    if (
-      !match
-    ) {
-      continue;
-    }
-
-    const latitude =
-      Number(
-        match[1]
-      );
-
-    const longitude =
-      Number(
-        match[2]
-      );
-
-    if (
-      isWithinTamaRegion(
-        latitude,
-        longitude
-      )
-    ) {
-      return [
-        latitude,
-        longitude
-      ];
-    }
-  }
-
-  return null;
-}
-
-function extractAddressFromHtml(
-  html
-) {
-  const structured =
-    findStructuredPlace(
-      html
-    );
-
-  if (
-    structured.address
-  ) {
-    return structured.address;
-  }
-
-  const metaCandidates = [
-    extractMetaContent(
-      html,
-      [
-        "og:street-address",
-        "street-address",
-        "streetaddress"
-      ]
-    ),
-
-    extractMetaContent(
-      html,
-      [
-        "description",
-        "og:description",
-        "twitter:description"
-      ]
-    )
-  ];
-
-  for (
-    const candidate
-    of metaCandidates
-  ) {
-    const address =
-      extractAddressFromText(
-        candidate
-      );
-
-    if (
-      address
-    ) {
-      return address;
-    }
-  }
-
-  const labeledPatterns = [
-    /(?:住所|所在地|店舗住所|アクセス)\s*[:：]?\s*(?:<\/[^>]+>\s*<[^>]+>)*([^<\n]{8,120})/giu,
-
-    /itemprop\s*=\s*["']streetAddress["'][^>]*>([\s\S]{3,150}?)<\//giu,
-
-    /class\s*=\s*["'][^"']*(?:address|rstinfo-table__address)[^"']*["'][^>]*>([\s\S]{3,250}?)<\//giu
-  ];
-
-  for (
-    const pattern
-    of labeledPatterns
-  ) {
-    for (
-      const match
-      of html.matchAll(
-        pattern
-      )
-    ) {
-      const address =
-        extractAddressFromText(
-          match[1]
-        );
-
-      if (
-        address
-      ) {
-        return address;
-      }
-    }
-  }
-
-  return extractAddressFromText(
-    html.slice(
-      0,
-      400000
-    )
-  );
-}
-
-async function fetchPageInformation(
-  sourceUrl
-) {
-  if (
-    !sourceUrl ||
-    isGoogleMapsUrl(
-      sourceUrl
-    )
-  ) {
-    return null;
-  }
-
-  let parsedUrl;
-
-  try {
-    parsedUrl =
-      new URL(
-        sourceUrl
-      );
-  } catch {
-    return null;
-  }
-
-  if (
-    ![
-      "http:",
-      "https:"
-    ].includes(
-      parsedUrl.protocol
-    )
-  ) {
-    return null;
-  }
-
-  try {
-    console.log(
-      `リンク先を確認: ${sourceUrl}`
-    );
-
-    const response =
-      await fetch(
-        sourceUrl,
-
-        {
-          redirect:
-            "follow",
-
-          headers: {
-            "User-Agent":
-              USER_AGENT,
-
-            "Accept":
-              "text/html,application/xhtml+xml",
-
-            "Accept-Language":
-              "ja,en;q=0.8"
-          },
-
-          signal:
-            AbortSignal.timeout(
-              15000
-            )
-        }
-      );
-
-    if (
-      !response.ok
-    ) {
-      console.warn(
-        `リンク先を取得できませんでした: ${response.status} / ${sourceUrl}`
-      );
-
-      return null;
-    }
-
-    const contentType =
-      response.headers.get(
-        "content-type"
-      ) || "";
-
-    if (
-      !/text\/html|application\/xhtml\+xml/i.test(
-        contentType
-      )
-    ) {
-      await response.body?.cancel();
-
-      return null;
-    }
-
-    const html =
-      (
-        await response.text()
-      ).slice(
-        0,
-        1200000
-      );
-
-    const structured =
-      findStructuredPlace(
-        html
-      );
-
-    const metaTitle =
-      extractMetaContent(
-        html,
-        [
-          "og:title",
-          "twitter:title"
-        ]
-      );
-
-    const description =
-      extractMetaContent(
-        html,
-        [
-          "og:description",
-          "description",
-          "twitter:description"
-        ]
-      );
-
-    const information = {
-      url:
-        response.url ||
-        sourceUrl,
-
-      name:
-        structured.name ||
-        normalizePlaceName(
-          metaTitle ||
-          extractHtmlTitle(
-            html
-          )
-        ),
-
-      address:
-        structured.address ||
-        extractAddressFromHtml(
-          html
-        ),
-
-      position:
-        structured.position ||
-        extractCoordinatesFromHtml(
-          html
-        ),
-
-      description:
-        cleanText(
-          description,
-          200
-        )
-    };
-
-    console.log(
-      `リンク先の情報: ` +
-      `店名=${information.name || "不明"} / ` +
-      `住所=${information.address || "不明"} / ` +
-      `座標=${information.position?.join(",") || "不明"}`
-    );
-
-    return information;
-
-  } catch (
-    error
-  ) {
-    console.warn(
-      `リンク先の取得に失敗しました: ${sourceUrl} / ${error.message}`
-    );
-
-    return null;
-  }
-}
-
-async function findPlace(
-  query
-) {
+async function findPlace(query) {
   const elapsed =
     Date.now() -
     previousGeocodingAt;
@@ -1997,65 +1469,61 @@ async function findPlace(
   previousGeocodingAt =
     Date.now();
 
-  const searchUrl =
-    new URL(
-      NOMINATIM_BASE
+  const url = new URL(
+    NOMINATIM
+  );
+
+  const parameters = {
+    format:
+      "jsonv2",
+
+    q:
+      query,
+
+    countrycodes:
+      "jp",
+
+    addressdetails:
+      "1",
+
+    limit:
+      "1",
+
+    viewbox:
+      "138.95,35.90,139.68,35.42",
+
+    bounded:
+      "1"
+  };
+
+  for (const [
+    key,
+    value
+  ] of Object.entries(parameters)) {
+    url.searchParams.set(
+      key,
+      value
     );
+  }
 
-  searchUrl.searchParams.set(
-    "format",
-    "jsonv2"
+  const response = await fetch(
+    url,
+
+    {
+      headers: {
+        "User-Agent":
+          USER_AGENT,
+
+        "Accept-Language":
+          "ja"
+      },
+
+      signal:
+        AbortSignal.timeout(
+          15000
+        )
+    }
   );
-
-  searchUrl.searchParams.set(
-    "q",
-    query
-  );
-
-  searchUrl.searchParams.set(
-    "countrycodes",
-    "jp"
-  );
-
-  searchUrl.searchParams.set(
-    "addressdetails",
-    "1"
-  );
-
-  searchUrl.searchParams.set(
-    "limit",
-    "1"
-  );
-
-  searchUrl.searchParams.set(
-    "viewbox",
-    "138.95,35.90,139.68,35.42"
-  );
-
-  searchUrl.searchParams.set(
-    "bounded",
-    "1"
-  );
-
-  const response =
-    await fetch(
-      searchUrl,
-
-      {
-        headers: {
-          "User-Agent":
-            USER_AGENT,
-
-          "Accept-Language":
-            "ja"
-        },
-
-        signal:
-          AbortSignal.timeout(
-            15000
-          )
-      }
-    );
 
   if (
     !response.ok
@@ -2068,33 +1536,19 @@ async function findPlace(
   const results =
     await response.json();
 
-  if (
-    !Array.isArray(
-      results
-    ) ||
-    results.length === 0
-  ) {
-    return null;
-  }
-
   const result =
     results[0];
 
-  const latitude =
-    Number(
-      result.lat
-    );
-
-  const longitude =
-    Number(
-      result.lon
-    );
+  const position =
+    result
+      ? makePosition(
+          result.lat,
+          result.lon
+        )
+      : null;
 
   if (
-    !isWithinTamaRegion(
-      latitude,
-      longitude
-    )
+    !position
   ) {
     return null;
   }
@@ -2103,10 +1557,7 @@ async function findPlace(
     result.address || {};
 
   return {
-    position: [
-      latitude,
-      longitude
-    ],
+    position,
 
     area:
       address.city ||
@@ -2124,133 +1575,98 @@ async function findPlaceFromCandidates(
 ) {
   const searches = [];
 
-  const addSearch = (
+  const add = (
     query,
-    displayName
+    name
   ) => {
-    const normalized =
-      cleanText(
-        query,
-        120
-      );
+    const normalized = cleanText(
+      query,
+      120
+    );
 
     if (
       normalized &&
       !searches.some(
-        (search) =>
-          search.query === normalized
+        (item) =>
+          item.query === normalized
       )
     ) {
       searches.push({
         query:
           normalized,
 
-        displayName:
-          displayName ||
-          normalized
+        name
       });
     }
   };
 
-  for (
-    const address
-    of addresses
-  ) {
-    if (
+  for (const address of addresses) {
+    add(
+      address,
+
+      candidates[0] ||
       address
-    ) {
-      addSearch(
-        address,
-        candidates[0] ||
-        address
-      );
-    }
+    );
   }
 
-  for (
-    const candidate
-    of candidates.slice(
-      0,
-      4
-    )
-  ) {
-    if (
-      areaHint &&
-      !candidate.includes(
-        areaHint
+  for (const candidate of candidates.slice(
+    0,
+    4
+  )) {
+    const simplified = candidate
+      .replace(
+        /\s*[-–—]\s*.+$/u,
+        ""
       )
-    ) {
-      addSearch(
-        `${areaHint} ${candidate}`,
-        candidate
-      );
-    }
+      .replace(
+        /\s*[（(].*?[)）]\s*/gu,
+        ""
+      )
+      .replace(
+        /\s+(?:クーポン|公式|店舗情報).*$/u,
+        ""
+      )
+      .trim();
 
-    addSearch(
+    for (const name of new Set([
       candidate,
-      candidate
-    );
-
-    const simplifiedCandidate =
-      candidate
-        .replace(
-          /\s*[-–—]\s*.+$/u,
-          ""
-        )
-        .replace(
-          /\s*[（(].*?[)）]\s*/gu,
-          ""
-        )
-        .replace(
-          /\s+(?:クーポン|公式|店舗情報).*$/u,
-          ""
-        )
-        .trim();
-
-    if (
-      simplifiedCandidate &&
-      simplifiedCandidate !== candidate
-    ) {
+      simplified
+    ])) {
       if (
-        areaHint
+        areaHint &&
+        !name.includes(areaHint)
       ) {
-        addSearch(
-          `${areaHint} ${simplifiedCandidate}`,
-          simplifiedCandidate
+        add(
+          `${areaHint} ${name}`,
+          name
         );
       }
 
-      addSearch(
-        simplifiedCandidate,
-        simplifiedCandidate
+      add(
+        name,
+        name
       );
     }
   }
 
-  for (
-    const search
-    of searches.slice(
-      0,
-      10
-    )
-  ) {
+  for (const search of searches.slice(
+    0,
+    10
+  )) {
     console.log(
       `場所を検索: ${search.query}`
     );
 
-    const place =
-      await findPlace(
-        search.query
-      );
+    const result = await findPlace(
+      search.query
+    );
 
-    if (
-      place
-    ) {
+    if (result) {
       return {
-        ...place,
+        ...result,
 
         name:
-          search.displayName
+          search.name
       };
     }
   }
@@ -2266,22 +1682,19 @@ async function readExistingSpots() {
         "utf8"
       );
 
-    const spots =
-      JSON.parse(
-        contents
-      );
+    const value = JSON.parse(
+      contents
+    );
 
     if (
-      !Array.isArray(
-        spots
-      )
+      !Array.isArray(value)
     ) {
       throw new Error(
         "map/spots.json は配列である必要があります。"
       );
     }
 
-    return spots;
+    return value;
 
   } catch (
     error
@@ -2294,21 +1707,6 @@ async function readExistingSpots() {
 
     throw error;
   }
-}
-
-function areaFromAddress(
-  address
-) {
-  const match =
-    String(
-      address || ""
-    ).match(
-      TAMA_AREA_PATTERN
-    );
-
-  return match
-    ? match[0]
-    : "";
 }
 
 async function convertMessageToSpot(
@@ -2327,10 +1725,9 @@ async function convertMessageToSpot(
     return previousSpot;
   }
 
-  const urls =
-    extractUrls(
-      message
-    );
+  const urls = extractUrls(
+    message
+  );
 
   const originalMapsUrl =
     urls.find(
@@ -2344,36 +1741,26 @@ async function convertMessageToSpot(
         )
       : "";
 
-  const sourceUrls =
-    urls
-      .filter(
-        (url) =>
-          !isGoogleMapsUrl(
-            url
-          )
-      )
-      .slice(
-        0,
-        2
-      );
+  const sourceUrls = urls
+    .filter(
+      (url) =>
+        !isGoogleMapsUrl(url)
+    )
+    .slice(
+      0,
+      2
+    );
 
-  const pageInformation = [];
+  const pages = [];
 
-  for (
-    const sourceUrl
-    of sourceUrls
-  ) {
-    const information =
+  for (const url of sourceUrls) {
+    const page =
       await fetchPageInformation(
-        sourceUrl
+        url
       );
 
-    if (
-      information
-    ) {
-      pageInformation.push(
-        information
-      );
+    if (page) {
+      pages.push(page);
     }
   }
 
@@ -2381,15 +1768,15 @@ async function convertMessageToSpot(
     extractPlaceCandidates(
       message,
       mapsUrl,
-      pageInformation
+      pages
     );
 
   const addresses = [
     ...new Set(
       [
-        ...pageInformation.map(
-          (information) =>
-            information.address
+        ...pages.map(
+          (page) =>
+            page.address
         ),
 
         extractAddress(
@@ -2404,7 +1791,7 @@ async function convertMessageToSpot(
   const areaHint =
     extractAreaHint(
       message,
-      pageInformation
+      pages
     );
 
   if (
@@ -2423,40 +1810,29 @@ async function convertMessageToSpot(
     addresses[0];
 
   let position =
-    mapsUrl
-      ? extractCoordinatesFromUrl(
-          mapsUrl
-        )
-      : null;
+    (
+      mapsUrl &&
+      extractCoordinatesFromUrl(
+        mapsUrl
+      )
+    ) ||
 
-  if (
-    position &&
-    !isWithinTamaRegion(
-      position[0],
-      position[1]
-    )
-  ) {
-    position =
-      null;
-  }
+    pages.find(
+      (page) =>
+        page.position
+    )?.position ||
 
-  if (
-    !position
-  ) {
-    position =
-      pageInformation.find(
-        (information) =>
-          information.position
-      )?.position ||
-      null;
-  }
+    null;
 
   let area =
     previousSpot?.area ||
-    areaFromAddress(
-      addresses[0]
-    ) ||
+
+    addresses[0]?.match(
+      AREAS
+    )?.[0] ||
+
     areaHint ||
+
     "多摩地域";
 
   if (
@@ -2492,11 +1868,6 @@ async function convertMessageToSpot(
       place.area;
   }
 
-  const sourceUrl =
-    sourceUrls[0] ||
-    mapsUrl ||
-    "";
-
   console.log(
     `掲載: ${name} / ${area} / ${position.join(",")}`
   );
@@ -2522,7 +1893,10 @@ async function convertMessageToSpot(
         name
       ),
 
-    sourceUrl,
+    sourceUrl:
+      sourceUrls[0] ||
+      mapsUrl ||
+      "",
 
     revision
   };
@@ -2544,18 +1918,16 @@ async function main() {
       "DISCORD_APPROVER_USER_ID"
     );
 
-  const previousSpots =
-    await readExistingSpots();
-
-  const previousSpotsById =
-    new Map(
-      previousSpots.map(
-        (spot) => [
-          spot.id,
-          spot
-        ]
-      )
-    );
+  const previous = new Map(
+    (
+      await readExistingSpots()
+    ).map(
+      (spot) => [
+        spot.id,
+        spot
+      ]
+    )
+  );
 
   const messages =
     await fetchChannelMessages(
@@ -2563,37 +1935,34 @@ async function main() {
       token
     );
 
-  const selectedMessages =
-    messages.filter(
-      (message) =>
-        !message.author?.bot &&
-        getMapReaction(
-          message
-        )
-    );
+  const selected = messages.filter(
+    (message) =>
+      !message.author?.bot &&
+      getMapReaction(
+        message
+      )
+  );
 
-  const approvedSpots = [];
+  const spots = [];
 
   console.log(
     `${messages.length}件の投稿から、` +
-    `地図リアクション付きの${selectedMessages.length}件を確認します。`
+    `地図リアクション付きの${selected.length}件を確認します。`
   );
 
-  for (
-    const message
-    of selectedMessages
-  ) {
-    const reaction =
-      getMapReaction(
-        message
-      );
-
+  for (const message of selected) {
     const approved =
       await wasApprovedByOwner(
         message,
-        reaction,
+
+        getMapReaction(
+          message
+        ),
+
         channelId,
+
         token,
+
         approverId
       );
 
@@ -2626,7 +1995,7 @@ async function main() {
         await convertMessageToSpot(
           message,
 
-          previousSpotsById.get(
+          previous.get(
             message.id
           )
         );
@@ -2634,7 +2003,7 @@ async function main() {
       if (
         spot
       ) {
-        approvedSpots.push(
+        spots.push(
           spot
         );
       }
@@ -2646,22 +2015,21 @@ async function main() {
         `投稿 ${message.id} の処理に失敗しました: ${error.message}`
       );
 
-      const previousSpot =
-        previousSpotsById.get(
-          message.id
-        );
-
       if (
-        previousSpot
+        previous.has(
+          message.id
+        )
       ) {
-        approvedSpots.push(
-          previousSpot
+        spots.push(
+          previous.get(
+            message.id
+          )
         );
       }
     }
   }
 
-  approvedSpots.sort(
+  spots.sort(
     (
       left,
       right
@@ -2686,7 +2054,7 @@ async function main() {
     SPOTS_PATH,
 
     `${JSON.stringify(
-      approvedSpots,
+      spots,
       null,
       2
     )}\n`,
@@ -2695,7 +2063,7 @@ async function main() {
   );
 
   console.log(
-    `${approvedSpots.length}件の承認済みスポットを map/spots.json に保存しました。`
+    `${spots.length}件の承認済みスポットを map/spots.json に保存しました。`
   );
 }
 
@@ -2708,26 +2076,22 @@ if (
         error.message
       );
 
-      process.exitCode =
-        1;
+      process.exitCode = 1;
     }
   );
 }
 
 module.exports = {
   classifySpot,
+  decodePage,
   extractAddress,
-  extractAddressFromHtml,
   extractAddressFromText,
   extractAreaHint,
   extractCoordinatesFromHtml,
   extractCoordinatesFromUrl,
   extractDescription,
-  extractJsonLdBlocks,
   extractPlaceCandidates,
-  extractPlaceName,
   extractUrls,
-  findStructuredPlace,
   getMapReaction,
   isGoogleMapsUrl,
   normalizeEmoji,
