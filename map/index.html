@@ -1045,12 +1045,11 @@
     async function loadCommunitySpots() {
       try {
         const response = await fetch(
-          communitySpotsUrl,
+          `${communitySpotsUrl}?v=${Date.now()}`,
           {
             cache: "no-store"
           }
         );
-
         if (!response.ok) {
           throw new Error(
             `スポット情報の取得に失敗しました: ${response.status}`
