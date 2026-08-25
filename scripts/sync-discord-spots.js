@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "11";
+const DATA_VERSION = "12";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -19,10 +19,10 @@ const MAX_REACTION_PAGES = 5;
 const MAP_REACTION = "🗺️";
 
 const CITIES =
-  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市";
+  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|川崎市";
 
 const AREAS = new RegExp(
-  `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子`,
+  `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子|川崎`,
   "u"
 );
 
@@ -44,16 +44,25 @@ const SOURCE_ADDRESS_HINTS = [
       (url.hostname === "instagram.com" || url.hostname.endsWith(".instagram.com")) &&
       /^\/spice_ekkyo11(?:\/|$)/i.test(url.pathname),
     address: "東京都立川市曙町3-4-3"
+  },
+  {
+    matches: (url) => url.hostname === "kawa-sui.com" || url.hostname === "www.kawa-sui.com",
+    name: "カワスイ 川崎水族館",
+    address: "神奈川県川崎市川崎区日進町1-11"
   }
 ];
 
-function findSourceAddressHint(value) {
+function findSourcePlaceHint(value) {
   try {
     const url = new URL(value);
-    return SOURCE_ADDRESS_HINTS.find((hint) => hint.matches(url))?.address || "";
+    return SOURCE_ADDRESS_HINTS.find((hint) => hint.matches(url)) || null;
   } catch {
-    return "";
+    return null;
   }
+}
+
+function findSourceAddressHint(value) {
+  return findSourcePlaceHint(value)?.address || "";
 }
 
 function normalizeAreaHint(value) {
@@ -69,7 +78,8 @@ function normalizeAreaHint(value) {
     立川: "立川市",
     調布: "調布市",
     稲城: "稲城市",
-    府中: "府中市"
+    府中: "府中市",
+    川崎: "川崎市"
   };
 
   return aliases[hint] || hint;
@@ -160,7 +170,7 @@ function isValidPosition(latitude, longitude) {
     latitude >= 35.42 &&
     latitude <= 35.90 &&
     longitude >= 138.95 &&
-    longitude <= 139.68
+    longitude <= 139.80
   );
 }
 
@@ -1361,7 +1371,7 @@ async function findPlace(query, areaHint = "") {
     countrycodes: "jp",
     addressdetails: "1",
     limit: "5",
-    viewbox: "138.95,35.90,139.68,35.42",
+    viewbox: "138.95,35.90,139.80,35.42",
     bounded: "1"
   };
 
@@ -1481,7 +1491,7 @@ async function findInstagramPlaceWithPhoton(name, areaHint) {
     const url = new URL(PHOTON);
     url.searchParams.set("q", `${normalizeAreaHint(areaHint)} ${name}`.trim());
     url.searchParams.set("limit", "10");
-    url.searchParams.set("bbox", "138.95,35.42,139.68,35.90");
+    url.searchParams.set("bbox", "138.95,35.42,139.80,35.90");
 
     const response = await fetch(url, {
       headers: { "User-Agent": USER_AGENT, "Accept-Language": "ja" },
@@ -1703,6 +1713,7 @@ async function convertMessageToSpot(message, previousSpot) {
     ? extractInstagramPlaceNames(message)
     : [];
   const candidates = [...new Set([
+    ...sourceUrls.map((url) => findSourcePlaceHint(url)?.name).filter(Boolean),
     ...instagramNames,
     ...extractPlaceCandidates(message, mapsUrl, candidatePages)
   ])];
@@ -2103,6 +2114,7 @@ module.exports = {
   findPlace,
   findPlaceFromCandidates,
   findSourceAddressHint,
+  findSourcePlaceHint,
   getMapReaction,
   isGoogleMapsUrl,
   isInstagramUrl,
