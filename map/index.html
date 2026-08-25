@@ -1151,7 +1151,16 @@
           venue
         )
       );
-
+      
+      marker.bindTooltip(
+        venue.name,
+        {
+          direction: "top",
+          offset: [0, -8],
+          opacity: 0.95
+        }
+      );
+      
       const card =
         createVenueCard(
           venue,
