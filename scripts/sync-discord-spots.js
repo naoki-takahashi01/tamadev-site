@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "13";
+const DATA_VERSION = "14";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -49,6 +49,11 @@ const SOURCE_ADDRESS_HINTS = [
     matches: (url) => url.hostname === "kawa-sui.com" || url.hostname === "www.kawa-sui.com",
     name: "カワスイ 川崎水族館",
     address: "神奈川県川崎市川崎区日進町1-11"
+  },
+  {
+    matches: (url) => url.hostname === "ubriaco.ne.jp" || url.hostname === "www.ubriaco.ne.jp",
+    name: "UBRIACO（ウブリアーコ）",
+    address: "東京都多摩市関戸4-4-1"
   }
 ];
 
