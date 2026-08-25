@@ -5,10 +5,12 @@ const path = require("node:path");
 
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+const PHOTON = "https://photon.komoot.io/api/";
+const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "9";
+const DATA_VERSION = "10";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -82,7 +84,10 @@ function matchesAreaHint(result, areaHint) {
     address.county,
     address.municipality,
     result?.display_name,
-    result?.properties?.title
+    result?.properties?.title,
+    result?.properties?.city,
+    result?.properties?.district,
+    result?.properties?.county
   ]
     .filter(Boolean)
     .join(" ");
@@ -336,6 +341,34 @@ function isGoogleMapsUrl(value) {
   } catch {
     return false;
   }
+}
+
+function isInstagramUrl(value) {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase();
+    return hostname === "instagram.com" || hostname.endsWith(".instagram.com");
+  } catch {
+    return false;
+  }
+}
+
+function extractInstagramPlaceNames(message) {
+  const names = [];
+
+  for (const embed of message.embeds || []) {
+    for (const value of [embed.title, embed.author?.name]) {
+      const name = normalizePlaceName(
+        String(value || "")
+          .replace(/\s*[（(][@＠][^)）]+[)）].*$/u, "")
+          .replace(/\s*[@＠][a-z\d_.]+.*$/iu, "")
+          .replace(/\s*[・·•|｜-]\s*(?:Instagram|インスタグラム).*$/iu, "")
+      );
+
+      if (name && !names.includes(name)) names.push(name);
+    }
+  }
+
+  return names;
 }
 
 function normalizePlaceName(value) {
@@ -1424,6 +1457,104 @@ async function findAddressWithGsi(address, areaHint = "") {
   }
 }
 
+function normalizeSearchName(value) {
+  return normalizePlaceName(value)
+    .normalize("NFKC")
+    .replace(/[\s・·•「」『』()（）_-]/gu, "")
+    .toLowerCase();
+}
+
+function namesMatch(left, right) {
+  const first = normalizeSearchName(left);
+  const second = normalizeSearchName(right);
+  return Boolean(first && second && (first.includes(second) || second.includes(first)));
+}
+
+async function findInstagramPlaceWithPhoton(name, areaHint) {
+  try {
+    const url = new URL(PHOTON);
+    url.searchParams.set("q", `${normalizeAreaHint(areaHint)} ${name}`.trim());
+    url.searchParams.set("limit", "10");
+    url.searchParams.set("bbox", "138.95,35.42,139.68,35.90");
+
+    const response = await fetch(url, {
+      headers: { "User-Agent": USER_AGENT, "Accept-Language": "ja" },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const feature = (data.features || []).find((item) =>
+      namesMatch(name, item.properties?.name) && matchesAreaHint(item, areaHint)
+    );
+    const coordinates = feature?.geometry?.coordinates;
+    const position = Array.isArray(coordinates)
+      ? makePosition(coordinates[1], coordinates[0])
+      : null;
+
+    if (!position) return null;
+
+    return {
+      name: feature.properties.name || name,
+      position,
+      area: feature.properties.city || normalizeAreaHint(areaHint) || "多摩地域"
+    };
+  } catch (error) {
+    console.warn(`店舗の補助検索に失敗しました: ${name} / ${error.message}`);
+    return null;
+  }
+}
+
+async function findInstagramPlaceWithOverpass(name, areaHint) {
+  const city = normalizeAreaHint(areaHint);
+  if (!city || !/市$/u.test(city)) return null;
+
+  const escapedName = name
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/"/g, '\\"');
+  const escapedCity = city.replace(/"/g, '\\"');
+  const query = `[out:json][timeout:20];` +
+    `area["boundary"="administrative"]["name"="${escapedCity}"]->.a;` +
+    `nwr["name"~"${escapedName}",i](area.a);out center 10;`;
+
+  try {
+    const response = await fetch(OVERPASS, {
+      method: "POST",
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({ data: query }),
+      signal: AbortSignal.timeout(25000)
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const result = (data.elements || []).find((item) => namesMatch(name, item.tags?.name));
+    const position = result
+      ? makePosition(result.lat ?? result.center?.lat, result.lon ?? result.center?.lon)
+      : null;
+
+    return position ? { name: result.tags.name || name, position, area: city } : null;
+  } catch (error) {
+    console.warn(`地図データの店舗検索に失敗しました: ${name} / ${error.message}`);
+    return null;
+  }
+}
+
+async function findInstagramPlace(names, areaHint) {
+  for (const name of names.slice(0, 3)) {
+    console.log(`Instagramの店舗を検索: ${areaHint || "多摩地域"} ${name}`);
+    const result = await findInstagramPlaceWithPhoton(name, areaHint) ||
+      await findInstagramPlaceWithOverpass(name, areaHint);
+    if (result) return result;
+  }
+
+  return null;
+}
+
 async function findPlaceFromCandidates(candidates, addresses, areaHint) {
   const searches = [];
 
@@ -1562,7 +1693,13 @@ async function convertMessageToSpot(message, previousSpot) {
     ...(mapsInformation?.name ? [mapsInformation] : [])
   ];
 
-  const candidates = extractPlaceCandidates(message, mapsUrl, candidatePages);
+  const instagramNames = sourceUrls.some(isInstagramUrl)
+    ? extractInstagramPlaceNames(message)
+    : [];
+  const candidates = [...new Set([
+    ...instagramNames,
+    ...extractPlaceCandidates(message, mapsUrl, candidatePages)
+  ])];
 
   const addresses = [
     ...new Set(
@@ -1606,7 +1743,11 @@ async function convertMessageToSpot(message, previousSpot) {
     "多摩地域";
 
   if (!position) {
-    const place = await findPlaceFromCandidates(candidates, addresses, areaHint);
+    let place = await findPlaceFromCandidates(candidates, addresses, areaHint);
+
+    if (!place && instagramNames.length > 0) {
+      place = await findInstagramPlace(instagramNames, areaHint);
+    }
 
     if (!place) {
       console.warn(
@@ -1946,17 +2087,24 @@ module.exports = {
   extractDescription,
   extractMapSections,
   extractLinkedPlaceSections,
+  extractInstagramPlaceNames,
   extractPlaceCandidates,
   extractUrls,
   findAddressWithGsi,
+  findInstagramPlace,
+  findInstagramPlaceWithOverpass,
+  findInstagramPlaceWithPhoton,
   findPlace,
   findPlaceFromCandidates,
   findSourceAddressHint,
   getMapReaction,
   isGoogleMapsUrl,
+  isInstagramUrl,
   matchesAreaHint,
   normalizeEmoji,
   normalizeAreaHint,
   normalizePlaceName,
+  normalizeSearchName,
+  namesMatch,
   parseCoordinatePair
 };
