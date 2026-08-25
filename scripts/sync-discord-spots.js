@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "10";
+const DATA_VERSION = "11";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -38,6 +38,12 @@ const SOURCE_ADDRESS_HINTS = [
       url.hostname === "www.tamatebakonet.jp" &&
       url.pathname === "/shop/detail/id=9664",
     address: "東京都立川市錦町1-4-7"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "instagram.com" || url.hostname.endsWith(".instagram.com")) &&
+      /^\/spice_ekkyo11(?:\/|$)/i.test(url.pathname),
+    address: "東京都立川市曙町3-4-3"
   }
 ];
 
