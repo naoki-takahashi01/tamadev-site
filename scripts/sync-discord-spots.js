@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "12";
+const DATA_VERSION = "13";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -436,6 +436,17 @@ function normalizePlaceName(value) {
   }
 
   return name;
+}
+
+// 店名を取得できなかったときに作られた説明用の仮タイトルは、
+// 実在する施設名として地図へ掲載しない。
+function isPlaceholderPlaceName(value) {
+  const name = cleanText(value, 100);
+
+  return (
+    /(?:駅周辺|周辺)のおすすめスポット(?:\s*\d+)?$/u.test(name) ||
+    /^(?:多摩地域|おすすめスポット)(?:のおすすめスポット)?(?:\s*\d+)?$/u.test(name)
+  );
 }
 
 function extractAddressFromText(value) {
@@ -1898,6 +1909,14 @@ async function convertMessageToSpots(message, previousSpotsById) {
       candidates[0] ||
       `${areaHint || "多摩地域"}のおすすめスポット ${index + 1}`;
 
+    if (!mapsInformation.name && isPlaceholderPlaceName(name)) {
+      console.warn(
+        `投稿 ${message.id} の${index + 1}件目は店名を取得できなかったため掲載しません。 ` +
+        `仮タイトル: ${name} / URL: ${section.url}`
+      );
+      continue;
+    }
+
     // GoogleマップHTML本文には画面中心など無関係な座標も多数ある。
     // リダイレクト後URLに明記された座標だけを信頼する。
     let position = extractCoordinatesFromUrl(mapsUrl);
@@ -2014,7 +2033,12 @@ async function main() {
             String(spot.id).startsWith(`${message.id}-`)
         );
 
-        const safePreviousSpots = previousMessageSpots.filter((spot) => normalizePlaceName(spot.name) && spot.name !== "トップ");
+        const safePreviousSpots = previousMessageSpots.filter(
+          (spot) =>
+            normalizePlaceName(spot.name) &&
+            spot.name !== "トップ" &&
+            !isPlaceholderPlaceName(spot.name)
+        );
 
         console.warn(
           `投稿 ${message.id} を再取得できなかったため、` +
@@ -2036,7 +2060,14 @@ async function main() {
           String(spot.id).startsWith(`${message.id}-`)
       );
 
-      spots.push(...previousMessageSpots);
+      spots.push(
+        ...previousMessageSpots.filter(
+          (spot) =>
+            normalizePlaceName(spot.name) &&
+            spot.name !== "トップ" &&
+            !isPlaceholderPlaceName(spot.name)
+        )
+      );
     }
   }
 
@@ -2070,14 +2101,16 @@ async function main() {
     }
   );
 
-const publicSpots = spots.map(({ description, ...spot }) => spot);
+const publicSpots = spots
+  .filter((spot) => !isPlaceholderPlaceName(spot.name))
+  .map(({ description, ...spot }) => spot);
 
   await fs.writeFile(
     SPOTS_PATH,
     `${JSON.stringify(publicSpots, null, 2)}\n`,
     "utf8"
   );
-  console.log(`${spots.length}件の承認済みスポットを map/spots.json に保存しました。`);
+  console.log(`${publicSpots.length}件の承認済みスポットを map/spots.json に保存しました。`);
 }
 
 if (require.main === module) {
