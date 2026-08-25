@@ -5,10 +5,12 @@ const path = require("node:path");
 
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+const GSI_ADDRESS_SEARCH =
+  "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT =
-  "tamadev-discord-spots/6.0 (+https://tamadev.jp/map/)";
+  "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "7";
+const DATA_VERSION = "8";
 
 const SPOTS_PATH = path.join(
   __dirname,
@@ -28,6 +30,72 @@ const AREAS = new RegExp(
   `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子`,
   "u"
 );
+
+// HTML取得が不安定な公式サイトや、同名店舗が多い紹介記事の住所を補う。
+// 住所は店舗の公式サイト・紹介元に掲載されている公開情報のみを使用する。
+const SOURCE_ADDRESS_HINTS = [
+  {
+    matches: (url) => url.hostname === "cerian.net" || url.hostname === "www.cerian.net",
+    address: "東京都八王子市台町4丁目45-7"
+  },
+  {
+    matches: (url) =>
+      url.hostname === "www.tamatebakonet.jp" &&
+      url.pathname === "/shop/detail/id=9664",
+    address: "東京都立川市錦町1-4-7"
+  }
+];
+
+function findSourceAddressHint(value) {
+  try {
+    const url = new URL(value);
+    return SOURCE_ADDRESS_HINTS.find((hint) => hint.matches(url))?.address || "";
+  } catch {
+    return "";
+  }
+}
+
+function normalizeAreaHint(value) {
+  const hint = String(value || "").trim();
+
+  const aliases = {
+    聖蹟桜ヶ丘: "多摩市",
+    多摩センター: "多摩市",
+    永山: "多摩市",
+    南大沢: "八王子市",
+    西八王子: "八王子市",
+    八王子: "八王子市",
+    立川: "立川市",
+    調布: "調布市",
+    稲城: "稲城市",
+    府中: "府中市"
+  };
+
+  return aliases[hint] || hint;
+}
+
+function matchesAreaHint(result, areaHint) {
+  const expected = normalizeAreaHint(areaHint).replace(/市$/u, "");
+
+  if (!expected) {
+    return true;
+  }
+
+  const address = result?.address || {};
+  const actual = [
+    address.city,
+    address.town,
+    address.village,
+    address.county,
+    address.municipality,
+    result?.display_name,
+    result?.properties?.title
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return actual.includes(expected);
+}
 
 const GOOGLE_HOSTS = new Set([
   "maps.app.goo.gl",
@@ -1878,7 +1946,7 @@ async function fetchGoogleMapsInformation(originalUrl) {
   return information;
 }
 
-async function findPlace(query) {
+async function findPlace(query, areaHint = "") {
   const elapsed =
     Date.now() -
     previousGeocodingAt;
@@ -1913,7 +1981,7 @@ async function findPlace(query) {
       "1",
 
     limit:
-      "1",
+      "5",
 
     viewbox:
       "138.95,35.90,139.68,35.42",
@@ -1964,8 +2032,17 @@ async function findPlace(query) {
   const results =
     await response.json();
 
-  const result =
-    results[0];
+  const result = results.find(
+    (candidate) => matchesAreaHint(candidate, areaHint)
+  );
+
+  if (!result && results.length > 0 && areaHint) {
+    console.warn(
+      `地域の異なる検索結果を除外: ${query} / ` +
+      `希望=${normalizeAreaHint(areaHint)} / ` +
+      `候補=${results.map((candidate) => candidate.address?.city || candidate.display_name || "不明").join("、")}`
+    );
+  }
 
   const position =
     result
@@ -1996,6 +2073,51 @@ async function findPlace(query) {
   };
 }
 
+async function findAddressWithGsi(address, areaHint = "") {
+  if (!address || !/\d/u.test(address)) {
+    return null;
+  }
+
+  try {
+    const url = new URL(GSI_ADDRESS_SEARCH);
+    url.searchParams.set("q", address);
+
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "ja"
+      },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (!response.ok) {
+      console.warn(`国土地理院の住所検索に失敗: ${response.status} / ${address}`);
+      return null;
+    }
+
+    const results = await response.json();
+    const result = results.find((candidate) => matchesAreaHint(candidate, areaHint));
+    const coordinates = result?.geometry?.coordinates;
+    const position = Array.isArray(coordinates)
+      ? makePosition(coordinates[1], coordinates[0])
+      : null;
+
+    if (!position) {
+      return null;
+    }
+
+    const title = result.properties?.title || address;
+
+    return {
+      position,
+      area: title.match(AREAS)?.[0] || normalizeAreaHint(areaHint) || "多摩地域"
+    };
+  } catch (error) {
+    console.warn(`国土地理院の住所検索を利用できません: ${address} / ${error.message}`);
+    return null;
+  }
+}
+
 async function findPlaceFromCandidates(
   candidates,
   addresses,
@@ -2005,7 +2127,8 @@ async function findPlaceFromCandidates(
 
   const add = (
     query,
-    name
+    name,
+    isAddress = false
   ) => {
     const normalized =
       cleanText(
@@ -2024,7 +2147,8 @@ async function findPlaceFromCandidates(
         query:
           normalized,
 
-        name
+        name,
+        isAddress
       });
     }
   };
@@ -2034,7 +2158,8 @@ async function findPlaceFromCandidates(
       address,
 
       candidates[0] ||
-      address
+      address,
+      true
     );
   }
 
@@ -2095,10 +2220,12 @@ async function findPlaceFromCandidates(
       `場所を検索: ${search.query}`
     );
 
-    const result =
-      await findPlace(
-        search.query
-      );
+    let result = await findPlace(search.query, areaHint);
+
+    if (!result && search.isAddress) {
+      console.log(`住所を国土地理院でも検索: ${search.query}`);
+      result = await findAddressWithGsi(search.query, areaHint);
+    }
 
     if (result) {
       return {
@@ -2216,6 +2343,8 @@ async function convertMessageToSpot(
   const addresses = [
     ...new Set(
       [
+        ...sourceUrls.map(findSourceAddressHint),
+
         ...candidatePages.map(
           (page) =>
             page.address
@@ -2228,11 +2357,10 @@ async function convertMessageToSpot(
     )
   ];
 
-  const areaHint =
-    extractAreaHint(
-      message,
-      pages
-    );
+  const areaHint = normalizeAreaHint(
+    addresses[0]?.match(AREAS)?.[0] ||
+    extractAreaHint(message, pages)
+  );
 
   if (
     candidates.length === 0 &&
@@ -2440,11 +2568,9 @@ async function convertMessageToSpots(
         mapsInformation.name ? [mapsInformation] : []
       );
 
-    const areaHint =
-      extractAreaHint(
-        sectionMessage,
-        []
-      );
+    const areaHint = normalizeAreaHint(
+      extractAreaHint(sectionMessage, [])
+    );
 
     let name =
       mapsInformation.name ||
@@ -2765,6 +2891,7 @@ if (
 
 module.exports = {
   classifySpot,
+  convertMessageToSpot,
   decodePage,
   extractAddress,
   extractAddressFromText,
@@ -2775,9 +2902,15 @@ module.exports = {
   extractMapSections,
   extractPlaceCandidates,
   extractUrls,
+  findAddressWithGsi,
+  findPlace,
+  findPlaceFromCandidates,
+  findSourceAddressHint,
   getMapReaction,
   isGoogleMapsUrl,
+  matchesAreaHint,
   normalizeEmoji,
+  normalizeAreaHint,
   normalizePlaceName,
   parseCoordinatePair
 };
