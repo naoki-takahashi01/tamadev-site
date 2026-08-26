@@ -2,7 +2,6 @@
 
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const { enrichSpotWithLocality } = require("./tama-localities");
 
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
@@ -11,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "14";
+const DATA_VERSION = "16";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -20,7 +19,7 @@ const MAX_REACTION_PAGES = 5;
 const MAP_REACTION = "🗺️";
 
 const CITIES =
-  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|川崎市";
+  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|川崎市|相模原市";
 
 const AREAS = new RegExp(
   `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子|川崎`,
@@ -52,9 +51,31 @@ const SOURCE_ADDRESS_HINTS = [
     address: "神奈川県川崎市川崎区日進町1-11"
   },
   {
+    matches: (url) =>
+      (url.hostname === "tsukui.ne.jp" || url.hostname === "www.tsukui.ne.jp") &&
+      /^\/kubota(?:\/|$)/u.test(url.pathname),
+    name: "久保田酒造",
+    address: "神奈川県相模原市緑区根小屋702",
+    position: [35.571915, 139.279922],
+    genre: "酒店"
+  },
+  {
     matches: (url) => url.hostname === "ubriaco.ne.jp" || url.hostname === "www.ubriaco.ne.jp",
     name: "UBRIACO（ウブリアーコ）",
-    address: "東京都多摩市関戸4-4-1"
+    address: "東京都多摩市関戸4-4-1",
+    position: [35.64982312055461, 139.44815565627886]
+  },
+  {
+    matches: (url) =>
+      url.hostname === "tatonner.jp" ||
+      url.hostname === "www.tatonner.jp" ||
+      (
+        (url.hostname === "tamapon.com" || url.hostname === "www.tamapon.com") &&
+        /^\/2026\/03\/16\/tatonner-openday\/?$/u.test(url.pathname)
+      ),
+    name: "タトネ",
+    address: "東京都多摩市関戸4-4-2",
+    position: [35.6497415, 139.4485325]
   }
 ];
 
@@ -995,6 +1016,7 @@ const GENRES = [
   "スイーツ",
   "コーヒー",
   "カフェ",
+  "酒店",
   "居酒屋",
   "書店・図書館",
   "公園・レジャー",
@@ -1058,6 +1080,10 @@ function classifyGenre(message, ...additionalTexts) {
     [
       "スイーツ",
       /ケーキ|洋菓子|和菓子|スイーツ|ジェラート|アイス|パフェ/u
+    ],
+    [
+      "酒店",
+      /酒造|酒蔵|蔵元|酒店|酒屋|ワイナリー|醸造所/u
     ],
     [
       "居酒屋",
@@ -1729,8 +1755,11 @@ async function convertMessageToSpot(message, previousSpot) {
   const instagramNames = sourceUrls.some(isInstagramUrl)
     ? extractInstagramPlaceNames(message)
     : [];
+  const sourcePlaceHints = sourceUrls
+    .map(findSourcePlaceHint)
+    .filter(Boolean);
   const candidates = [...new Set([
-    ...sourceUrls.map((url) => findSourcePlaceHint(url)?.name).filter(Boolean),
+    ...sourcePlaceHints.map((hint) => hint.name).filter(Boolean),
     ...instagramNames,
     ...extractPlaceCandidates(message, mapsUrl, candidatePages)
   ])];
@@ -1759,7 +1788,11 @@ async function convertMessageToSpot(message, previousSpot) {
   let name = candidates[0] ||
     addresses[0];
 
-  let position = mapsInformation?.position ||
+  // 公式サイトなどに対して登録した補正値を最優先にする。
+  // 同じ街区の別店舗へ検索結果が丸められる事故を防ぐため。
+  let position = sourcePlaceHints.find((hint) => hint.position)?.position ||
+
+    mapsInformation?.position ||
 
     (
       mapsUrl &&
@@ -1807,7 +1840,7 @@ async function convertMessageToSpot(message, previousSpot) {
     id: message.id,
     name,
     type: classifySpot(message),
-    genre: classifyGenre(
+    genre: sourcePlaceHints.find((hint) => hint.genre)?.genre || classifyGenre(
         message,
         name,
         ...pages.flatMap((page) => [ page.name || "", page.description || "" ] )),
@@ -2109,7 +2142,7 @@ async function main() {
 
 const publicSpots = spots
   .filter((spot) => !isPlaceholderPlaceName(spot.name))
-  .map(({ description, ...spot }) => enrichSpotWithLocality(spot));
+  .map(({ description, ...spot }) => spot);
 
   await fs.writeFile(
     SPOTS_PATH,
