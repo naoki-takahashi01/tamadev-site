@@ -29,6 +29,7 @@
   <title>多摩.dev</title>
   <meta name="description" content="多摩で学びを循環するコミュニティ" />
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./chat.css" />
   <link rel="icon" href="./favicon.ico" sizes="any">
 </head>
 <body>
@@ -134,6 +135,62 @@
 
     </div>
   </main>
+
+  <button
+    id="tamanaviLauncher"
+    class="tamanavi-launcher"
+    type="button"
+    aria-controls="tamanaviPanel"
+    aria-expanded="false"
+  >
+    <img src="/assets/tamanavi.png" alt="" width="46" height="46" />
+    <span class="tamanavi-launcher-label">たまナビに聞く</span>
+  </button>
+
+  <section
+    id="tamanaviPanel"
+    class="tamanavi-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="tamanaviTitle"
+    hidden
+  >
+    <header class="tamanavi-header">
+      <img class="tamanavi-avatar" src="/assets/tamanavi.png" alt="" width="46" height="46" />
+      <div class="tamanavi-heading">
+        <strong id="tamanaviTitle">たまナビ</strong>
+        <small>多摩.dev AI案内人</small>
+      </div>
+      <button id="tamanaviClose" class="tamanavi-close" type="button" aria-label="チャットを閉じる">×</button>
+    </header>
+
+    <div id="tamanaviMessages" class="tamanavi-messages" role="list" aria-live="polite">
+      <div class="tamanavi-message is-assistant" role="listitem">こんにちは！多摩.dev AI案内人の「たまナビ」です。
+多摩.devのイベントや登壇、多摩地域のおすすめスポットをご案内します。何を知りたいですか？</div>
+    </div>
+
+    <div class="tamanavi-suggestions" aria-label="質問例">
+      <button class="tamanavi-suggestion" type="button" data-question="次回の多摩.devはいつ？">次回はいつ？</button>
+      <button class="tamanavi-suggestion" type="button" data-question="スティーブさんの多摩.devでの過去の登壇と資料を教えて！">過去の登壇を探す</button>
+      <button class="tamanavi-suggestion" type="button" data-question="聖蹟桜ヶ丘のおすすめスポットを教えて！">おすすめスポット</button>
+    </div>
+
+    <form id="tamanaviForm" class="tamanavi-form">
+      <input
+        id="tamanaviInput"
+        class="tamanavi-input"
+        name="question"
+        type="text"
+        maxlength="200"
+        autocomplete="off"
+        placeholder="多摩.devや多摩地域について質問"
+        aria-label="たまナビへの質問"
+        required
+      />
+      <button id="tamanaviSend" class="tamanavi-send" type="submit">送信</button>
+    </form>
+    <p class="tamanavi-notice">AIによる案内です。最新情報はリンク先をご確認ください。質問は1端末につき1日10回までです。個人情報は入力しないでください。</p>
+  </section>
   <script>
     const d = new Date(document.lastModified);
     if (!isNaN(d.getTime())) {
@@ -143,5 +200,7 @@
       document.getElementById("lastUpdated").textContent = `${y}/${m}/${day}`;
     }
   </script>
+  <!-- Worker公開後、YOUR-SUBDOMAINをCloudflareのサブドメインへ変更してください。 -->
+  <script src="./chat.js" data-api-endpoint="https://tamadev-ai.YOUR-SUBDOMAIN.workers.dev/chat"></script>
 </body>
 </html>

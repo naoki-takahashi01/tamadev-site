@@ -1,0 +1,17 @@
+name = "tamadev-ai"
+main = "src/index.js"
+compatibility_date = "2026-08-26"
+
+[vars]
+ALLOWED_ORIGINS = "https://tamadev.jp,http://localhost:8000,http://127.0.0.1:8000"
+KNOWLEDGE_URL = "https://tamadev.jp/ai/knowledge.json"
+SPOTS_URL = "https://tamadev.jp/map/spots.json"
+OPENAI_MODEL = "gpt-5.6-luna"
+DAILY_IP_LIMIT = "10"
+DAILY_GLOBAL_LIMIT = "100"
+MONTHLY_GLOBAL_LIMIT = "300"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tamadev-ai"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
