@@ -152,7 +152,7 @@
     button.addEventListener("click", () => {
       if (button.dataset.action === "choose-talk-search") {
         const question = "過去の登壇を探したい";
-        const answer = "何回目のイベント、またはどなたの登壇を探しますか？\n「#1の登壇」「第4回の登壇」「スティーブさんの登壇」のように入力してください！";
+        const answer = "何回目のイベント、またはどなたの登壇を探しますか？\n「#1の登壇」「第4回の登壇」「○○さんの登壇」のように入力してください！";
       
         addMessage("user", question);
         addMessage("assistant", answer);
