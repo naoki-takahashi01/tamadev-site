@@ -50,7 +50,7 @@
   }
 
   function appendLinkedText(container, text) {
-    const linkPattern = /\[([^\]]+)]\((https:\/\/[^\s)]+)\)/g;
+    const linkPattern = /\[([^\]]+)]\s*\((https:\/\/[^\s)]+)\)/g;
     let cursor = 0;
     let match;
 
