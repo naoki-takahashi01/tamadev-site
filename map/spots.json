@@ -6,14 +6,11 @@
     "genre": "その他",
     "area": "多摩市",
     "position": [
-      35.649635,
-      139.448425
+      35.64982312055461,
+      139.44815565627886
     ],
     "sourceUrl": "https://ubriaco.ne.jp/html/tenpo.html",
-    "revision": "2026-08-25T09:15:42.440000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.14
+    "revision": "2026-08-25T09:15:42.440000+00:00:v16"
   },
   {
     "id": "1518772591462973650",
@@ -26,10 +23,7 @@
       139.3828009
     ],
     "sourceUrl": "https://www.nekomedousaten.com/",
-    "revision": "2026-06-23T00:20:03.235000+00:00:v14",
-    "locality": "豊田",
-    "nearestStation": "豊田駅",
-    "stationDistanceKm": 0.38
+    "revision": "2026-06-23T00:20:03.235000+00:00:v16"
   },
   {
     "id": "1516007303990480977",
@@ -42,10 +36,7 @@
       139.4075339
     ],
     "sourceUrl": "https://www.google.com/maps/place/cafe+%26+atelier+re:ku/@35.6670964,139.4075339,3a,75y,90t/data=!3m8!1e2!3m6!1sCIABIhBY2uDeTGmkRD8tmOh-kJ3J!2e10!3e12!6shttps:%2F%2Flh3.googleusercontent.com%2Fgps-cs-s%2FAPNQkAHvqgbM6Dy47BG6iEcR8nOU2AwHvYWjhYp4AnIfNwF0yquTT8vUyYnl0NkqUyVZ-w-_kt8zRCG4MXfgj1E8WWMk9GmBlwOr3cB1nvUCtOa85xcXB0rmM_eOXW4CgpGr2wuGqxkvxTTiYGAR%3Dw137-h195-k-no!7i1076!8i1522!4m8!3m7!1s0x6018e3bd65fa01cb:0x5d8256708d2882b!8m2!3d35.6671066!4d139.4074624!10e9!15sChLjgqvjg5Xjgqfjg7vllqvojLZaEiIQ44Kr44OV44KnIOWWq-iMtpIBBGNhZmWaAURDaTlEUVVsUlFVTnZaRU5vZEhsalJqbHZUMjFXVUZKdWJIUlRNazV1VWxka2FWZHNTWGxhVlZKcFdsaENXRTB6WXhBQuABAPoBBAgAECI!16s%2Fg%2F11z7dj454p?authuser=0&entry=tts&g_ep=EgoyMDI2MDYxMC4wIPu8ASoASAFQAw%3D%3D&skid=7100de5f-7073-496b-89f0-18104d49cd51",
-    "revision": "2026-06-15T09:11:47.325000+00:00:v14",
-    "locality": "高幡不動",
-    "nearestStation": "高幡不動駅",
-    "stationDistanceKm": 0.74
+    "revision": "2026-06-15T09:11:47.325000+00:00:v16"
   },
   {
     "id": "1513172903498092617",
@@ -58,10 +49,7 @@
       139.4306861
     ],
     "sourceUrl": "https://tamapon.com/2026/06/07/kamosuryoriten/",
-    "revision": "2026-06-07T13:28:53.587000+00:00:v14",
-    "locality": "多摩センター",
-    "nearestStation": "多摩センター駅",
-    "stationDistanceKm": 1.31
+    "revision": "2026-06-07T13:28:53.587000+00:00:v16"
   },
   {
     "id": "1511362510220034189",
@@ -74,10 +62,7 @@
       139.417587
     ],
     "sourceUrl": "https://www.tamatebakonet.jp/shop/detail/id=9664",
-    "revision": "2026-06-02T13:35:02.194000+00:00:v14",
-    "locality": "立川",
-    "nearestStation": "立川駅",
-    "stationDistanceKm": 0.4
+    "revision": "2026-06-02T13:35:02.194000+00:00:v16"
   },
   {
     "id": "1505200461106385027-1",
@@ -107,10 +92,7 @@
       139.451431
     ],
     "sourceUrl": "https://ginryu.net/",
-    "revision": "2026-04-26T00:58:29.946000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 1.05
+    "revision": "2026-04-26T00:58:29.946000+00:00:v16"
   },
   {
     "id": "1496344020253675701",
@@ -123,10 +105,7 @@
       139.447861
     ],
     "sourceUrl": "https://www.taketorinoyu.com/",
-    "revision": "2026-04-22T02:56:55.156000+00:00:v14",
-    "locality": "永山",
-    "nearestStation": "永山駅",
-    "stationDistanceKm": 0.03
+    "revision": "2026-04-22T02:56:55.156000+00:00:v16"
   },
   {
     "id": "1484908983662673971-1",
@@ -139,11 +118,8 @@
       139.4780625
     ],
     "sourceUrl": "https://news.yahoo.co.jp/expert/articles/171b88d5540520120379b61110add123eaa80676",
-    "revision": "2026-03-21T13:38:09.980000+00:00:v14",
-    "messageId": "1484908983662673971",
-    "locality": "府中",
-    "nearestStation": "府中駅",
-    "stationDistanceKm": 1.06
+    "revision": "2026-03-21T13:38:09.980000+00:00:v16",
+    "messageId": "1484908983662673971"
   },
   {
     "id": "1484908983662673971-2",
@@ -156,11 +132,8 @@
       139.342926
     ],
     "sourceUrl": "https://8dabe.com/2023/11/20/girasol/",
-    "revision": "2026-03-21T13:38:09.980000+00:00:v14",
-    "messageId": "1484908983662673971",
-    "locality": "京王八王子",
-    "nearestStation": "京王八王子駅",
-    "stationDistanceKm": 0.16
+    "revision": "2026-03-21T13:38:09.980000+00:00:v16",
+    "messageId": "1484908983662673971"
   },
   {
     "id": "1483223798558888047",
@@ -169,14 +142,11 @@
     "genre": "カフェ",
     "area": "多摩市",
     "position": [
-      35.649635,
-      139.448425
+      35.6497415,
+      139.4485325
     ],
     "sourceUrl": "https://tamapon.com/2026/03/16/tatonner-openday/#google_vignette",
-    "revision": "2026-03-16T22:01:50.542000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.14
+    "revision": "2026-03-16T22:01:50.542000+00:00:v16"
   },
   {
     "id": "1480905213610037339",
@@ -189,10 +159,7 @@
       139.457489
     ],
     "sourceUrl": "https://note.com/rinkei90/n/nf6c3cb7b8cd2",
-    "revision": "2026-03-10T12:28:36.813000+00:00:v14",
-    "locality": "永山",
-    "nearestStation": "永山駅",
-    "stationDistanceKm": 0.86
+    "revision": "2026-03-10T12:28:36.813000+00:00:v16"
   },
   {
     "id": "1480188008299757588",
@@ -205,10 +172,7 @@
       139.314209
     ],
     "sourceUrl": "https://cerian.net/",
-    "revision": "2026-03-08T12:58:41.742000+00:00:v14",
-    "locality": "西八王子",
-    "nearestStation": "西八王子駅",
-    "stationDistanceKm": 0.2
+    "revision": "2026-03-08T12:58:41.742000+00:00:v16"
   },
   {
     "id": "1479795474985779355",
@@ -221,10 +185,7 @@
       139.450027
     ],
     "sourceUrl": "https://www.machida-risuen.com/",
-    "revision": "2026-03-07T10:58:54.507000+00:00:v14",
-    "locality": "玉川学園前",
-    "nearestStation": "玉川学園前駅",
-    "stationDistanceKm": 1.97
+    "revision": "2026-03-07T10:58:54.507000+00:00:v16"
   },
   {
     "id": "1476499629309956126",
@@ -237,10 +198,7 @@
       139.447052
     ],
     "sourceUrl": "https://vitamallseiseki.jp/shop/bookoff%E3%83%B4%E3%82%A3%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%BC%E3%83%AB%E3%81%9B%E3%81%84%E3%81%9B%E3%81%8D/",
-    "revision": "2026-02-26T08:42:23.664000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.13
+    "revision": "2026-02-26T08:42:23.664000+00:00:v16"
   },
   {
     "id": "1470427280776892482",
@@ -253,10 +211,7 @@
       139.4479498831333
     ],
     "sourceUrl": "https://tabelog.com/tokyo/A1327/A132702/13026104/",
-    "revision": "2026-08-25T00:20:16.428000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.06
+    "revision": "2026-08-25T00:20:16.428000+00:00:v16"
   },
   {
     "id": "1465559300964356137",
@@ -269,10 +224,7 @@
       139.42865
     ],
     "sourceUrl": "https://resuto-tamacity.org/lp/momo/",
-    "revision": "2026-01-27T04:09:26.125000+00:00:v14",
-    "locality": "多摩センター",
-    "nearestStation": "多摩センター駅",
-    "stationDistanceKm": 0.45
+    "revision": "2026-01-27T04:09:26.125000+00:00:v16"
   },
   {
     "id": "1465342866858447112",
@@ -285,10 +237,7 @@
       139.4242849
     ],
     "sourceUrl": "https://tamapon.com/2023/06/22/tamacitylibrary-repo/",
-    "revision": "2026-01-26T13:49:24.213000+00:00:v14",
-    "locality": "多摩センター",
-    "nearestStation": "多摩センター駅",
-    "stationDistanceKm": 0.42
+    "revision": "2026-01-26T13:49:24.213000+00:00:v16"
   },
   {
     "id": "1464910964251168892-1",
@@ -303,10 +252,7 @@
     ],
     "sourceUrl": "https://maps.app.goo.gl/UCAQdpgtqfYhEmaf8",
     "mapUrl": "https://maps.app.goo.gl/UCAQdpgtqfYhEmaf8",
-    "revision": "2026-01-25T09:13:10.607000+00:00:v14",
-    "locality": "調布",
-    "nearestStation": "調布駅",
-    "stationDistanceKm": 1.29
+    "revision": "2026-01-25T09:13:10.607000+00:00:v16"
   },
   {
     "id": "1464910964251168892-2",
@@ -321,10 +267,7 @@
     ],
     "sourceUrl": "https://maps.app.goo.gl/svbScimyP4zdMpCT6",
     "mapUrl": "https://maps.app.goo.gl/svbScimyP4zdMpCT6",
-    "revision": "2026-01-25T09:13:10.607000+00:00:v14",
-    "locality": "府中",
-    "nearestStation": "府中駅",
-    "stationDistanceKm": 0.28
+    "revision": "2026-01-25T09:13:10.607000+00:00:v16"
   },
   {
     "id": "1464277337590993107",
@@ -337,10 +280,7 @@
       139.447162
     ],
     "sourceUrl": "https://kusabiya.jp/",
-    "revision": "2026-01-23T15:15:22.239000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.31
+    "revision": "2026-01-23T15:15:22.239000+00:00:v16"
   },
   {
     "id": "1461740910940524750",
@@ -353,23 +293,20 @@
       139.428101
     ],
     "sourceUrl": "https://tamapon.com/2020/07/28/wadashu/",
-    "revision": "2026-01-16T15:16:31.001000+00:00:v14",
-    "locality": "多摩センター",
-    "nearestStation": "多摩センター駅",
-    "stationDistanceKm": 1.9
+    "revision": "2026-01-16T15:16:31.001000+00:00:v16"
   },
   {
     "id": "1460928279367389195",
     "name": "久保田酒造",
     "type": "spot",
-    "genre": "居酒屋",
-    "area": "大和市",
+    "genre": "酒店",
+    "area": "相模原市",
     "position": [
-      35.4475136,
-      139.4795615
+      35.571915,
+      139.279922
     ],
     "sourceUrl": "https://www.tsukui.ne.jp/kubota/index.html",
-    "revision": "2026-01-14T09:27:24.536000+00:00:v14"
+    "revision": "2026-01-14T09:27:24.536000+00:00:v16"
   },
   {
     "id": "1460078361471615184",
@@ -382,26 +319,20 @@
       139.439453
     ],
     "sourceUrl": "http://www.udon-tama.biz/",
-    "revision": "2026-01-12T01:10:08.319000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.73
+    "revision": "2026-01-12T01:10:08.319000+00:00:v16"
   },
   {
     "id": "1455501960357744747",
     "name": "地酒の小山商店",
     "type": "spot",
-    "genre": "居酒屋",
+    "genre": "酒店",
     "area": "多摩市",
     "position": [
       35.644581,
       139.451508
     ],
     "sourceUrl": "https://www.jizakenokoyama.co.jp/",
-    "revision": "2025-12-30T10:05:09.268000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 0.77
+    "revision": "2025-12-30T10:05:09.268000+00:00:v16"
   },
   {
     "id": "1454406482199052412",
@@ -414,10 +345,7 @@
       139.4292649
     ],
     "sourceUrl": "https://gj0a900.gorp.jp/",
-    "revision": "2026-08-24T12:33:34.370000+00:00:v14",
-    "locality": "聖蹟桜ヶ丘",
-    "nearestStation": "聖蹟桜ヶ丘駅",
-    "stationDistanceKm": 1.86
+    "revision": "2026-08-24T12:33:34.370000+00:00:v16"
   },
   {
     "id": "1453756358980665565",
@@ -430,10 +358,7 @@
       139.430194
     ],
     "sourceUrl": "https://mosimosi.biz/column/220121-1-shoutengai-tanbou/",
-    "revision": "2025-12-25T14:28:45.468000+00:00:v14",
-    "locality": "多摩センター",
-    "nearestStation": "多摩センター駅",
-    "stationDistanceKm": 1.1
+    "revision": "2025-12-25T14:28:45.468000+00:00:v16"
   },
   {
     "id": "1453604318857920533",
@@ -446,10 +371,7 @@
       139.37601208290843
     ],
     "sourceUrl": "https://s.tabelog.com/tokyo/A1329/A132904/13061398/",
-    "revision": "2025-12-25T04:24:36.278000+00:00:v14",
-    "locality": "南大沢",
-    "nearestStation": "南大沢駅",
-    "stationDistanceKm": 1.06
+    "revision": "2025-12-25T04:24:36.278000+00:00:v16"
   },
   {
     "id": "1453592027718750289",
@@ -462,9 +384,6 @@
       139.42041
     ],
     "sourceUrl": "https://www.instagram.com/spice_ekkyo11/",
-    "revision": "2025-12-25T03:35:45.842000+00:00:v14",
-    "locality": "立川",
-    "nearestStation": "立川駅",
-    "stationDistanceKm": 0.63
+    "revision": "2025-12-25T03:35:45.842000+00:00:v16"
   }
 ]
