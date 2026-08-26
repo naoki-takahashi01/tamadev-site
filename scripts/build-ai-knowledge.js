@@ -62,7 +62,7 @@ function extractTalkCards(html, event) {
       type: "talk",
       eventName: event.name,
       eventDate: event.date,
-      eventUrl: `${event.url}#talks`,
+      eventUrl: event.url,
       title,
       format: badge,
       speaker,
