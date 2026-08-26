@@ -149,7 +149,23 @@
     ask(input.value.trim());
   });
   suggestions.forEach((button) => {
-    button.addEventListener("click", () => ask(button.dataset.question || button.textContent.trim()));
+    button.addEventListener("click", () => {
+      if (button.dataset.action === "choose-spot-area") {
+        const question = "おすすめスポットを探したい";
+        const answer = "どの地域で探しますか？\n聖蹟桜ヶ丘、多摩センター、永山、立川、府中などを指定してください！";
+  
+        addMessage("user", question);
+        addMessage("assistant", answer);
+        conversation.push(
+          { role: "user", content: question },
+          { role: "assistant", content: answer }
+        );
+        input.focus();
+        return;
+      }
+  
+      ask(button.dataset.question || button.textContent.trim());
+    });
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !panel.hidden) togglePanel(false);
