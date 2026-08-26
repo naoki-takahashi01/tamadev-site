@@ -150,6 +150,19 @@
   });
   suggestions.forEach((button) => {
     button.addEventListener("click", () => {
+      if (button.dataset.action === "choose-talk-search") {
+        const question = "過去の登壇を探したい";
+        const answer = "何回目のイベント、またはどなたの登壇を探しますか？\n「#1の登壇」「第4回の登壇」「スティーブさんの登壇」のように入力してください！";
+      
+        addMessage("user", question);
+        addMessage("assistant", answer);
+        conversation.push(
+          { role: "user", content: question },
+          { role: "assistant", content: answer }
+        );
+        input.focus();
+        return;
+      }
       if (button.dataset.action === "choose-spot-area") {
         const question = "おすすめスポットを探したい";
         const answer = "どの地域で探しますか？\n聖蹟桜ヶ丘、多摩センター、永山、立川、府中などを指定してください！";
