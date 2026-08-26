@@ -46,14 +46,33 @@ function scoreItem(item, question, keywords) {
   const aliases = (item.speakerAliases || []).map(normalize);
   let score = 0;
 
+  const eventNumber = normalize(
+    item.eventName || item.name || ""
+  ).match(/#\s*(\d+(?:\.\d+)?)/)?.[1];
+
+  if (eventNumber) {
+    const escapedNumber = eventNumber.replace(".", "\\.");
+    const eventPattern = new RegExp(
+      `(?:#\\s*${escapedNumber}|第\\s*${escapedNumber}\\s*回|${escapedNumber}\\s*回目)`
+    );
+
+    if (eventPattern.test(normalizedQuestion)) {
+      score += 30;
+    }
+  }
+
   for (const alias of aliases) {
-    if (alias && normalizedQuestion.includes(alias)) score += 30;
+    if (alias && normalizedQuestion.includes(alias)) {
+      score += 30;
+    }
   }
 
   const strongFields = [
     item.speaker,
     item.title,
     item.name,
+    item.eventName,
+    item.eventDate,
     item.area,
     item.locality,
     item.nearestStation,
@@ -61,15 +80,23 @@ function scoreItem(item, question, keywords) {
   ]
     .filter(Boolean)
     .map(normalize);
+
   const fullText = normalize(JSON.stringify(item));
 
   for (const field of strongFields) {
-    if (field.length >= 2 && normalizedQuestion.includes(field)) score += 20;
+    if (field.length >= 2 && normalizedQuestion.includes(field)) {
+      score += 20;
+    }
   }
+
   for (const keyword of keywords) {
-    if (strongFields.some((field) => field.includes(keyword))) score += 8;
-    else if (fullText.includes(keyword)) score += 3;
+    if (strongFields.some((field) => field.includes(keyword))) {
+      score += 8;
+    } else if (fullText.includes(keyword)) {
+      score += 3;
+    }
   }
+
   return score;
 }
 
