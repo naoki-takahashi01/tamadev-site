@@ -2,6 +2,7 @@
 
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { enrichSpotWithLocality } = require("./tama-localities");
 
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
@@ -2142,7 +2143,7 @@ async function main() {
 
 const publicSpots = spots
   .filter((spot) => !isPlaceholderPlaceName(spot.name))
-  .map(({ description, ...spot }) => spot);
+  .map(({ description, ...spot }) => enrichSpotWithLocality(spot));
 
   await fs.writeFile(
     SPOTS_PATH,
