@@ -50,7 +50,15 @@ function scoreItem(item, question, keywords) {
     if (alias && normalizedQuestion.includes(alias)) score += 30;
   }
 
-  const strongFields = [item.speaker, item.title, item.name, item.area, item.genre]
+  const strongFields = [
+    item.speaker,
+    item.title,
+    item.name,
+    item.area,
+    item.locality,
+    item.nearestStation,
+    item.genre
+  ]
     .filter(Boolean)
     .map(normalize);
   const fullText = normalize(JSON.stringify(item));
