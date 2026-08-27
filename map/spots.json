@@ -1,5 +1,21 @@
 [
   {
+    "id": "1542433893616193587",
+    "name": "京王聖蹟桜ヶ丘駅近くのカフェ｜サンコーヒー｜京王聖蹟桜ヶ丘駅ショッピングセンターA館3階",
+    "type": "shop",
+    "genre": "コーヒー",
+    "area": "多摩市",
+    "position": [
+      35.650349,
+      139.447342
+    ],
+    "sourceUrl": "http://www.sancoffee.co.jp/",
+    "revision": "2026-08-27T07:21:37.274000+00:00:v16",
+    "locality": "聖蹟桜ヶ丘",
+    "nearestStation": "聖蹟桜ヶ丘駅",
+    "stationDistanceKm": 0.04
+  },
+  {
     "id": "1542399436074782740",
     "name": "Dia.Coffee",
     "type": "shop",
