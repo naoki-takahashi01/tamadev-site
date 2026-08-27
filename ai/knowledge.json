@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-26T22:07:26.382Z",
+  "generatedAt": "2026-08-27T01:57:40.840Z",
   "scope": "多摩.devと東京都多摩地域に関する公開情報",
   "community": {
     "name": "多摩.dev",
@@ -16,7 +16,11 @@
       "id": "community-tachikawa-any",
       "type": "community",
       "name": "Tachikawa.any",
-      "aliases": ["tachikawa.any", "立川.any", "tachikawaany"],
+      "aliases": [
+        "tachikawa.any",
+        "立川.any",
+        "tachikawaany"
+      ],
       "area": "立川・国立・国分寺・八王子・東大和など",
       "description": "中央線・多摩モノレール沿線に住む、または働くテックな人たちが気軽に集まれるコミュニティです。",
       "connpassUrl": "https://tachikawaany.connpass.com/"
@@ -142,7 +146,12 @@
       "title": "多摩ニュータウンを、味わう",
       "format": "10分",
       "speaker": "Steve Aoki",
-      "speakerAliases": ["スティーブ", "スティーブさん", "Steve", "Solti"],
+      "speakerAliases": [
+        "スティーブ",
+        "スティーブさん",
+        "Steve",
+        "Solti"
+      ],
       "speakerUrl": "https://x.com/Solti",
       "materialUrl": "https://speakerdeck.com/player/8a7929089d544f2aae415c40b8afcf16",
       "materialStatus": "published"
@@ -156,7 +165,10 @@
       "title": "ファシリタティブ・リーダーについて",
       "format": "LT",
       "speaker": "ナカグチ｜しょっち",
-      "speakerAliases": ["ナカグチ", "しょっち"],
+      "speakerAliases": [
+        "ナカグチ",
+        "しょっち"
+      ],
       "speakerUrl": "https://x.com/naka227_shima",
       "materialUrl": "https://www.docswell.com/s/3838904/5YVYXV-2026-02-27-003241",
       "materialStatus": "published"
@@ -170,7 +182,11 @@
       "title": "エンジニアが始めるUXリサーチ入門",
       "format": "LT",
       "speaker": "Daichi KUDO",
-      "speakerAliases": ["Daichi", "KUDO", "工藤"],
+      "speakerAliases": [
+        "Daichi",
+        "KUDO",
+        "工藤"
+      ],
       "speakerUrl": "https://x.com/da1chi24",
       "materialUrl": "https://speakerdeck.com/player/2b2dfd74170140e48761e094db1db0ae",
       "materialStatus": "published"
@@ -352,7 +368,11 @@
       "title": "pnpmでできるサプライチェーン攻撃への備え",
       "format": "10分",
       "speaker": "Daichi KUDO",
-      "speakerAliases": ["Daichi", "KUDO", "工藤"],
+      "speakerAliases": [
+        "Daichi",
+        "KUDO",
+        "工藤"
+      ],
       "speakerUrl": "https://x.com/da1chi24",
       "materialUrl": "https://speakerdeck.com/player/6b183722d33541ab8b2268cda9307ad3",
       "materialStatus": "published"
@@ -492,7 +512,12 @@
       "title": "多摩.devで草を食べる話をしたらカンファレンスに登壇していた",
       "format": "LT",
       "speaker": "Steve Aoki",
-      "speakerAliases": ["スティーブ", "スティーブさん", "Steve", "Solti"],
+      "speakerAliases": [
+        "スティーブ",
+        "スティーブさん",
+        "Steve",
+        "Solti"
+      ],
       "speakerUrl": "https://x.com/Solti",
       "materialUrl": "https://speakerdeck.com/player/da569efa9e284b77b2853943a26ec671",
       "materialStatus": "published"
