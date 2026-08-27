@@ -1,5 +1,21 @@
 [
   {
+    "id": "1542399436074782740",
+    "name": "Dia.Coffee",
+    "type": "shop",
+    "genre": "コーヒー",
+    "area": "八王子市",
+    "position": [
+      35.6594077,
+      139.3439926
+    ],
+    "sourceUrl": "https://www.instagram.com/dia__coffee/",
+    "revision": "2026-08-27T05:04:41.956000+00:00:v16",
+    "locality": "京王八王子",
+    "nearestStation": "京王八王子駅",
+    "stationDistanceKm": 0.25
+  },
+  {
     "id": "1541459472432758937",
     "name": "UBRIACO（ウブリアーコ）",
     "type": "spot",
