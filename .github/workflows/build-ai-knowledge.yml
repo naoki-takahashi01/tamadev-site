@@ -1,0 +1,47 @@
+name: AI検索データを更新
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "events/**"
+      - "scripts/build-ai-knowledge.js"
+      - ".github/workflows/build-ai-knowledge.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ai-knowledge
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v7
+
+      - name: Node.jsを準備
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: AI検索データを生成
+        run: node scripts/build-ai-knowledge.js
+
+      - name: 変更があれば更新
+        run: |
+          if git diff --quiet -- ai/knowledge.json; then
+            echo "AI検索データに変更はありません。"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ai/knowledge.json
+          git commit -m "chore: AI検索データを更新"
+          git push
