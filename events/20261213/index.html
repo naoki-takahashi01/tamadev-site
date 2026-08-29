@@ -4,8 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tech TAMA Conference 2026 | 多摩.dev</title>
-  <meta name="description" content="2026年12月13日開催予定。多摩.devによる特別イベント「Tech TAMA Conference 2026」のご案内ページです。" />
+  <meta
+    name="description"
+    content="2026年12月13日開催。多摩.devによる特別イベント「Tech TAMA Conference 2026」のご案内ページです。"
+  />
   <link rel="stylesheet" href="/style.css" />
+
   <style>
     :root {
       --tamadev-orange: #e47b47;
@@ -30,13 +34,25 @@
       margin: 0;
       color: var(--tamadev-text);
       background:
-        radial-gradient(circle at top right, rgba(115, 191, 220, 0.18), transparent 28%),
-        radial-gradient(circle at top left, rgba(228, 123, 71, 0.10), transparent 24%),
+        radial-gradient(
+          circle at top right,
+          rgba(115, 191, 220, 0.18),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at top left,
+          rgba(228, 123, 71, 0.10),
+          transparent 24%
+        ),
         var(--tamadev-bg);
       font-family:
-        -apple-system, BlinkMacSystemFont,
-        "Hiragino Sans", "Hiragino Kaku Gothic ProN",
-        "Yu Gothic", Meiryo, sans-serif;
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Sans",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
       line-height: 1.7;
     }
 
@@ -64,7 +80,11 @@
       overflow: hidden;
       margin: 18px 0 28px;
       padding: 40px 28px 32px;
-      background: linear-gradient(180deg, #fdfefe 0%, #edf8f7 100%);
+      background: linear-gradient(
+        180deg,
+        #fdfefe 0%,
+        #edf8f7 100%
+      );
       border: 1px solid var(--tamadev-border);
       border-radius: 28px;
       box-shadow: var(--tamadev-shadow);
@@ -75,7 +95,11 @@
       position: absolute;
       inset: 0;
       background-image:
-        radial-gradient(circle, rgba(40, 63, 123, 0.12) 1.5px, transparent 1.5px);
+        radial-gradient(
+          circle,
+          rgba(40, 63, 123, 0.12) 1.5px,
+          transparent 1.5px
+        );
       background-size: 34px 34px;
       opacity: 0.25;
       pointer-events: none;
@@ -197,7 +221,9 @@
       border-radius: 999px;
       font-weight: 700;
       text-decoration: none;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
     }
 
     .button:hover {
@@ -227,7 +253,11 @@
     .section-band {
       margin-top: 36px;
       padding: 12px 18px;
-      background: linear-gradient(90deg, var(--tamadev-sky), #87cee6);
+      background: linear-gradient(
+        90deg,
+        var(--tamadev-sky),
+        #87cee6
+      );
       color: #fff;
       border-radius: 14px;
       font-size: 1rem;
@@ -284,33 +314,63 @@
       color: var(--tamadev-subtext);
     }
 
-    .speaker-placeholder {
+    /*
+      Keynote
+    */
+
+    .keynote-profile {
       display: grid;
-      gap: 14px;
+      grid-template-columns: 160px 1fr;
+      gap: 24px;
+      align-items: start;
     }
 
-    .speaker-box {
-      padding: 18px;
-      border: 1px solid var(--tamadev-border);
-      border-radius: 16px;
-      background: linear-gradient(180deg, #ffffff 0%, #f9fcfc 100%);
+    .keynote-image {
+      display: block;
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 20px;
     }
 
-    .speaker-box h3 {
-      margin: 0 0 6px;
+    .keynote-content h3 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
       color: var(--tamadev-text);
-      font-size: 1.1rem;
     }
 
-    .speaker-box p {
-      margin: 0;
+    .keynote-content p {
+      margin: 0 0 12px;
       color: var(--tamadev-subtext);
     }
+
+    .keynote-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .keynote-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .keynote-links a {
+      color: var(--tamadev-blue);
+      font-weight: 700;
+    }
+
+    /*
+      CTA
+    */
 
     .cta {
       text-align: center;
       padding: 36px 24px;
-      background: linear-gradient(180deg, #eff9f8 0%, #e0f2ef 100%);
+      background: linear-gradient(
+        180deg,
+        #eff9f8 0%,
+        #e0f2ef 100%
+      );
     }
 
     .cta h2 {
@@ -355,55 +415,125 @@
         grid-template-columns: 78px 1fr;
       }
     }
+
+    @media (max-width: 600px) {
+      .keynote-profile {
+        grid-template-columns: 1fr;
+      }
+
+      .keynote-image {
+        width: 120px;
+        height: 120px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="page">
+
     <div class="topbar">
       <a href="/events/">← イベント一覧へ戻る</a>
     </div>
 
+    <!-- =========================
+         Hero
+    ========================== -->
+
     <header class="hero">
       <div class="hero-inner">
+
         <div class="hero-main">
+
           <div class="brand-mark" aria-label="多摩.dev">
             <span class="orange">tama</span><span class="blue">.dev</span>
           </div>
-          <p class="brand-sub">多摩.dev カンファレンス</p>
-          <div class="hero-tagline">都心の代替ではない。多摩で、無理なく続くエンジニアコミュニティから。</div>
-          <h1 class="hero-title">Tech TAMA Conference 2026</h1>
+
+          <p class="brand-sub">
+            多摩.dev カンファレンス
+          </p>
+
+          <div class="hero-tagline">
+            都心の代替ではない。多摩で、無理なく続くエンジニアコミュニティから。
+          </div>
+
+          <h1 class="hero-title">
+            Tech TAMA Conference 2026
+          </h1>
+
           <p class="hero-text">
             多摩.dev が開催する、特別な1日のカンファレンスです。<br />
-            多摩地域で学び、つながり、続いていくための場として、いつもの多摩.devより少し大きなかたちで開催します。
+            多摩地域で学び、つながり、続いていくための場として、
+            いつもの多摩.devより少し大きなかたちで開催します。
           </p>
 
           <div class="hero-actions">
-            <a class="button button-primary" href="#overview">開催概要を見る</a>
-            <a class="button button-secondary" href="#join">参加案内</a>
+            <a
+              class="button button-primary"
+              href="#overview"
+            >
+              開催概要を見る
+            </a>
+
+            <a
+              class="button button-secondary"
+              href="#join"
+            >
+              参加案内
+            </a>
           </div>
+
         </div>
 
         <aside class="hero-side">
+
           <h2>開催情報</h2>
+
           <div class="info-list">
+
             <div class="info-item">
-              <div class="info-label">開催日</div>
-              <div class="info-value">2026年12月13日（日）</div>
+              <div class="info-label">
+                開催日
+              </div>
+              <div class="info-value">
+                2026年12月13日（日）
+              </div>
             </div>
+
             <div class="info-item">
-              <div class="info-label">会場</div>
-              <div class="info-value">聖蹟桜ヶ丘（詳細は後日公開）</div>
+              <div class="info-label">
+                会場
+              </div>
+              <div class="info-value">
+                関戸公民館 大会議室<br />
+                <span class="small">
+                  ※ ほかの部屋も調整中
+                </span>
+              </div>
             </div>
+
             <div class="info-item">
-              <div class="info-label">主催</div>
-              <div class="info-value">多摩.dev</div>
+              <div class="info-label">
+                主催
+              </div>
+              <div class="info-value">
+                多摩.dev
+              </div>
             </div>
+
             <div class="info-item">
-              <div class="info-label">形式</div>
-              <div class="info-value">オフライン開催予定</div>
+              <div class="info-label">
+                形式
+              </div>
+              <div class="info-value">
+                オフライン開催予定
+              </div>
             </div>
+
           </div>
+
         </aside>
+
       </div>
     </header>
 
@@ -411,103 +541,282 @@
       多摩のエンジニアが、気軽に集まり、学び、つながる。その延長線上にあるカンファレンスです。
     </div>
 
-    <section id="overview" class="section">
+    <!-- =========================
+         About
+    ========================== -->
+
+    <section
+      id="overview"
+      class="section"
+    >
+
       <div class="section-header">
-        <h2>このカンファレンスについて</h2>
-        <p>多摩.dev の普段のイベントと同じく、役割や技術領域にとらわれず、プロダクト開発やエンジニアリングに関わる方を広く歓迎します。</p>
+        <h2>
+          このカンファレンスについて
+        </h2>
+
+        <p>
+          多摩.dev の普段のイベントと同じく、
+          役割や技術領域にとらわれず、
+          プロダクト開発やエンジニアリングに関わる方を広く歓迎します。
+        </p>
       </div>
 
       <div class="grid-2">
+
         <div class="card">
-          <h3>多摩.dev とは</h3>
+
+          <h3>
+            多摩.dev とは
+          </h3>
+
           <p>
-            多摩地域のエンジニアが、気軽に集まり、学び、つながるコミュニティです。<br />
-            エンジニアに限らず、プロダクト開発に関わる方々を歓迎しています。
+            多摩地域のエンジニアが、
+            気軽に集まり、学び、つながるコミュニティです。<br />
+            エンジニアに限らず、
+            プロダクト開発に関わる方々を歓迎しています。
           </p>
+
         </div>
 
         <div class="card">
-          <h3>カンファレンスとして目指すこと</h3>
+
+          <h3>
+            カンファレンスとして目指すこと
+          </h3>
+
           <p>
-            いつもの多摩.devの空気感を大切にしながら、より多くの人が交わり、学びを持ち帰れる場にしたいと考えています。<br />
-            「大きいイベント」だけでなく、「また来たい」と思える場を目指します。
+            いつもの多摩.devの空気感を大切にしながら、
+            より多くの人が交わり、
+            学びを持ち帰れる場にしたいと考えています。<br />
+            「大きいイベント」だけでなく、
+            「また来たい」と思える場を目指します。
           </p>
+
         </div>
+
       </div>
+
     </section>
 
+    <!-- =========================
+         Keynote
+    ========================== -->
+
     <section class="section">
+
       <div class="section-header">
-        <h2>キーノート</h2>
-        <p>多摩.dev カンファレンス 2026のキーノートスピーカーをご紹介します。</p>
+
+        <h2>
+          キーノート
+        </h2>
+
+        <p>
+          多摩.dev カンファレンス 2026の
+          キーノートスピーカーをご紹介します。
+        </p>
+
       </div>
 
-      <div class="speaker-placeholder">
-        <div class="speaker-box">
-          <h3>こうのさん（東葛.dev）</h3>
+      <div class="keynote-profile">
+
+        <img
+          src="./kono.jpg"
+          alt="こうのさん"
+          class="keynote-image"
+        />
+
+        <div class="keynote-content">
+
+          <h3>
+            こうのさん
+          </h3>
+
+          <p class="keynote-links">
+
+            <a
+              href="https://x.com/hk_it7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              X @hk_it7
+            </a>
+
+            <span>／</span>
+
+            <a
+              href="https://toukatsu.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              東葛.dev
+            </a>
+
+          </p>
+
           <p>
-            東葛.devを運営する、こうのさんをキーノートスピーカーとしてお迎えします。<br />
+            東葛地域を中心に活動するエンジニアコミュニティ
+            「東葛.dev」を運営する、こうのさんを
+            キーノートスピーカーとしてお迎えします。
+          </p>
+
+          <p>
             キーノートのタイトル・内容は後日公開予定です。
           </p>
+
         </div>
+
       </div>
+
     </section>
 
+    <!-- =========================
+         Timetable
+    ========================== -->
+
     <section class="section">
+
       <div class="section-header">
-        <h2>タイムテーブル</h2>
-        <p>現在調整中です。公開までお待ちください。</p>
+
+        <h2>
+          タイムテーブル
+        </h2>
+
+        <p>
+          現在調整中です。公開までお待ちください。
+        </p>
+
       </div>
 
       <div class="schedule-note">
         タイムテーブルは後日公開予定です。<br />
         オープニング、キーノート、セッション、LTなどを予定しています。
       </div>
+
     </section>
 
+    <!-- =========================
+         Venue
+    ========================== -->
+
     <section class="section">
+
       <div class="section-header">
-        <h2>会場・アクセス</h2>
-        <p>聖蹟桜ヶ丘での開催を予定しています。</p>
+
+        <h2>
+          会場・アクセス
+        </h2>
+
+        <p>
+          聖蹟桜ヶ丘の関戸公民館で開催します。
+        </p>
+
       </div>
 
       <div class="grid-2">
+
         <div class="card">
-          <h3>開催エリア</h3>
+
+          <h3>
+            関戸公民館 大会議室
+          </h3>
+
           <p>
-            聖蹟桜ヶ丘<br />
-            ※ 会場の詳細・アクセス方法は確定次第ご案内します。
+            メイン会場として大会議室を利用します。<br />
+            ほかの部屋についても現在調整中です。
           </p>
+
         </div>
 
         <div class="card">
-          <h3>参加しやすさ</h3>
+
+          <h3>
+            アクセス
+          </h3>
+
           <p>
-            多摩地域の方はもちろん、多摩地域外からの参加も歓迎です。<br />
-            「多摩でやっているからこそ面白い」と思える場を目指します。
+            京王線 聖蹟桜ヶ丘駅から徒歩圏内です。<br />
+            詳しいアクセス方法は後日ご案内します。
           </p>
+
         </div>
+
       </div>
+
     </section>
 
-    <section id="join" class="section cta">
-      <h2>参加案内</h2>
+    <!-- =========================
+         Join
+    ========================== -->
+
+    <section
+      id="join"
+      class="section cta"
+    >
+
+      <h2>
+        参加案内
+      </h2>
+
       <p>
-        参加申込ページは準備中です。公開できる状態になりましたら、多摩.dev 公式サイトやSNSでお知らせします。
+        参加申込ページは準備中です。
+        公開できる状態になりましたら、
+        多摩.dev 公式サイトやSNSでお知らせします。
       </p>
-      <div class="hero-actions" style="justify-content:center;">
-        <a class="button button-primary" href="/events/">多摩.dev のイベント一覧を見る</a>
-        <a class="button button-secondary" href="https://x.com/asagayanaoki" target="_blank" rel="noopener noreferrer">お知らせをチェックする</a>
+
+      <div
+        class="hero-actions"
+        style="justify-content:center;"
+      >
+
+        <a
+          class="button button-primary"
+          href="/events/"
+        >
+          多摩.dev のイベント一覧を見る
+        </a>
+
+        <a
+          class="button button-secondary"
+          href="https://x.com/asagayanaoki"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          お知らせをチェックする
+        </a>
+
       </div>
-      <p class="small" style="margin-top: 16px;">
-        ※ connpass等の参加申込URLが決まったら、こちらにボタンを追加してください。
+
+      <p
+        class="small"
+        style="margin-top: 16px;"
+      >
+        ※ connpass等の参加申込URLが決まったら、
+        こちらにボタンを追加してください。
       </p>
+
     </section>
+
+    <!-- =========================
+         Footer
+    ========================== -->
 
     <footer class="footer">
-      <p><strong>Tech TAMA Conference 2026</strong> / 主催：多摩.dev</p>
-      <p>このページは、情報が決まり次第、順次更新していきます。</p>
+
+      <p>
+        <strong>
+          Tech TAMA Conference 2026
+        </strong>
+        / 主催：多摩.dev
+      </p>
+
+      <p>
+        このページは、情報が決まり次第、
+        順次更新していきます。
+      </p>
+
     </footer>
+
   </div>
 </body>
 </html>
