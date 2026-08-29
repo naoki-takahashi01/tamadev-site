@@ -128,7 +128,6 @@
     .hero-title-area {
       position: relative;
       z-index: 1;
-
       margin-bottom: 24px;
     }
 
@@ -328,10 +327,14 @@
     }
 
     .section > p {
-      margin: 0;
+      margin: 0 0 14px;
 
       color: var(--tamadev-subtext);
       line-height: 1.9;
+    }
+
+    .section > p:last-child {
+      margin-bottom: 0;
     }
 
     /*
@@ -408,6 +411,22 @@
     }
 
     /*
+      Proposal
+    */
+
+    .proposal-note {
+      padding: 18px;
+
+      background: #f9fcfc;
+
+      border: 1px dashed var(--tamadev-border);
+      border-radius: 16px;
+
+      color: var(--tamadev-subtext);
+      line-height: 1.9;
+    }
+
+    /*
       Keynote
     */
 
@@ -478,6 +497,97 @@
     }
 
     /*
+      Staff
+    */
+
+    .staff-group + .staff-group {
+      margin-top: 34px;
+    }
+
+    .staff-group-title {
+      display: inline-block;
+
+      margin: 0 0 20px;
+      padding: 5px 12px;
+
+      background: var(--tamadev-blue);
+      border-radius: 999px;
+
+      color: #fff;
+
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .staff-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 18px;
+    }
+
+    .staff-member {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      width: 96px;
+
+      color: var(--tamadev-text);
+
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .staff-avatar-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 68px;
+      height: 68px;
+
+      margin-bottom: 8px;
+
+      background: var(--tamadev-mint);
+
+      border: 1px solid var(--tamadev-border);
+      border-radius: 50%;
+
+      color: var(--tamadev-blue);
+
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .staff-name {
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .staff-member:hover .staff-name {
+      text-decoration: underline;
+    }
+
+    /*
+      実画像へ切り替える場合に利用
+    */
+
+    .staff-avatar {
+      display: block;
+
+      width: 68px;
+      height: 68px;
+
+      margin-bottom: 8px;
+
+      object-fit: cover;
+
+      border: 1px solid var(--tamadev-border);
+      border-radius: 50%;
+    }
+
+    /*
       Footer
     */
 
@@ -490,7 +600,7 @@
     }
 
     .footer-links {
-      margin: 0 0 20px;
+      margin: 0;
     }
 
     .footer-links a {
@@ -500,14 +610,6 @@
 
     .footer-links a:hover {
       text-decoration: underline;
-    }
-
-    .footer-info {
-      text-align: center;
-    }
-
-    .footer-info p {
-      margin: 6px 0;
     }
 
     .small {
@@ -575,6 +677,24 @@
       .keynote-image {
         width: 120px;
         height: 120px;
+      }
+
+      .staff-list {
+        gap: 20px 12px;
+      }
+
+      .staff-member {
+        width: 78px;
+      }
+
+      .staff-avatar,
+      .staff-avatar-placeholder {
+        width: 60px;
+        height: 60px;
+      }
+
+      .staff-name {
+        font-size: 0.78rem;
       }
     }
   </style>
@@ -760,6 +880,28 @@
     </section>
 
     <!-- =========================
+         Proposal
+    ========================== -->
+
+    <section class="section">
+
+      <div class="section-header">
+
+        <h2>
+          プロポーザル募集
+        </h2>
+
+      </div>
+
+      <div class="proposal-note">
+        多摩.dev カンファレンス（仮）では、
+        当日お話しいただくプロポーザルを募集予定です。<br />
+        募集内容や応募方法については、詳細が決まり次第お知らせします。
+      </div>
+
+    </section>
+
+    <!-- =========================
          Keynote
     ========================== -->
 
@@ -924,6 +1066,186 @@
     </section>
 
     <!-- =========================
+         Staff
+    ========================== -->
+
+    <section class="section">
+
+      <div class="section-header">
+
+        <h2>
+          スタッフ
+        </h2>
+
+      </div>
+
+      <!-- 主催 -->
+
+      <div class="staff-group">
+
+        <h3 class="staff-group-title">
+          主催
+        </h3>
+
+        <div class="staff-list">
+
+          <a
+            class="staff-member"
+            href="https://x.com/asagayanaoki"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              N
+            </div>
+
+            <span class="staff-name">
+              髙橋 直規
+            </span>
+
+          </a>
+
+        </div>
+
+      </div>
+
+      <!-- 当日スタッフ -->
+
+      <div class="staff-group">
+
+        <h3 class="staff-group-title">
+          当日スタッフ
+        </h3>
+
+        <div class="staff-list">
+
+          <a
+            class="staff-member"
+            href="https://x.com/garagara21kt"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              G
+            </div>
+
+            <span class="staff-name">
+              gara
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/keita_kitami_"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              フ
+            </div>
+
+            <span class="staff-name">
+              フクイ
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/ykawasaki683"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              か
+            </div>
+
+            <span class="staff-name">
+              かわさき
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/Solti"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              S
+            </div>
+
+            <span class="staff-name">
+              Steve Aoki
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/massan_mrk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              M
+            </div>
+
+            <span class="staff-name">
+              massan
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/da1chi24"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              D
+            </div>
+
+            <span class="staff-name">
+              daichi
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/yussak213"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="staff-avatar-placeholder">
+              Y
+            </div>
+
+            <span class="staff-name">
+              yussak
+            </span>
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =========================
          Footer
     ========================== -->
 
@@ -942,16 +1264,6 @@
         </a>
 
       </p>
-
-      <div class="footer-info">
-
-        <p>
-          <strong>
-            多摩.dev カンファレンス（仮）
-          </strong>
-          / 主催：多摩.dev
-        </p>
-      </div>
 
     </footer>
 
