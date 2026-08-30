@@ -284,31 +284,6 @@
     }
 
     /*
-      Section Band
-    */
-
-    .section-band {
-      margin-top: 36px;
-      padding: 12px 18px;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--tamadev-sky),
-          #87cee6
-        );
-
-      border-radius: 14px;
-
-      color: #fff;
-
-      font-size: 1rem;
-      font-weight: 700;
-
-      box-shadow: var(--tamadev-shadow);
-    }
-
-    /*
       Sections
     */
 
@@ -358,8 +333,7 @@
     }
 
     /*
-      「このカンファレンスについて」だけ、
-      既存style.cssの影響を明示的に打ち消す
+      Overview
     */
 
     #overview {
@@ -431,10 +405,11 @@
     }
 
     /*
-      Proposal
+      Proposal / Schedule
     */
 
-    .proposal-note {
+    .proposal-note,
+    .schedule-note {
       padding: 18px;
 
       background: #f9fcfc;
@@ -498,22 +473,6 @@
     .keynote-links a {
       color: var(--tamadev-blue);
       font-weight: 700;
-    }
-
-    /*
-      Timetable
-    */
-
-    .schedule-note {
-      padding: 18px;
-
-      background: #f9fcfc;
-
-      border: 1px dashed var(--tamadev-border);
-      border-radius: 16px;
-
-      color: var(--tamadev-subtext);
-      line-height: 1.9;
     }
 
     /*
@@ -762,7 +721,6 @@
           <div class="info-list">
 
             <div class="info-item">
-
               <div class="info-label">
                 開催日
               </div>
@@ -770,11 +728,23 @@
               <div class="info-value">
                 2026年12月13日（日）
               </div>
-
             </div>
 
             <div class="info-item">
+              <div class="info-label">
+                時間
+              </div>
 
+              <div class="info-value">
+                10:30〜18:30<br />
+
+                <span class="small">
+                  ※ 予定
+                </span>
+              </div>
+            </div>
+
+            <div class="info-item">
               <div class="info-label">
                 会場
               </div>
@@ -786,11 +756,23 @@
                   ※ ほかの部屋も調整中
                 </span>
               </div>
-
             </div>
 
             <div class="info-item">
+              <div class="info-label">
+                参加定員
+              </div>
 
+              <div class="info-value">
+                60名程度<br />
+
+                <span class="small">
+                  ※ 予定
+                </span>
+              </div>
+            </div>
+
+            <div class="info-item">
               <div class="info-label">
                 主催
               </div>
@@ -798,11 +780,9 @@
               <div class="info-value">
                 多摩.dev
               </div>
-
             </div>
 
             <div class="info-item">
-
               <div class="info-label">
                 形式
               </div>
@@ -810,7 +790,6 @@
               <div class="info-value">
                 オフライン開催
               </div>
-
             </div>
 
           </div>
@@ -832,11 +811,9 @@
     >
 
       <div class="section-header">
-
         <h2>
           このカンファレンスについて
         </h2>
-
       </div>
 
       <div class="grid-2">
@@ -887,11 +864,9 @@
     <section class="section">
 
       <div class="section-header">
-
         <h2>
           プロポーザル募集
         </h2>
-
       </div>
 
       <div class="proposal-note">
@@ -909,11 +884,9 @@
     <section class="section">
 
       <div class="section-header">
-
         <h2>
           キーノート
         </h2>
-
       </div>
 
       <div class="keynote-profile">
@@ -985,7 +958,7 @@
       </div>
 
       <div class="schedule-note">
-        タイムテーブルは後日公開予定です。<br />
+        10:30〜18:30での開催を予定しています。<br />
         オープニング、キーノート、セッション、LTなどを予定しています。
       </div>
 
@@ -1051,11 +1024,9 @@
     >
 
       <div class="section-header">
-
         <h2>
           参加案内
         </h2>
-
       </div>
 
       <p>
@@ -1073,214 +1044,5 @@
     <section class="section">
 
       <div class="section-header">
-
         <h2>
-          スタッフ
-        </h2>
-
-      </div>
-
-      <div class="staff-group">
-
-        <h3 class="staff-group-title">
-          コアスタッフ
-        </h3>
-
-        <div class="staff-list">
-
-          <a
-            class="staff-member"
-            href="https://x.com/asagayanaoki"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1901279065748967425/pBq2NcaN_400x400.jpg"
-              alt="髙橋 直規"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              髙橋 直規
-            </span>
-
-          </a>
-
-        </div>
-
-      </div>
-
-      <div class="staff-group">
-
-        <h3 class="staff-group-title">
-          スタッフ
-        </h3>
-
-        <div class="staff-list">
-
-          <a
-            class="staff-member"
-            href="https://x.com/garagara21kt"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1805836343656038403/bNDDmZN4_400x400.jpg"
-              alt="gara"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              gara
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/keita_kitami_"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/2089337581683245056/-dAvtHpr_400x400.png"
-              alt="フクイ"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              フクイ
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/ykawasaki683"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1651792657226829826/JuvRED-b_400x400.jpg"
-              alt="かわさき"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              かわさき
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/Solti"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1910173390310420480/JYw4LCcx_400x400.jpg"
-              alt="Steve Aoki"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              Steve Aoki
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/massan_mrk"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1946023905186983936/TwQ4voHW_400x400.jpg"
-              alt="massan"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              massan
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/da1chi24"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1961353914449891328/lRiPrwrq_400x400.jpg"
-              alt="daichi"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              daichi
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/yussak213"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1715589056413995008/4Ru9d9mv_400x400.jpg"
-              alt="yussak"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              yussak
-            </span>
-
-          </a>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Footer
-    ========================== -->
-
-    <footer class="footer">
-
-      <p class="footer-links">
-
-        <a href="/events/">
-          イベント履歴へ戻る
-        </a>
-
-        <span> / </span>
-
-        <a href="/">
-          トップへ戻る
-        </a>
-
-      </p>
-
-    </footer>
-
-  </div>
-
-</body>
-</html>
+         
