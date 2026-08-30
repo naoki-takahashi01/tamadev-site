@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>TechTAMA 2026 Conference | 多摩.dev</title>
+  <title>TechTAMA 2026 Conference | 多摩.dev #6</title>
 
   <meta
     name="description"
-    content="2026年12月13日開催。多摩.devが主催する地域技術カンファレンス「TechTAMA 2026 Conference」のご案内ページです。"
+    content="2026年12月13日開催。多摩.dev #6として開催する地域技術カンファレンス「TechTAMA 2026 Conference」のご案内ページです。"
   />
 
   <link rel="stylesheet" href="/style.css" />
@@ -128,7 +128,7 @@
     .hero-title-area {
       position: relative;
       z-index: 1;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .conference-title {
@@ -175,7 +175,15 @@
       align-items: center;
     }
 
+    /*
+      tama.dev #6
+    */
+
     .brand-mark-small {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+
       margin: 0 0 18px;
 
       font-size: clamp(2.5rem, 4.4vw, 3.4rem);
@@ -184,12 +192,24 @@
       letter-spacing: -0.02em;
     }
 
+    .brand-name {
+      white-space: nowrap;
+    }
+
     .brand-mark-small .orange {
       color: var(--tamadev-orange);
     }
 
     .brand-mark-small .blue {
       color: var(--tamadev-blue);
+    }
+
+    .brand-episode {
+      color: var(--tamadev-blue);
+
+      font-size: 0.52em;
+      font-weight: 700;
+      letter-spacing: 0;
     }
 
     .hero-tagline {
@@ -251,19 +271,23 @@
 
     .info-list {
       display: grid;
-      gap: 12px;
+      gap: 0;
     }
 
     .info-item {
       display: grid;
-      grid-template-columns: 88px 1fr;
-      gap: 10px;
+      grid-template-columns: 96px 1fr;
+      gap: 14px;
 
-      align-items: start;
+      align-items: baseline;
 
-      padding-bottom: 12px;
+      padding: 14px 0;
 
       border-bottom: 1px dashed var(--tamadev-border);
+    }
+
+    .info-item:first-child {
+      padding-top: 4px;
     }
 
     .info-item:last-child {
@@ -281,6 +305,15 @@
     .info-value {
       color: var(--tamadev-text);
       font-weight: 700;
+    }
+
+    .info-note {
+      margin-left: 6px;
+
+      color: var(--tamadev-subtext);
+
+      font-size: 0.82rem;
+      font-weight: 400;
     }
 
     /*
@@ -566,13 +599,6 @@
       text-decoration: underline;
     }
 
-    .small {
-      color: var(--tamadev-subtext);
-
-      font-size: 0.92rem;
-      font-weight: 400;
-    }
-
     /*
       Tablet
     */
@@ -584,6 +610,11 @@
 
       .hero-inner {
         grid-template-columns: 1.2fr 0.9fr;
+      }
+
+      .info-item {
+        grid-template-columns: 82px 1fr;
+        gap: 10px;
       }
     }
 
@@ -623,8 +654,13 @@
         padding-top: 22px !important;
       }
 
+      .brand-mark-small {
+        gap: 8px;
+      }
+
       .info-item {
         grid-template-columns: 78px 1fr;
+        gap: 8px;
       }
     }
 
@@ -653,6 +689,11 @@
 
       .staff-name {
         font-size: 0.78rem;
+      }
+
+      .info-note {
+        margin-left: 4px;
+        font-size: 0.76rem;
       }
     }
   </style>
@@ -695,9 +736,15 @@
 
           <div
             class="brand-mark-small"
-            aria-label="tama.dev"
+            aria-label="tama.dev #6"
           >
-            <span class="orange">tama</span><span class="blue">.dev</span>
+            <span class="brand-name">
+              <span class="orange">tama</span><span class="blue">.dev</span>
+            </span>
+
+            <span class="brand-episode">
+              #6
+            </span>
           </div>
 
           <div class="hero-tagline">
@@ -705,8 +752,11 @@
           </div>
 
           <p class="hero-text">
-            多摩.devが主催する、多摩地域の技術カンファレンスです。<br />
-            多摩にエンジニアリングに関係する人たちが集まり、
+            TechTAMA 2026 Conferenceは、
+            多摩.dev #6として開催する、多摩地域の技術カンファレンスです。<br />
+
+            いつもの多摩.devより少し大きなかたちで、
+            エンジニアリングに関わる人たちが多摩に集まり、
             互いの学びを豊かにする1日をつくります。
           </p>
 
@@ -736,11 +786,8 @@
               </div>
 
               <div class="info-value">
-                10:30〜18:30<br />
-
-                <span class="small">
-                  ※ 予定
-                </span>
+                10:30〜18:30
+                <span class="info-note">（予定）</span>
               </div>
             </div>
 
@@ -750,11 +797,8 @@
               </div>
 
               <div class="info-value">
-                関戸公民館 大会議室<br />
-
-                <span class="small">
-                  ※ ほかの部屋も調整中
-                </span>
+                関戸公民館 大会議室
+                <span class="info-note">（ほかの部屋も調整中）</span>
               </div>
             </div>
 
@@ -764,11 +808,8 @@
               </div>
 
               <div class="info-value">
-                60名程度<br />
-
-                <span class="small">
-                  ※ 予定
-                </span>
+                60名程度
+                <span class="info-note">（予定）</span>
               </div>
             </div>
 
@@ -779,16 +820,6 @@
 
               <div class="info-value">
                 多摩.dev
-              </div>
-            </div>
-
-            <div class="info-item">
-              <div class="info-label">
-                形式
-              </div>
-
-              <div class="info-value">
-                オフライン開催
               </div>
             </div>
 
@@ -811,9 +842,11 @@
     >
 
       <div class="section-header">
+
         <h2>
           このカンファレンスについて
         </h2>
+
       </div>
 
       <div class="grid-2">
@@ -843,9 +876,12 @@
           <p>
             多摩に集まり、互いの学びを豊かにする。<br />
 
-            通常の多摩.devより多くの人が交わり、
+            TechTAMA 2026 Conferenceは、
+            多摩.devの12月回をいつもより少し大きくした、
+            多摩.dev #6として開催します。<br />
+
             それぞれの経験や知識を持ち寄りながら、
-            新しい学びや出会いを生み出す場にしたいと考えています。<br />
+            新しい学びや出会いが生まれる場にしたいと考えています。<br />
 
             多摩だからこそ生まれる、
             技術と人のつながりを楽しむ1日にします。
@@ -857,6 +893,7 @@
 
     </section>
 
+
     <!-- =========================
          Proposal
     ========================== -->
@@ -864,18 +901,23 @@
     <section class="section">
 
       <div class="section-header">
+
         <h2>
           プロポーザル募集
         </h2>
+
       </div>
 
       <div class="proposal-note">
         TechTAMA 2026 Conferenceでは、
         当日お話しいただくプロポーザルを募集予定です。<br />
-        募集内容や応募方法については、詳細が決まり次第お知らせします。
+
+        募集内容や応募方法については、
+        詳細が決まり次第お知らせします。
       </div>
 
     </section>
+
 
     <!-- =========================
          Keynote
@@ -884,9 +926,11 @@
     <section class="section">
 
       <div class="section-header">
+
         <h2>
           キーノート
         </h2>
+
       </div>
 
       <div class="keynote-profile">
@@ -939,6 +983,7 @@
 
     </section>
 
+
     <!-- =========================
          Timetable
     ========================== -->
@@ -959,10 +1004,13 @@
 
       <div class="schedule-note">
         10:30〜18:30での開催を予定しています。<br />
-        オープニング、キーノート、セッション、LTなどを予定しています。
+
+        オープニング、キーノート、
+        セッション、LTなどを予定しています。
       </div>
 
     </section>
+
 
     <!-- =========================
          Venue
@@ -992,6 +1040,7 @@
 
           <p>
             メイン会場として大会議室を利用します。<br />
+
             ほかの部屋についても現在調整中です。
           </p>
 
@@ -1005,6 +1054,7 @@
 
           <p>
             京王線 聖蹟桜ヶ丘駅より徒歩約1分の場所にあります。<br />
+
             会場は、ヴィータ・コミューネ8Fにあります。
           </p>
 
@@ -1013,6 +1063,7 @@
       </div>
 
     </section>
+
 
     <!-- =========================
          Join
@@ -1024,18 +1075,22 @@
     >
 
       <div class="section-header">
+
         <h2>
           参加案内
         </h2>
+
       </div>
 
       <p>
         参加申込ページは準備中です。<br />
+
         公開できる状態になりましたら、
         多摩.dev 公式サイトやSNSでお知らせします。
       </p>
 
     </section>
+
 
     <!-- =========================
          Staff
@@ -1044,5 +1099,215 @@
     <section class="section">
 
       <div class="section-header">
+
         <h2>
-         
+          スタッフ
+        </h2>
+
+      </div>
+
+      <div class="staff-group">
+
+        <h3 class="staff-group-title">
+          コアスタッフ
+        </h3>
+
+        <div class="staff-list">
+
+          <a
+            class="staff-member"
+            href="https://x.com/asagayanaoki"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1901279065748967425/pBq2NcaN_400x400.jpg"
+              alt="髙橋 直規"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              髙橋 直規
+            </span>
+
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="staff-group">
+
+        <h3 class="staff-group-title">
+          スタッフ
+        </h3>
+
+        <div class="staff-list">
+
+          <a
+            class="staff-member"
+            href="https://x.com/garagara21kt"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1805836343656038403/bNDDmZN4_400x400.jpg"
+              alt="gara"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              gara
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/keita_kitami_"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/2089337581683245056/-dAvtHpr_400x400.png"
+              alt="フクイ"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              フクイ
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/ykawasaki683"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1651792657226829826/JuvRED-b_400x400.jpg"
+              alt="かわさき"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              かわさき
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/Solti"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1910173390310420480/JYw4LCcx_400x400.jpg"
+              alt="Steve Aoki"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              Steve Aoki
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/massan_mrk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1946023905186983936/TwQ4voHW_400x400.jpg"
+              alt="massan"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              massan
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/da1chi24"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1961353914449891328/lRiPrwrq_400x400.jpg"
+              alt="daichi"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              daichi
+            </span>
+
+          </a>
+
+          <a
+            class="staff-member"
+            href="https://x.com/yussak213"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <img
+              src="https://pbs.twimg.com/profile_images/1715589056413995008/4Ru9d9mv_400x400.jpg"
+              alt="yussak"
+              class="staff-avatar"
+            />
+
+            <span class="staff-name">
+              yussak
+            </span>
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         Footer
+    ========================== -->
+
+    <footer class="footer">
+
+      <p class="footer-links">
+
+        <a href="/events/">
+          イベント履歴へ戻る
+        </a>
+
+        <span> / </span>
+
+        <a href="/">
+          トップへ戻る
+        </a>
+
+      </p>
+
+    </footer>
+
+  </div>
+
+</body>
+</html>
