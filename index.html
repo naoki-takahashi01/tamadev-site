@@ -1,1333 +1,229 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>TechTAMA 2026 Conference | 多摩.dev #6</title>
-
-  <meta
-    name="description"
-    content="2026年12月13日開催。多摩.dev #6として開催する地域技術カンファレンス「TechTAMA 2026 Conference」のご案内ページです。"
-  />
-
-  <!-- OGP -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta
-    property="og:title"
-    content="TechTAMA 2026 Conference | 多摩.dev #6"
-  />
-  <meta
-    property="og:description"
-    content="2026年12月13日、聖蹟桜ヶ丘・関戸公民館で開催。多摩.dev #6として開催する地域技術カンファレンスです。"
-  />
-  <meta
-    property="og:url"
-    content="https://tamadev.jp/events/20261213/"
-  />
-  <meta
-    property="og:image"
-    content="https://tamadev.jp/events/20261213/techtama-2026-banner.png"
-  />
+  <meta property="og:site_name" content="多摩.dev" />
+  <meta property="og:title" content="多摩.dev | 多摩のエンジニアコミュニティ" />
+  <meta property="og:description" content="多摩地域で勉強会を開催。ゆったりと知見や経験を共有する場をつくります。" />
+  <meta property="og:url" content="https://tamadev.jp/" />
+  <meta property="og:image" content="https://tamadev.jp/hero.png" />
 
+  <!-- Twitter Card（X） -->
   <meta name="twitter:card" content="summary_large_image" />
-
-  <link rel="stylesheet" href="/style.css" />
-
-  <style>
-    :root {
-      --tamadev-orange: #e47b47;
-      --tamadev-blue: #283f7b;
-      --tamadev-sky: #73bfdc;
-      --tamadev-bg: #f4fbfa;
-      --tamadev-mint: #dff2ef;
-      --tamadev-card: #ffffff;
-      --tamadev-text: #22313f;
-      --tamadev-subtext: #5d6b78;
-      --tamadev-border: #d7e7e4;
-      --tamadev-shadow: 0 10px 30px rgba(26, 49, 69, 0.08);
-      --tamadev-radius: 20px;
-      --container: 1100px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-
-      color: var(--tamadev-text);
-
-      background:
-        radial-gradient(
-          circle at top right,
-          rgba(115, 191, 220, 0.18),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at top left,
-          rgba(228, 123, 71, 0.10),
-          transparent 24%
-        ),
-        var(--tamadev-bg);
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Hiragino Sans",
-        "Hiragino Kaku Gothic ProN",
-        "Yu Gothic",
-        Meiryo,
-        sans-serif;
-
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .page {
-      width: min(calc(100% - 32px), var(--container));
-      margin: 0 auto;
-    }
-
-    /*
-      Accessibility
-    */
-
-    .visually-hidden {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    }
-
-    /*
-      Top
-    */
-
-    .topbar {
-      padding: 18px 0 0;
-      font-size: 0.95rem;
-    }
-
-    .topbar a {
-      color: var(--tamadev-subtext);
-      text-decoration: none;
-    }
-
-    .topbar a:hover {
-      text-decoration: underline;
-    }
-
-    /*
-      Key Visual
-    */
-
-    .conference-visual {
-      overflow: hidden;
-
-      margin: 18px 0 24px;
-
-      background: #fff;
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: 28px;
-
-      box-shadow: var(--tamadev-shadow);
-    }
-
-    .conference-visual img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    /*
-      Event Summary
-    */
-
-    .event-summary {
-      display: grid;
-      grid-template-columns: 1.35fr 0.95fr;
-      gap: 32px;
-
-      align-items: center;
-
-      margin: 0 0 28px;
-      padding: 30px 28px;
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.94) 0%,
-          rgba(237, 248, 247, 0.94) 100%
-        );
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: 24px;
-
-      box-shadow: var(--tamadev-shadow);
-    }
-
-    /*
-      Summary title
-    */
-
-    .summary-title {
-      margin: 0 0 6px;
-      padding: 0;
-
-      color: var(--tamadev-blue);
-
-      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-      font-weight: 800;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-    }
-
-    .summary-title::before,
-    .summary-title::after {
-      content: none !important;
-      display: none !important;
-    }
-
-    /*
-      TechTAMA
-    */
-
-    .tech-tama-word {
-      white-space: nowrap;
-    }
-
-    .tama-accent {
-      color: var(--tamadev-orange);
-    }
-
-    .conference-expansion {
-      margin: 0 0 18px;
-
-      color: var(--tamadev-subtext);
-
-      font-size: clamp(0.92rem, 1.8vw, 1.08rem);
-      font-weight: 600;
-      line-height: 1.6;
-      letter-spacing: 0.01em;
-    }
-
-    .tama-initial {
-      color: var(--tamadev-orange);
-      font-weight: 800;
-    }
-
-    .hero-tagline {
-      display: inline-block;
-
-      margin: 0 0 18px;
-      padding: 8px 14px;
-
-      background: rgba(115, 191, 220, 0.16);
-
-      border-radius: 999px;
-
-      color: var(--tamadev-blue);
-
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    .hero-text {
-      margin: 0;
-
-      color: var(--tamadev-subtext);
-
-      font-size: 1rem;
-      line-height: 1.9;
-    }
-
-    /*
-      開催情報
-    */
-
-    .hero-side {
-      padding: 22px 20px;
-
-      background: rgba(255, 255, 255, 0.82);
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: 20px;
-    }
-
-    .hero-side h2 {
-      margin: 0 0 16px;
-      padding: 0;
-
-      color: var(--tamadev-blue);
-
-      font-size: 1.05rem;
-      font-weight: 700;
-      line-height: 1.4;
-    }
-
-    .hero-side h2::before,
-    .hero-side h2::after,
-    .section-header h2::before,
-    .section-header h2::after {
-      content: none !important;
-      display: none !important;
-    }
-
-    .info-list {
-      display: grid;
-      gap: 0;
-    }
-
-    .info-item {
-      display: grid;
-      grid-template-columns: 96px 1fr;
-      gap: 14px;
-
-      align-items: baseline;
-
-      padding: 14px 0;
-
-      border-bottom: 1px dashed var(--tamadev-border);
-    }
-
-    .info-item:first-child {
-      padding-top: 4px;
-    }
-
-    .info-item:last-child {
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .info-label {
-      color: var(--tamadev-subtext);
-
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
-    .info-value {
-      color: var(--tamadev-text);
-
-      font-weight: 700;
-    }
-
-    .info-note {
-      margin-left: 6px;
-
-      color: var(--tamadev-subtext);
-
-      font-size: 0.82rem;
-      font-weight: 400;
-    }
-
-    /*
-      Sections
-    */
-
-    .section {
-      margin: 28px 0;
-      padding: 28px 24px;
-
-      background: var(--tamadev-card);
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: var(--tamadev-radius);
-
-      box-shadow: var(--tamadev-shadow);
-    }
-
-    .section-header {
-      margin-bottom: 18px;
-    }
-
-    .section-header h2 {
-      margin: 0 0 8px;
-      padding: 0;
-
-      color: var(--tamadev-blue);
-
-      font-size: 1.65rem;
-      font-weight: 700;
-      line-height: 1.3;
-    }
-
-    .section-header p {
-      margin: 0;
-
-      color: var(--tamadev-subtext);
-
-      line-height: 1.9;
-    }
-
-    .section > p {
-      margin: 0 0 14px;
-
-      color: var(--tamadev-subtext);
-
-      line-height: 1.9;
-    }
-
-    .section > p:last-child {
-      margin-bottom: 0;
-    }
-
-    /*
-      Overview
-    */
-
-    #overview {
-      padding-top: 28px !important;
-    }
-
-    #overview > .section-header {
-      position: static !important;
-
-      margin: 0 0 18px !important;
-      padding: 0 !important;
-
-      transform: none !important;
-    }
-
-    #overview > .section-header h2 {
-      position: static !important;
-
-      top: auto !important;
-      left: auto !important;
-
-      margin: 0 0 8px !important;
-      padding: 0 !important;
-
-      line-height: 1.3 !important;
-
-      transform: none !important;
-    }
-
-    #overview > .section-header h2::before,
-    #overview > .section-header h2::after {
-      content: none !important;
-      display: none !important;
-    }
-
-    /*
-      Cards
-    */
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      padding: 20px;
-
-      background: #fff;
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: 18px;
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-
-      color: var(--tamadev-text);
-
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .card p {
-      margin: 0;
-
-      color: var(--tamadev-subtext);
-
-      line-height: 1.9;
-    }
-
-    /*
-      Proposal / Schedule
-    */
-
-    .proposal-note,
-    .schedule-note {
-      padding: 18px;
-
-      background: #f9fcfc;
-
-      border: 1px dashed var(--tamadev-border);
-      border-radius: 16px;
-
-      color: var(--tamadev-subtext);
-
-      line-height: 1.9;
-    }
-
-    /*
-      Keynote
-    */
-
-    .keynote-profile {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 24px;
-
-      align-items: start;
-    }
-
-    .keynote-image {
-      display: block;
-
-      width: 160px;
-      height: 160px;
-
-      object-fit: cover;
-
-      border-radius: 20px;
-    }
-
-    .keynote-content h3 {
-      margin: 0 0 8px;
-
-      color: var(--tamadev-text);
-
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .keynote-content p {
-      margin: 0 0 12px;
-
-      color: var(--tamadev-subtext);
-
-      line-height: 1.9;
-    }
-
-    .keynote-content p:last-child {
-      margin-bottom: 0;
-    }
-
-    .keynote-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .keynote-links a {
-      color: var(--tamadev-blue);
-
-      font-weight: 700;
-    }
-
-    /*
-      Staff
-    */
-
-    .staff-group + .staff-group {
-      margin-top: 34px;
-    }
-
-    .staff-group-title {
-      display: inline-block;
-
-      margin: 0 0 20px;
-      padding: 5px 12px;
-
-      background: var(--tamadev-blue);
-
-      border-radius: 999px;
-
-      color: #fff;
-
-      font-size: 0.9rem;
-      font-weight: 700;
-      line-height: 1.4;
-    }
-
-    .staff-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px 18px;
-    }
-
-    .staff-member {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      width: 96px;
-
-      color: var(--tamadev-text);
-
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .staff-avatar {
-      display: block;
-
-      width: 68px;
-      height: 68px;
-
-      margin-bottom: 8px;
-
-      object-fit: cover;
-
-      border: 1px solid var(--tamadev-border);
-      border-radius: 50%;
-    }
-
-    .staff-name {
-      font-size: 0.84rem;
-      line-height: 1.4;
-    }
-
-    .staff-member:hover .staff-name {
-      text-decoration: underline;
-    }
-
-    /*
-      Footer
-    */
-
-    .footer {
-      padding: 10px 0 48px;
-
-      color: var(--tamadev-subtext);
-
-      font-size: 0.95rem;
-    }
-
-    .footer-links {
-      margin: 0;
-    }
-
-    .footer-links a {
-      color: var(--tamadev-blue);
-
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
-
-    /*
-      Tablet
-    */
-
-    @media (max-width: 960px) {
-      .event-summary {
-        grid-template-columns: 1.2fr 0.9fr;
-      }
-
-      .info-item {
-        grid-template-columns: 82px 1fr;
-        gap: 10px;
-      }
-    }
-
-    /*
-      Mobile
-    */
-
-    @media (max-width: 760px) {
-      .conference-visual {
-        margin-top: 14px;
-        border-radius: 20px;
-      }
-
-      .event-summary {
-        grid-template-columns: 1fr;
-
-        gap: 24px;
-
-        padding: 24px 20px;
-      }
-
-      .summary-title {
-        font-size: clamp(1.7rem, 7vw, 2.2rem);
-      }
-
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 22px 18px;
-      }
-
-      #overview {
-        padding-top: 22px !important;
-      }
-
-      .info-item {
-        grid-template-columns: 78px 1fr;
-        gap: 8px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .conference-expansion {
-        font-size: 0.86rem;
-      }
-
-      .hero-tagline {
-        border-radius: 14px;
-      }
-
-      .keynote-profile {
-        grid-template-columns: 1fr;
-      }
-
-      .keynote-image {
-        width: 120px;
-        height: 120px;
-      }
-
-      .staff-list {
-        gap: 20px 12px;
-      }
-
-      .staff-member {
-        width: 78px;
-      }
-
-      .staff-avatar {
-        width: 60px;
-        height: 60px;
-      }
-
-      .staff-name {
-        font-size: 0.78rem;
-      }
-
-      .info-note {
-        margin-left: 4px;
-        font-size: 0.76rem;
-      }
-    }
-  </style>
+  <meta name="twitter:site" content="@tamadev_" />
+  <meta name="twitter:title" content="多摩.dev | 多摩のエンジニアコミュニティ" />
+  <meta name="twitter:description" content="多摩地域で勉強会を開催。ゆったりと知見や経験を共有する場をつくります。" />
+  <meta name="twitter:image" content="https://tamadev.jp/hero.png" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ0E6TCXNH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FQ0E6TCXNH');
+  </script>
+
+  <title>多摩.dev</title>
+  <meta name="description" content="多摩で学びを循環するコミュニティ" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./chat.css" />
+  <link rel="icon" href="./favicon.ico" sizes="any">
 </head>
-
 <body>
+  <main class="container">
+    <div class="card">
+      <img class="heroImage" src="./hero.png" alt="多摩.dev" />
+      <header class="hero" aria-label="多摩.dev">
+        <h1>多摩.dev</h1>
+        <p class="lead">
+          多摩地域のエンジニアが、気軽に集まり、学び、つながるコミュニティです。<br />
+          初参加歓迎です。LT登壇なしでも参加できます。多摩地域外からの参加も歓迎です。
+        </p>
+      </header>
 
-  <div class="page">
+      <section class="section" aria-labelledby="next">
+        <h2 id="next">次回開催情報</h2>
+        <a href="https://tamadev.connpass.com/event/401152/" target="_blank" rel="noopener noreferrer">
+          <strong>2026/09/19（土）</strong> 関戸公民館＠聖蹟桜ヶ丘
+        </a>
+      </section>
 
-    <div class="topbar">
-      <a href="/events/">
-        ← イベント一覧へ戻る
-      </a>
+      <section class="section" aria-labelledby="media">
+        <h2 id="media">掲載情報</h2>
+        <div class="links">
+          <a class="link-card" href="https://www.city.tama.lg.jp/shisei/johokoukai/1005203/r4/1019931/1020330.html" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">たま広報</div>
+            <p class="link-desc">令和8年6月20日号に多摩.devを掲載いただきました</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="links">
+        <h2 id="links">公式リンク</h2>
+        <div class="links">
+          <a class="link-card" href="https://x.com/tamadev_" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">X</div>
+            <p class="link-desc">公式アカウント・開催情報や活動のお知らせ</p>
+          </a>
+          <a class="link-card" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">connpass</div>
+            <p class="link-desc">開催情報・参加申し込み</p>
+          </a>
+          <a class="link-card" href="https://discord.com/invite/X9R3zVrtxx" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">Discord</div>
+            <p class="link-desc">参加者コミュニケーション</p>
+          </a>
+          <a class="link-card" href="https://evet.jp/c/tamadev" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">Evet</div>
+            <p class="link-desc">コミュニティページ</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="int">
+        <h2 id="int">発起の想い</h2>
+        <script defer class="speakerdeck-embed" data-id="2a65af301a5247c5a5d93443d16cb17f" data-ratio="1.7777777777777777" src="//speakerdeck.com/assets/embed.js"></script>
+      </section>
+
+      <section class="section" aria-labelledby="event">
+        <h2 id="event">イベント・地域マップ</h2>
+        <div class="links">
+          <a class="link-card" href="/events/">
+            <div class="link-title">イベント</div>
+            <p class="link-desc">今後開催予定のイベントと過去イベントについて</p>
+          </a>
+
+          <a class="link-card" href="/map/">
+            <div class="link-title">多摩.dev 開催地・おすすめスポットマップ</div>
+            <p class="link-desc">
+              イベントの開催地や開催候補、コミュニティで紹介されたおすすめスポット
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="support">
+        <h2 id="support">ご協力のお願い</h2>
+        <div class="links">
+          <a class="link-card" href="/support/" aria-label="会場提供・活動協力について">
+            <div class="link-title">会場提供・活動協力について</div>
+            <p class="link-desc">
+              ご協力いただける企業・団体の方へ
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="contact">
+        <h2 id="contact">お問い合わせ</h2>
+        <div class="links">
+          <a class="link-card" href="mailto:contact@tamadev.jp">
+            <div class="link-title">メールでのお問い合わせ</div>
+            <p class="link-desc">
+              会場提供、取材、連携のご相談など<br />
+              contact@tamadev.jp
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="ops">
+        <h2 id="ops">運営</h2>
+        <p class="owner">
+          <strong>髙橋直規（幡ヶ谷亭直吉）</strong>
+        </p>
+        <p class="owner-desc">
+          多摩.devの発起人・運営者です。活動内容やプロフィールは個人サイトにまとめています。
+        </p>
+        <div class="actions">
+          <a class="btn btn-secondary" href="https://hatagayatei.com/" target="_blank" rel="noopener noreferrer">
+            個人サイト
+          </a>
+          <a class="btn btn-secondary" href="https://x.com/asagayanaoki" target="_blank" rel="noopener noreferrer">
+            個人X
+          </a>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 多摩.dev</span>
+        <span class="mini">Last updated: <span id="lastUpdated">—</span></span>
+      </footer>
     </div>
+  </main>
 
-    <!-- =========================
-         Key Visual
-    ========================== -->
+  <button
+    id="tamanaviLauncher"
+    class="tamanavi-launcher"
+    type="button"
+    aria-controls="tamanaviPanel"
+    aria-expanded="false"
+  >
+    <img src="/assets/tamanavi.png" alt="" width="46" height="46" />
+    <span class="tamanavi-launcher-label">たまナビに聞く</span>
+  </button>
 
-    <header>
-
-      <h1 class="visually-hidden">
-        TechTAMA 2026 Conference | 多摩.dev #6
-      </h1>
-
-      <div class="conference-visual">
-
-        <img
-          src="./techtama-2026-banner.png"
-          alt="TechTAMA 2026 Conference。2026年12月13日開催。多摩.dev #6。"
-          width="1648"
-          height="928"
-          loading="eager"
-          fetchpriority="high"
-        />
-
+  <section
+    id="tamanaviPanel"
+    class="tamanavi-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="tamanaviTitle"
+    hidden
+  >
+    <header class="tamanavi-header">
+      <img class="tamanavi-avatar" src="/assets/tamanavi.png" alt="" width="46" height="46" />
+      <div class="tamanavi-heading">
+        <strong id="tamanaviTitle">たまナビ</strong>
+        <small>多摩.dev AI案内人</small>
       </div>
-
+      <button id="tamanaviClose" class="tamanavi-close" type="button" aria-label="チャットを閉じる">×</button>
     </header>
 
-    <!-- =========================
-         Event Summary
-    ========================== -->
-
-    <section class="event-summary">
-
-      <div class="summary-main">
-
-        <h2 class="summary-title">
-          <span class="tech-tama-word">Tech<span class="tama-accent">TAMA</span></span> 2026 Conference
-        </h2>
-
-        <p class="conference-expansion">
-          <span class="tama-initial">T</span>ama,
-          <span class="tama-initial">A</span>ssemble for
-          <span class="tama-initial">M</span>utual Learning and
-          <span class="tama-initial">A</span>ugmentation
-        </p>
-
-        <div class="hero-tagline">
-          都心の代替ではない、多摩で、無理なく開催するエンジニアカンファレンス
-        </div>
-
-        <p class="hero-text">
-          TechTAMA 2026 Conferenceは、
-          多摩.dev #6として開催する、多摩地域の技術カンファレンスです。<br />
-
-          いつもの多摩.devより少し大きなかたちで、
-          エンジニアリングに関わる人たちが多摩に集まり、
-          互いの学びを豊かにする1日をつくります。
-        </p>
-
-      </div>
-
-      <aside class="hero-side">
-
-        <h2>
-          開催情報
-        </h2>
-
-        <div class="info-list">
-
-          <div class="info-item">
-
-            <div class="info-label">
-              開催日
-            </div>
-
-            <div class="info-value">
-              2026年12月13日（日）
-            </div>
-
-          </div>
-
-          <div class="info-item">
-
-            <div class="info-label">
-              時間
-            </div>
-
-            <div class="info-value">
-              10:30〜18:30
-              <span class="info-note">（予定）</span>
-            </div>
-
-          </div>
-
-          <div class="info-item">
-
-            <div class="info-label">
-              会場
-            </div>
-
-            <div class="info-value">
-              関戸公民館 大会議室
-              <span class="info-note">（他調整中）</span>
-            </div>
-
-          </div>
-
-          <div class="info-item">
-
-            <div class="info-label">
-              参加定員
-            </div>
-
-            <div class="info-value">
-              60名程度
-              <span class="info-note">（予定）</span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </aside>
-
-    </section>
-
-    <!-- =========================
-         About
-    ========================== -->
-
-    <section
-      id="overview"
-      class="section"
-    >
-
-      <div class="section-header">
-
-        <h2>
-          このカンファレンスについて
-        </h2>
-
-      </div>
-
-      <div class="grid-2">
-
-        <div class="card">
-
-          <h3>
-            多摩.dev とは
-          </h3>
-
-          <p>
-            多摩地域のエンジニアが、
-            気軽に集まり、学び、つながるコミュニティです。<br />
-
-            エンジニアに限らず、
-            プロダクト開発に関わる方々を歓迎しています。
-          </p>
-
-        </div>
-
-        <div class="card">
-
-          <h3>
-            TechTAMA Conferenceとして目指すこと
-          </h3>
-
-          <p>
-            多摩に集まり、互いの学びを豊かにする。<br />
-
-            TechTAMA 2026 Conferenceは、
-            多摩.devの12月回をいつもより少し大きくした、
-            多摩.dev #6として開催します。<br />
-
-            それぞれの経験や知識を持ち寄りながら、
-            新しい学びや出会いが生まれる場にしたいと考えています。<br />
-
-            多摩だからこそ生まれる、
-            技術と人のつながりを楽しむ1日にします。
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Proposal
-    ========================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          プロポーザル募集
-        </h2>
-
-      </div>
-
-      <div class="proposal-note">
-
-        TechTAMA 2026 Conferenceでは、
-        当日お話しいただくプロポーザルを募集予定です。<br />
-
-        募集内容や応募方法については、
-        詳細が決まり次第お知らせします。
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Keynote
-    ========================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          キーノート
-        </h2>
-
-      </div>
-
-      <div class="keynote-profile">
-
-        <img
-          src="https://pbs.twimg.com/profile_images/1190056739414192135/Lp82u-yj_400x400.jpg"
-          alt="こうのさん"
-          class="keynote-image"
-        />
-
-        <div class="keynote-content">
-
-          <h3>
-            こうのさん
-          </h3>
-
-          <p class="keynote-links">
-
-            <a
-              href="https://x.com/hk_it7"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              X @hk_it7
-            </a>
-
-            <span>
-              ／
-            </span>
-
-            <a
-              href="https://toukatsu.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              東葛.dev
-            </a>
-
-          </p>
-
-          <p>
-            東葛地域を中心に活動するエンジニアコミュニティ
-            「東葛.dev」を運営する、こうのさんを
-            キーノートスピーカーとしてお迎えします。
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Timetable
-    ========================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          タイムテーブル
-        </h2>
-
-        <p>
-          現在調整中です。公開までお待ちください。
-        </p>
-
-      </div>
-
-      <div class="schedule-note">
-
-        10:30〜18:30での開催を予定しています。<br />
-
-        オープニング、キーノート、
-        セッション、LTなどを予定しています。
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Venue
-    ========================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          会場・アクセス
-        </h2>
-
-        <p>
-          聖蹟桜ヶ丘の関戸公民館で開催します。
-        </p>
-
-      </div>
-
-      <div class="grid-2">
-
-        <div class="card">
-
-          <h3>
-            関戸公民館 大会議室
-          </h3>
-
-          <p>
-            メイン会場として大会議室を利用します。<br />
-
-            ほかの部屋についても現在調整中です。
-          </p>
-
-        </div>
-
-        <div class="card">
-
-          <h3>
-            アクセス
-          </h3>
-
-          <p>
-            京王線 聖蹟桜ヶ丘駅より徒歩約1分の場所にあります。<br />
-
-            会場は、ヴィータ・コミューネ8Fにあります。
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Join
-    ========================== -->
-
-    <section
-      id="join"
-      class="section"
-    >
-
-      <div class="section-header">
-
-        <h2>
-          参加案内
-        </h2>
-
-      </div>
-
-      <p>
-        参加申込ページは準備中です。<br />
-
-        公開できる状態になりましたら、
-        多摩.dev 公式サイトやSNSでお知らせします。
-      </p>
-
-    </section>
-
-    <!-- =========================
-         Staff
-    ========================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          スタッフ
-        </h2>
-
-      </div>
-
-      <div class="staff-group">
-
-        <h3 class="staff-group-title">
-          コアスタッフ
-        </h3>
-
-        <div class="staff-list">
-
-          <a
-            class="staff-member"
-            href="https://x.com/asagayanaoki"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1901279065748967425/pBq2NcaN_400x400.jpg"
-              alt="髙橋 直規"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              髙橋 直規
-            </span>
-
-          </a>
-
-        </div>
-
-      </div>
-
-      <div class="staff-group">
-
-        <h3 class="staff-group-title">
-          スタッフ
-        </h3>
-
-        <div class="staff-list">
-
-          <a
-            class="staff-member"
-            href="https://x.com/garagara21kt"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1805836343656038403/bNDDmZN4_400x400.jpg"
-              alt="gara"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              gara
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/keita_kitami_"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/2089337581683245056/-dAvtHpr_400x400.png"
-              alt="フクイ"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              フクイ
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/ykawasaki683"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1651792657226829826/JuvRED-b_400x400.jpg"
-              alt="かわさき"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              かわさき
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/Solti"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1910173390310420480/JYw4LCcx_400x400.jpg"
-              alt="Steve Aoki"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              Steve Aoki
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/massan_mrk"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1946023905186983936/TwQ4voHW_400x400.jpg"
-              alt="massan"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              massan
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/da1chi24"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1961353914449891328/lRiPrwrq_400x400.jpg"
-              alt="daichi"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              daichi
-            </span>
-
-          </a>
-
-          <a
-            class="staff-member"
-            href="https://x.com/yussak213"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <img
-              src="https://pbs.twimg.com/profile_images/1715589056413995008/4Ru9d9mv_400x400.jpg"
-              alt="yussak"
-              class="staff-avatar"
-            />
-
-            <span class="staff-name">
-              yussak
-            </span>
-
-          </a>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- =========================
-         Footer
-    ========================== -->
-
-    <footer class="footer">
-
-      <p class="footer-links">
-
-        <a href="/events/">
-          イベント履歴へ戻る
-        </a>
-
-        <span> / </span>
-
-        <a href="/">
-          トップへ戻る
-        </a>
-
-      </p>
-
-    </footer>
-
-  </div>
-
+    <div id="tamanaviMessages" class="tamanavi-messages" role="list" aria-live="polite">
+      <div class="tamanavi-message is-assistant" role="listitem">こんにちは！多摩.dev AI案内人の「たまナビ」です。
+多摩.devのイベントや登壇、多摩地域のおすすめスポットをご案内します。何を知りたいですか？</div>
+    </div>
+
+    <div class="tamanavi-suggestions" aria-label="質問例">
+      <button class="tamanavi-suggestion" type="button" data-question="次回の多摩.devはいつ？">次回はいつ？</button>
+      <button class="tamanavi-suggestion" type="button" data-action="choose-talk-search">過去の登壇を探す</button>
+      <button class="tamanavi-suggestion" type="button" data-action="choose-spot-area">おすすめスポット</button>
+    </div>
+
+    <form id="tamanaviForm" class="tamanavi-form">
+      <input
+        id="tamanaviInput"
+        class="tamanavi-input"
+        name="question"
+        type="text"
+        maxlength="200"
+        autocomplete="off"
+        placeholder="多摩.devや多摩地域について質問"
+        aria-label="たまナビへの質問"
+        required
+      />
+      <button id="tamanaviSend" class="tamanavi-send" type="submit">送信</button>
+    </form>
+    <p class="tamanavi-notice">AIによる案内です。最新情報はリンク先をご確認ください。質問は1端末につき1日10回までです。個人情報は入力しないでください。</p>
+  </section>
+
+  <script>
+    const d = new Date(document.lastModified);
+    if (!isNaN(d.getTime())) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      document.getElementById("lastUpdated").textContent = `${y}/${m}/${day}`;
+    }
+  </script>
+
+  <!-- Worker公開後、YOUR-SUBDOMAINをCloudflareのサブドメインへ変更してください。 -->
+  <script src="./chat.js" data-api-endpoint="https://tamadev-ai.hiliteeternal.workers.dev/chat"></script>
 </body>
 </html>
