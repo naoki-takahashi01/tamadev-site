@@ -179,8 +179,30 @@
       box-shadow: var(--tamadev-shadow);
     }
 
+    /*
+      Summary title
+    */
+
+    .summary-title {
+      margin: 0 0 6px;
+      padding: 0;
+
+      color: var(--tamadev-blue);
+
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .summary-title::before,
+    .summary-title::after {
+      content: none !important;
+      display: none !important;
+    }
+
     .conference-expansion {
-      margin: 0 0 14px;
+      margin: 0 0 18px;
 
       color: var(--tamadev-subtext);
 
@@ -624,6 +646,10 @@
         padding: 24px 20px;
       }
 
+      .summary-title {
+        font-size: clamp(1.7rem, 7vw, 2.2rem);
+      }
+
       .grid-2 {
         grid-template-columns: 1fr;
       }
@@ -728,6 +754,10 @@
     <section class="event-summary">
 
       <div class="summary-main">
+
+        <h2 class="summary-title">
+          TechTAMA 2026 Conference
+        </h2>
 
         <p class="conference-expansion">
           <span class="tama-initial">T</span>ama,
