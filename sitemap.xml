@@ -2,22 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://tamadev.jp/</loc>
-    <lastmod>2026-03-07</lastmod>
   </url>
+
+  <url>
+    <loc>https://tamadev.jp/code-of-conduct/</loc>
+  </url>
+
   <url>
     <loc>https://tamadev.jp/events/</loc>
-    <lastmod>2026-03-07</lastmod>
   </url>
+
   <url>
     <loc>https://tamadev.jp/events/20260226/</loc>
-    <lastmod>2026-02-26</lastmod>
   </url>
+
   <url>
     <loc>https://tamadev.jp/events/20260424/</loc>
-    <lastmod>2026-03-08</lastmod>
   </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20260517/</loc>
+  </url>
+
   <url>
     <loc>https://tamadev.jp/events/20260612/</loc>
-    <lastmod>2026-03-08</lastmod>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20260718/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20260807/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20260919/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20261016/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/events/20261213/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/map/</loc>
+  </url>
+
+  <url>
+    <loc>https://tamadev.jp/support/</loc>
   </url>
 </urlset>
