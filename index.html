@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="多摩.dev" />
@@ -10,9 +11,10 @@
   <meta property="og:description" content="多摩地域で勉強会を開催。ゆったりと知見や経験を共有する場をつくります。" />
   <meta property="og:url" content="https://tamadev.jp/" />
   <meta property="og:image" content="https://tamadev.jp/hero.png" />
-  
+
   <!-- Twitter Card（X） -->
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@tamadev_" />
   <meta name="twitter:title" content="多摩.dev | 多摩のエンジニアコミュニティ" />
   <meta name="twitter:description" content="多摩地域で勉強会を開催。ゆったりと知見や経験を共有する場をつくります。" />
   <meta name="twitter:image" content="https://tamadev.jp/hero.png" />
@@ -21,7 +23,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQ0E6TCXNH"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag(){window.dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-FQ0E6TCXNH');
   </script>
@@ -39,18 +41,18 @@
       <header class="hero" aria-label="多摩.dev">
         <h1>多摩.dev</h1>
         <p class="lead">
-          多摩地域のエンジニアが、気軽に集まり、学び、つながるコミュニティです。<br/>
+          多摩地域のエンジニアが、気軽に集まり、学び、つながるコミュニティです。<br />
           初参加歓迎です。LT登壇なしでも参加できます。多摩地域外からの参加も歓迎です。
         </p>
       </header>
 
-        
       <section class="section" aria-labelledby="next">
         <h2 id="next">次回開催情報</h2>
         <a href="https://tamadev.connpass.com/event/401152/" target="_blank" rel="noopener noreferrer">
           <strong>2026/09/19（土）</strong> 関戸公民館＠聖蹟桜ヶ丘
         </a>
       </section>
+
       <section class="section" aria-labelledby="media">
         <h2 id="media">掲載情報</h2>
         <div class="links">
@@ -60,9 +62,14 @@
           </a>
         </div>
       </section>
+
       <section class="section" aria-labelledby="links">
         <h2 id="links">公式リンク</h2>
         <div class="links">
+          <a class="link-card" href="https://x.com/tamadev_" target="_blank" rel="noopener noreferrer">
+            <div class="link-title">X</div>
+            <p class="link-desc">公式アカウント・開催情報や活動のお知らせ</p>
+          </a>
           <a class="link-card" href="https://tamadev.connpass.com/" target="_blank" rel="noopener noreferrer">
             <div class="link-title">connpass</div>
             <p class="link-desc">開催情報・参加申し込み</p>
@@ -77,6 +84,7 @@
           </a>
         </div>
       </section>
+
       <section class="section" aria-labelledby="int">
         <h2 id="int">発起の想い</h2>
         <script defer class="speakerdeck-embed" data-id="2a65af301a5247c5a5d93443d16cb17f" data-ratio="1.7777777777777777" src="//speakerdeck.com/assets/embed.js"></script>
@@ -89,7 +97,7 @@
             <div class="link-title">イベント</div>
             <p class="link-desc">今後開催予定のイベントと過去イベントについて</p>
           </a>
-      
+
           <a class="link-card" href="/map/">
             <div class="link-title">多摩.dev 開催地・おすすめスポットマップ</div>
             <p class="link-desc">
@@ -111,6 +119,19 @@
         </div>
       </section>
 
+      <section class="section" aria-labelledby="contact">
+        <h2 id="contact">お問い合わせ</h2>
+        <div class="links">
+          <a class="link-card" href="mailto:contact@tamadev.jp">
+            <div class="link-title">メールでのお問い合わせ</div>
+            <p class="link-desc">
+              会場提供、取材、連携のご相談など<br />
+              contact@tamadev.jp
+            </p>
+          </a>
+        </div>
+      </section>
+
       <section class="section" aria-labelledby="ops">
         <h2 id="ops">運営</h2>
         <p class="owner">
@@ -124,15 +145,15 @@
             個人サイト
           </a>
           <a class="btn btn-secondary" href="https://x.com/asagayanaoki" target="_blank" rel="noopener noreferrer">
-            X（旧Twitter）
+            個人X
           </a>
         </div>
       </section>
+
       <footer class="footer">
         <span>© 多摩.dev</span>
         <span class="mini">Last updated: <span id="lastUpdated">—</span></span>
       </footer>
-
     </div>
   </main>
 
@@ -191,6 +212,7 @@
     </form>
     <p class="tamanavi-notice">AIによる案内です。最新情報はリンク先をご確認ください。質問は1端末につき1日10回までです。個人情報は入力しないでください。</p>
   </section>
+
   <script>
     const d = new Date(document.lastModified);
     if (!isNaN(d.getTime())) {
@@ -200,6 +222,7 @@
       document.getElementById("lastUpdated").textContent = `${y}/${m}/${day}`;
     }
   </script>
+
   <!-- Worker公開後、YOUR-SUBDOMAINをCloudflareのサブドメインへ変更してください。 -->
   <script src="./chat.js" data-api-endpoint="https://tamadev-ai.hiliteeternal.workers.dev/chat"></script>
 </body>
