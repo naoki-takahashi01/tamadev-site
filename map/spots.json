@@ -1,16 +1,16 @@
 [
   {
     "id": "1543840098024431636",
-    "name": "Home",
+    "name": "すしえもん 高尾店",
     "type": "spot",
-    "genre": "和食",
+    "genre": "その他",
     "area": "八王子市",
     "position": [
       35.643543,
       139.289185
     ],
     "sourceUrl": "https://sushiemon.jp/shop/takao/",
-    "revision": "2026-08-31T04:29:22.531000+00:00:v16",
+    "revision": "2026-08-31T04:36:27.293000+00:00:v16",
     "locality": "高尾",
     "nearestStation": "高尾駅",
     "stationDistanceKm": 0.6
