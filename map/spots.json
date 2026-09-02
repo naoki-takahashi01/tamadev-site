@@ -1,5 +1,21 @@
 [
   {
+    "id": "1544691087094849598",
+    "name": "コーチャンフォー若葉台店",
+    "type": "spot",
+    "genre": "その他",
+    "area": "稲城市",
+    "position": [
+      35.623409,
+      139.473785
+    ],
+    "sourceUrl": "https://x.com/cf_wakabadai/status/2095094641406464419",
+    "revision": "2026-09-02T13:27:29.298000+00:00:v16",
+    "locality": "若葉台",
+    "nearestStation": "若葉台駅",
+    "stationDistanceKm": 0.52
+  },
+  {
     "id": "1544556950048481340",
     "name": "GYUTON",
     "type": "shop",
