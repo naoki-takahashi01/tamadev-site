@@ -1,5 +1,21 @@
 [
   {
+    "id": "1544556950048481340",
+    "name": "GYUTON",
+    "type": "shop",
+    "genre": "ラーメン",
+    "area": "多摩市",
+    "position": [
+      35.6510191,
+      139.4491258
+    ],
+    "sourceUrl": "https://s.tabelog.com/tokyo/A1327/A132702/13276487/dtlmenu/",
+    "revision": "2026-09-02T03:57:53.372000+00:00:v16",
+    "locality": "聖蹟桜ヶ丘",
+    "nearestStation": "聖蹟桜ヶ丘駅",
+    "stationDistanceKm": 0.15
+  },
+  {
     "id": "1543840098024431636",
     "name": "すしえもん 高尾店",
     "type": "spot",
