@@ -2,7 +2,6 @@
 
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const { enrichSpotWithLocality } = require("./tama-localities");
 
 const DISCORD_API = "https://discord.com/api/v10";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
@@ -11,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "16";
+const DATA_VERSION = "17";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -77,6 +76,24 @@ const SOURCE_ADDRESS_HINTS = [
     name: "タトネ",
     address: "東京都多摩市関戸4-4-2",
     position: [35.6497415, 139.4485325]
+  },
+  {
+    matches: (url) =>
+      url.hostname === "artigiano-gelateria.com" ||
+      url.hostname === "www.artigiano-gelateria.com",
+    name: "アルティジャーノ・ジェラテリア",
+    address: "東京都日野市百草329",
+    position: [35.653326880200865, 139.433873915258],
+    genre: "スイーツ"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "instagram.com" || url.hostname.endsWith(".instagram.com")) &&
+      /^\/matoi_mogusaen(?:\/|$)/i.test(url.pathname),
+    name: "まとい",
+    address: "東京都日野市落川1062-1",
+    position: [35.656994, 139.430054],
+    genre: "ラーメン"
   }
 ];
 
@@ -2143,7 +2160,7 @@ async function main() {
 
 const publicSpots = spots
   .filter((spot) => !isPlaceholderPlaceName(spot.name))
-  .map(({ description, ...spot }) => enrichSpotWithLocality(spot));
+  .map(({ description, ...spot }) => spot);
 
   await fs.writeFile(
     SPOTS_PATH,
