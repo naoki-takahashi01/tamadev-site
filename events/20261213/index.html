@@ -517,6 +517,81 @@
     }
 
     /*
+      Related links / Proposal details
+    */
+
+
+    .proposal-details {
+      display: grid;
+      gap: 14px;
+
+      margin-bottom: 18px;
+    }
+
+    .proposal-detail {
+      padding: 16px 18px;
+
+      background: #fff;
+
+      border: 1px solid var(--tamadev-border);
+      border-radius: 16px;
+    }
+
+    .proposal-detail strong {
+      color: var(--tamadev-text);
+    }
+
+    .proposal-detail p {
+      margin: 4px 0 0;
+
+      color: var(--tamadev-subtext);
+      line-height: 1.8;
+    }
+
+
+    /*
+      News
+    */
+
+    .news-list {
+      display: grid;
+    }
+
+    .news-item {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 18px;
+
+      padding: 16px 4px;
+
+      border-bottom: 1px solid var(--tamadev-border);
+
+      color: var(--tamadev-text);
+
+      text-decoration: none;
+    }
+
+    .news-item:first-child {
+      border-top: 1px solid var(--tamadev-border);
+    }
+
+    .news-item time {
+      color: var(--tamadev-subtext);
+
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .news-item span {
+      font-weight: 600;
+    }
+
+    .news-item:hover span {
+      color: var(--tamadev-blue);
+      text-decoration: underline;
+    }
+
+    /*
       Keynote
     */
 
@@ -759,6 +834,11 @@
         margin-left: 4px;
         font-size: 0.76rem;
       }
+
+      .news-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
     }
   </style>
 </head>
@@ -954,6 +1034,7 @@
 
       </div>
 
+
     </section>
 
     <!-- =========================
@@ -970,22 +1051,47 @@
 
       </div>
 
-      <div class="proposal-note">
+      <div class="proposal-details">
 
+        <div class="proposal-detail">
+          <strong>応募締切：2026年10月4日（日）23:59</strong>
+          <p>
+            TechTAMA 2026 Conferenceでは、
+            当日お話しいただくプロポーザルを募集しています。
+          </p>
+        </div>
+
+        <div class="proposal-detail">
+          <strong>募集形式</strong>
+          <p>
+            LT（5分）／セッション（20分）／セッション（40分）／ワークショップ（40分）
+          </p>
+        </div>
+
+        <div class="proposal-detail">
+          <strong>初登壇・再演も歓迎します</strong>
+          <p>
+            登壇経験の有無は問いません。
+            初めてカンファレンスで話してみたい方や、
+            過去に別のイベントで話した内容の再演も歓迎しています。
+          </p>
+        </div>
+
+      </div>
+
+      <div class="proposal-note">
+        プロポーザルの応募・詳細確認は、
+        カンファレンス支援プラットフォーム
         <a
           href="https://fortee.jp/techtama-26-conf"
           target="_blank"
           rel="noopener noreferrer"
-          class="proposal-link"
         >
-          TechTAMA 2026 Conferenceでは、
-          当日お話しいただくプロポーザルを募集します。<br />
-
-          プロポーザルの応募・詳細確認は、
-          カンファレンス支援プラットフォーム「Fortee」からお願いします。
+          「Fortee」
         </a>
-
+        からお願いします。
       </div>
+
 
     </section>
 
@@ -1123,7 +1229,7 @@
           </h3>
 
           <p>
-            京王線 聖蹟桜ヶ丘駅より徒歩約1分の場所にあります。<br />
+            京王線 聖蹟桜ヶ丘駅 西口より徒歩約2分の場所にあります。<br />
 
             会場は、ヴィータ・コミューネ8Fにあります。
           </p>
@@ -1131,6 +1237,7 @@
         </div>
 
       </div>
+
 
     </section>
 
@@ -1157,6 +1264,82 @@
         公開できる状態になりましたら、
         多摩.dev 公式サイトやSNSでお知らせします。
       </p>
+
+    </section>
+
+    <!-- =========================
+         News
+    ========================== -->
+
+    <section class="section">
+
+      <div class="section-header">
+
+        <h2>
+          お知らせ
+        </h2>
+
+        <p>
+          TechTAMA 2026 Conferenceに関するお知らせや、
+          開催に向けた記事を掲載しています。
+        </p>
+
+      </div>
+
+      <div class="news-list">
+
+        <a
+          class="news-item"
+          href="https://hiliteeternal.hatenablog.com/entry/2026/09/16/190000"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <time datetime="2026-09-16">
+            2026.09.16
+          </time>
+
+          <span>
+            TechTAMAの舞台・聖蹟桜ヶ丘と関戸公民館について紹介しました
+          </span>
+
+        </a>
+
+        <a
+          class="news-item"
+          href="https://hiliteeternal.hatenablog.com/entry/2026/09/14/212339"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <time datetime="2026-09-14">
+            2026.09.14
+          </time>
+
+          <span>
+            TechTAMA 2026 Conferenceのプロポーザル募集について紹介しました
+          </span>
+
+        </a>
+
+        <a
+          class="news-item"
+          href="https://hiliteeternal.hatenablog.com/entry/2026/09/01/215242"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <time datetime="2026-09-01">
+            2026.09.01
+          </time>
+
+          <span>
+            TechTAMA 2026 Conferenceを開催します
+          </span>
+
+        </a>
+
+      </div>
 
     </section>
 
