@@ -516,6 +516,56 @@
       line-height: 1.9;
     }
 
+    .proposal-link {
+      display: block;
+
+      color: var(--tamadev-subtext);
+
+      text-decoration: none;
+
+      transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .proposal-link strong,
+    .proposal-link span {
+      display: block;
+    }
+
+    .proposal-link strong {
+      margin-bottom: 4px;
+
+      color: var(--tamadev-blue);
+
+      font-size: 1.05rem;
+    }
+
+    .proposal-link-arrow {
+      margin-top: 8px;
+
+      color: var(--tamadev-blue);
+
+      font-weight: 700;
+    }
+
+    .proposal-link:hover {
+      background: #f2f9f8;
+
+      border-color: var(--tamadev-sky);
+
+      box-shadow: 0 8px 22px rgba(26, 49, 69, 0.08);
+
+      transform: translateY(-1px);
+    }
+
+    .proposal-link:focus-visible {
+      outline: 3px solid rgba(115, 191, 220, 0.45);
+      outline-offset: 3px;
+    }
+
     /*
       Related links / Proposal details
     */
@@ -1155,18 +1205,27 @@
 
       </div>
 
-      <div class="proposal-note">
-        プロポーザルの応募・詳細確認は、
-        カンファレンス支援プラットフォーム
-        <a
-          href="https://fortee.jp/techtama-26-conf"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          「Fortee」
-        </a>
-        からお願いします。
-      </div>
+      <a
+        class="proposal-note proposal-link"
+        href="https://fortee.jp/techtama-26-conf"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+
+        <strong>
+          プロポーザルを応募する
+        </strong>
+
+        <span>
+          プロポーザルの応募・詳細確認は、
+          カンファレンス支援プラットフォーム「Fortee」からお願いします。
+        </span>
+
+        <span class="proposal-link-arrow">
+          Forteeで応募・詳細を見る →
+        </span>
+
+      </a>
 
 
     </section>
@@ -1342,7 +1401,6 @@
       </p>
 
     </section>
-
 
     <!-- =========================
          Staff
