@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "19";
+const DATA_VERSION = "20";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -164,6 +164,18 @@ function matchesAreaHint(result, areaHint) {
     .join(" ");
 
   return actual.includes(expected);
+}
+
+function extractNearbyStation(message) {
+  const content = String(message.content || "");
+  return content.match(/(?:最寄り(?:駅)?(?:が|は|：|:)?\s*|(?:近く|付近|周辺|そば)の?\s*)([一-龠ぁ-んァ-ヶー]{2,12}駅)/u)?.[1] ||
+    content.match(/([一-龠ぁ-んァ-ヶー]{2,12}駅)(?:の近く|近く|付近|周辺|から徒歩)/u)?.[1] || "";
+}
+
+function distanceKm(left, right) {
+  const lat = (left[0] - right[0]) * 111;
+  const lng = (left[1] - right[1]) * 111 * Math.cos(left[0] * Math.PI / 180);
+  return Math.hypot(lat, lng);
 }
 
 const GOOGLE_HOSTS = new Set([
@@ -1441,7 +1453,7 @@ async function fetchGoogleMapsInformation(originalUrl) {
   return information;
 }
 
-async function findPlace(query, areaHint = "") {
+async function findPlace(query, areaHint = "", stationPosition = null, expectedName = "") {
   const elapsed = Date.now() -
     previousGeocodingAt;
 
@@ -1486,7 +1498,14 @@ async function findPlace(query, areaHint = "") {
 
   const results = await response.json();
 
-  const result = results.find((candidate) => matchesAreaHint(candidate, areaHint));
+  const result = results.find((candidate) => {
+    if (!matchesAreaHint(candidate, areaHint)) return false;
+    const name = candidate.name || candidate.display_name?.split(",")[0] || "";
+    if (expectedName && !namesMatch(expectedName, name)) return false;
+    if (!stationPosition) return true;
+    const position = makePosition(candidate.lat, candidate.lon);
+    return position && distanceKm(position, stationPosition) <= 3;
+  });
 
   if (!result && results.length > 0 && areaHint) {
     console.warn(
@@ -1659,7 +1678,7 @@ async function findInstagramPlace(names, areaHint) {
   return null;
 }
 
-async function findPlaceFromCandidates(candidates, addresses, areaHint) {
+async function findPlaceFromCandidates(candidates, addresses, areaHint, stationPosition = null) {
   const searches = [];
 
   const add = (
@@ -1713,7 +1732,7 @@ async function findPlaceFromCandidates(candidates, addresses, areaHint) {
     of searches.slice(0, 10 )) {
     console.log(`場所を検索: ${search.query}`);
 
-    let result = await findPlace(search.query, areaHint);
+    let result = await findPlace(search.query, areaHint, stationPosition, search.name);
 
     if (!result && search.isAddress) {
       console.log(`住所を国土地理院でも検索: ${search.query}`);
@@ -1819,7 +1838,9 @@ async function convertMessageToSpot(message, previousSpot) {
     )
   ];
 
-  const areaHint = normalizeAreaHint(addresses[0]?.match(AREAS)?.[0] || extractAreaHint(message, pages));
+  const station = !addresses.length && !mapsUrl ? extractNearbyStation(message) : "";
+  const stationPlace = station ? await findPlace(station, "", null, station) : null;
+  const areaHint = normalizeAreaHint(addresses[0]?.match(AREAS)?.[0] || extractAreaHint(message, pages) || stationPlace?.area);
 
   if (
     candidates.length === 0 &&
@@ -1855,7 +1876,7 @@ async function convertMessageToSpot(message, previousSpot) {
     "多摩地域";
 
   if (!position) {
-    let place = await findPlaceFromCandidates(candidates, addresses, areaHint);
+    let place = await findPlaceFromCandidates(candidates, addresses, areaHint, stationPlace?.position || (station ? [0, 0] : null));
 
     if (!place && instagramNames.length > 0) {
       place = await findInstagramPlace(instagramNames, areaHint);
