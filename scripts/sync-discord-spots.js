@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "18";
+const DATA_VERSION = "19";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -974,6 +974,21 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
     }
   }
 
+  // 「最寄りが○○駅、春夏冬という中華料理のお店をおすすめ」など、
+  // 店名を独立した行に書いていない投稿からも、紹介対象だけを取り出す。
+  // 読点や句点を境界にして、駅名や前の文まで店名へ混ぜない。
+  for (const text of texts) {
+    for (const segment of String(text).split(/[、。，,\n]/u)) {
+      const normalized = cleanText(segment, 160).replace(/^(?:そして|また|ちなみに|近くにある|近所の)\s*/u, "");
+      const match = normalized.match(
+        /(?:^|(?:は|にある|にあるのは|の))\s*[「『]?([^「」『』]{1,32}?)[」』]?\s*(?:という|っていう|と呼ばれる|という名の)\s*(?:(?:中華料理|和食|洋食|イタリアン|ラーメン|カフェ|喫茶|レストラン|飲食|料理|寿司|パン|ケーキ|コーヒー|お酒|カレー)[^。！？]{0,12}?)?(?:お店|店|カフェ|レストラン|食堂|施設|スポット)/u
+      );
+      if (match && !/^(?:ここ|そこ|こちら|あちら|私|僕|自分|最寄り|おすすめ)$/u.test(match[1].trim())) {
+        add(match[1]);
+      }
+    }
+  }
+
   const lines = (
     message.content || ""
   )
@@ -984,7 +999,7 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
   for (const line of lines) {
     if (
       line.length <= 40 &&
-      !/おすすめです|美味しいです|おいしいです|ある.*です/u.test(line)
+      !/おすすめ|美味しい|おいしい|という|でした|です[。！!]?|ます[。！!]?|最寄り|通って|行きました/u.test(line)
     ) {
       add(line);
     }
@@ -994,7 +1009,9 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
     candidates.length === 0 &&
     lines.length > 0
   ) {
-    add(lines[0]);
+    if (!/[。！？]|(?:です|ます|という|おすすめ|最寄り|通って)/u.test(lines[0])) {
+      add(lines[0]);
+    }
   }
 
   return candidates;
