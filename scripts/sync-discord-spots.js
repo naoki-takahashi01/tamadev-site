@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "20";
+const DATA_VERSION = "21";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -2142,7 +2142,10 @@ async function main() {
           (spot) =>
             normalizePlaceName(spot.name) &&
             spot.name !== "トップ" &&
-            !isPlaceholderPlaceName(spot.name)
+            !isPlaceholderPlaceName(spot.name) &&
+            // 駅名付きでURLのない投稿は、以前の検索で別の街の同名店を
+            // 掲載している可能性がある。再検索失敗時にその座標を復活させない。
+            !(extractNearbyStation(message) && !spot.sourceUrl)
         );
 
         console.warn(
@@ -2170,7 +2173,8 @@ async function main() {
           (spot) =>
             normalizePlaceName(spot.name) &&
             spot.name !== "トップ" &&
-            !isPlaceholderPlaceName(spot.name)
+            !isPlaceholderPlaceName(spot.name) &&
+            !(extractNearbyStation(message) && !spot.sourceUrl)
         )
       );
     }
