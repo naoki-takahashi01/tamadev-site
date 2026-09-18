@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "21";
+const DATA_VERSION = "22";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -171,6 +171,20 @@ function extractNearbyStation(message) {
   return content.match(/(?:最寄り(?:駅)?(?:が|は|：|:)?\s*|(?:近く|付近|周辺|そば)の?\s*)([一-龠ぁ-んァ-ヶー]{2,12}駅)/u)?.[1] ||
     content.match(/([一-龠ぁ-んァ-ヶー]{2,12}駅)(?:の近く|近く|付近|周辺|から徒歩)/u)?.[1] || "";
 }
+
+// 公開地図データで店舗が見つからない場合の、出典を確認した最小限の補完。
+// 店名だけでは同名店を誤認するため、投稿中の最寄り駅も一致した場合に限る。
+const VERIFIED_STATION_PLACES = [
+  {
+    name: "春夏冬",
+    station: "中河原駅",
+    area: "府中市",
+    address: "東京都府中市住吉町5-17-36",
+    position: [35.657317, 139.45639],
+    // 出典: NAVITIMEの「春夏冬」店舗情報（住所・緯度経度）
+    genre: "中華"
+  }
+];
 
 function distanceKm(left, right) {
   const lat = (left[0] - right[0]) * 111;
@@ -1839,7 +1853,12 @@ async function convertMessageToSpot(message, previousSpot) {
   ];
 
   const station = !addresses.length && !mapsUrl ? extractNearbyStation(message) : "";
-  const stationPlace = station ? await findPlace(station, "", null, station) : null;
+  const verifiedPlace = !sourceUrls.length && station
+    ? VERIFIED_STATION_PLACES.find((entry) =>
+      entry.station === station && candidates.some((candidate) =>
+        normalizeSearchName(candidate) === normalizeSearchName(entry.name)))
+    : null;
+  const stationPlace = station && !verifiedPlace ? await findPlace(station, "", null, station) : null;
   const areaHint = normalizeAreaHint(addresses[0]?.match(AREAS)?.[0] || extractAreaHint(message, pages) || stationPlace?.area);
 
   if (
@@ -1853,6 +1872,21 @@ async function convertMessageToSpot(message, previousSpot) {
 
   let name = candidates[0] ||
     addresses[0];
+
+  if (verifiedPlace) {
+    console.log(`確認済みの住所を使用: ${verifiedPlace.name} / ${verifiedPlace.address}`);
+    return {
+      id: message.id,
+      name: verifiedPlace.name,
+      type: classifySpot(message),
+      genre: verifiedPlace.genre,
+      area: verifiedPlace.area,
+      position: verifiedPlace.position,
+      description: extractDescription(message, verifiedPlace.name),
+      sourceUrl: "",
+      revision
+    };
+  }
 
   // 公式サイトなどに対して登録した補正値を最優先にする。
   // 同じ街区の別店舗へ検索結果が丸められる事故を防ぐため。
