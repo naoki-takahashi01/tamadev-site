@@ -605,14 +605,23 @@
 
     .news-list {
       display: grid;
+
+      max-height: 216px;
+      overflow-y: auto;
+
+      padding-right: 8px;
+
+      scrollbar-gutter: stable;
     }
 
     .news-item {
       display: grid;
       grid-template-columns: 110px 1fr;
       gap: 18px;
+      align-items: center;
 
-      padding: 16px 4px;
+      min-height: 72px;
+      padding: 14px 4px;
 
       border-bottom: 1px solid var(--tamadev-border);
 
@@ -639,6 +648,19 @@
     .news-item:hover span {
       color: var(--tamadev-blue);
       text-decoration: underline;
+    }
+
+    .news-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .news-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .news-list::-webkit-scrollbar-thumb {
+      background: var(--tamadev-border);
+      border-radius: 999px;
     }
 
     /*
@@ -885,9 +907,15 @@
         font-size: 0.76rem;
       }
 
+      .news-list {
+        max-height: 270px;
+      }
+
       .news-item {
         grid-template-columns: 1fr;
         gap: 4px;
+
+        min-height: 90px;
       }
     }
   </style>
@@ -1107,6 +1135,23 @@
       </div>
 
       <div class="news-list">
+
+        <a
+          class="news-item"
+          href="https://hiliteeternal.hatenablog.com/entry/2026/09/18/190000"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          <time datetime="2026-09-18">
+            2026.09.18
+          </time>
+
+          <span>
+            初回のTechTAMAで、あなたの経験を話してみませんか？
+          </span>
+
+        </a>
 
         <a
           class="news-item"
