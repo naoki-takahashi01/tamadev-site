@@ -1,5 +1,18 @@
 [
   {
+    "id": "1550774647417479332",
+    "name": "釜めし やきとり 鳥はな",
+    "type": "shop",
+    "genre": "居酒屋",
+    "area": "多摩市",
+    "position": [
+      35.65161028654297,
+      139.44608353571118
+    ],
+    "sourceUrl": "https://torihana-seisekisakuragaoka.owst.jp/",
+    "revision": "2026-09-19T07:44:58.989000+00:00:v22"
+  },
+  {
     "id": "1550160937762431107",
     "name": "春夏冬",
     "type": "shop",
