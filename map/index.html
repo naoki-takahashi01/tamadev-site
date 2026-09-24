@@ -697,6 +697,27 @@
 
     const places = [];
 
+    // 多摩地域外のおすすめスポットも地図と一覧には表示するが、
+    // 初期表示や絞り込み時の表示範囲には含めない。
+    const tamaAreaNames = new Set([
+      "多摩市", "八王子市", "立川市", "調布市", "稲城市", "府中市",
+      "日野市", "町田市", "国立市", "国分寺市", "小金井市", "小平市",
+      "東村山市", "東大和市", "武蔵村山市", "昭島市", "福生市", "羽村市",
+      "青梅市", "あきる野市", "西東京市", "武蔵野市", "三鷹市", "狛江市",
+      "清瀬市", "東久留米市"
+    ]);
+
+    function isInInitialBounds(venue) {
+      if (venue.status !== "spot") {
+        return true;
+      }
+
+      const area = String(venue.area || "");
+
+      return area.includes("多摩地域") ||
+        Array.from(tamaAreaNames).some((name) => area.includes(name));
+    }
+
     const map = L.map(
       "event-map",
       {
@@ -1321,9 +1342,11 @@
             );
           }
 
-          visiblePositions.push(
-            place.venue.position
-          );
+          if (isInInitialBounds(place.venue)) {
+            visiblePositions.push(
+              place.venue.position
+            );
+          }
 
           if (
             place.venue.status !== "spot"
