@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "22";
+const DATA_VERSION = "23";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -19,10 +19,10 @@ const MAX_REACTION_PAGES = 5;
 const MAP_REACTION = "🗺️";
 
 const CITIES =
-  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|川崎市|相模原市";
+  "多摩市|八王子市|立川市|調布市|稲城市|府中市|日野市|町田市|国立市|国分寺市|小金井市|小平市|東村山市|東大和市|武蔵村山市|昭島市|福生市|羽村市|青梅市|あきる野市|西東京市|武蔵野市|三鷹市|狛江市|清瀬市|東久留米市|川崎市|相模原市|朝霞市";
 
 const AREAS = new RegExp(
-  `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子|川崎`,
+  `${CITIES}|聖蹟桜ヶ丘|多摩センター|南大沢|立川|調布|稲城|府中|永山|八王子|川崎|朝霞`,
   "u"
 );
 
@@ -134,7 +134,8 @@ function normalizeAreaHint(value) {
     調布: "調布市",
     稲城: "稲城市",
     府中: "府中市",
-    川崎: "川崎市"
+    川崎: "川崎市",
+    朝霞: "朝霞市"
   };
 
   return aliases[hint] || hint;
