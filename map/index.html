@@ -549,6 +549,28 @@
 
       {
         name:
+          "朝霞市産業文化センター",
+
+        area:
+          "朝霞・朝霞市",
+
+        position: [
+          35.813246,
+          139.590420
+        ],
+
+        status:
+          "held",
+
+        description:
+          "2026年9月23日：武蔵野線.dev クロスコミュニティ交流会 vol.1を開催。",
+
+        eventUrl:
+          "https://musashino-line.connpass.com/event/401818/"
+      },
+
+      {
+        name:
           "たましんRISURUホール",
 
         area:
@@ -697,7 +719,7 @@
 
     const places = [];
 
-    // 多摩地域外のおすすめスポットも地図と一覧には表示するが、
+    // 多摩地域外の会場・おすすめスポットも地図と一覧には表示するが、
     // 初期表示や絞り込み時の表示範囲には含めない。
     const tamaAreaNames = new Set([
       "多摩市", "八王子市", "立川市", "調布市", "稲城市", "府中市",
@@ -708,10 +730,6 @@
     ]);
 
     function isInInitialBounds(venue) {
-      if (venue.status !== "spot") {
-        return true;
-      }
-
       const area = String(venue.area || "");
 
       return area.includes("多摩地域") ||
