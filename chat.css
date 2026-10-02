@@ -5,31 +5,136 @@
   --tamanavi-green: #315b52;
 }
 
-.tamanavi-launcher {
+.tamanavi-resident {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  left: 14px;
+  bottom: 8px;
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 58px;
-  padding: 6px 16px 6px 7px;
-  border: 1px solid rgba(102, 71, 34, .2);
-  border-radius: 999px;
+}
+
+.tamanavi-launcher {
+  display: block;
+  width: 110px;
+  height: 110px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+.tamanavi-launcher:hover,
+.tamanavi-launcher:focus-visible {
+  transform: translateY(-4px) rotate(-2deg);
+}
+
+.tamanavi-launcher:focus-visible {
+  outline: 3px solid rgba(232, 168, 58, .5);
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+.tamanavi-launcher img {
+  display: block;
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+
+  filter: drop-shadow(
+    0 6px 8px rgba(46, 39, 24, .22)
+  );
+}
+
+.tamanavi-launcher-label {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+  border: 0;
+}
+
+.tamanavi-greeting {
+  position: absolute;
+
+  left: 86px;
+  bottom: 82px;
+
+  width: 230px;
+  padding: 11px 14px;
+
+  border: 1px solid rgba(102, 71, 34, .25);
+  border-radius: 16px;
+
   background: var(--tamanavi-cream);
   color: var(--tamanavi-brown);
-  font: inherit;
-  font-weight: 700;
-  box-shadow: 0 10px 30px rgba(46, 39, 24, .2);
-  cursor: pointer;
+
+  font-size: .86rem;
+  font-weight: 600;
+  line-height: 1.55;
+
+  box-shadow:
+    0 8px 24px rgba(46, 39, 24, .18);
+
+  animation:
+    tamanavi-greeting-in .25s ease-out;
+
+  pointer-events: none;
 }
 
-.tamanavi-launcher:hover {
-  transform: translateY(-1px);
+.tamanavi-greeting[hidden] {
+  display: none;
 }
 
-.tamanavi-launcher img,
+.tamanavi-greeting::after {
+  content: "";
+
+  position: absolute;
+
+  left: 20px;
+  bottom: -8px;
+
+  width: 14px;
+  height: 14px;
+
+  border-right:
+    1px solid rgba(102, 71, 34, .25);
+
+  border-bottom:
+    1px solid rgba(102, 71, 34, .25);
+
+  background: var(--tamanavi-cream);
+
+  transform: rotate(45deg);
+}
+
+@keyframes tamanavi-greeting-in {
+  from {
+    opacity: 0;
+    transform:
+      translateY(5px)
+      scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
 .tamanavi-avatar {
   width: 46px;
   height: 46px;
@@ -38,18 +143,25 @@
 
 .tamanavi-panel {
   position: fixed;
-  right: 20px;
-  bottom: 92px;
+  left: 20px;
+  bottom: 126px;
   z-index: 1001;
+
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
+
   width: min(390px, calc(100vw - 32px));
-  height: min(620px, calc(100dvh - 120px));
+  height: min(620px, calc(100dvh - 150px));
+
   overflow: hidden;
+
   border: 1px solid rgba(102, 71, 34, .22);
   border-radius: 20px;
+
   background: #fff;
-  box-shadow: 0 20px 60px rgba(17, 24, 39, .24);
+
+  box-shadow:
+    0 20px 60px rgba(17, 24, 39, .24);
 }
 
 .tamanavi-panel[hidden] {
@@ -60,9 +172,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
   padding: 12px 14px;
-  background: linear-gradient(135deg, var(--tamanavi-cream), #fff);
-  border-bottom: 1px solid rgba(102, 71, 34, .14);
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--tamanavi-cream),
+      #fff
+    );
+
+  border-bottom:
+    1px solid rgba(102, 71, 34, .14);
 }
 
 .tamanavi-heading {
@@ -88,42 +209,60 @@
 .tamanavi-close {
   width: 36px;
   height: 36px;
+
   border: 0;
   border-radius: 999px;
-  background: rgba(102, 71, 34, .08);
+
+  background:
+    rgba(102, 71, 34, .08);
+
   color: var(--tamanavi-brown);
+
   font-size: 1.25rem;
+
   cursor: pointer;
 }
 
 .tamanavi-messages {
   overflow-y: auto;
+
   padding: 16px 14px;
+
   background: #fffcf4;
 }
 
 .tamanavi-message {
   width: fit-content;
   max-width: 88%;
+
   margin: 0 0 12px;
+
   padding: 10px 12px;
+
   border-radius: 14px;
+
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+
   line-height: 1.6;
   font-size: .92rem;
 }
 
 .tamanavi-message.is-assistant {
-  border: 1px solid rgba(102, 71, 34, .12);
+  border:
+    1px solid rgba(102, 71, 34, .12);
+
   border-bottom-left-radius: 4px;
+
   background: #fff;
   color: #332a20;
 }
 
 .tamanavi-message.is-user {
   margin-left: auto;
+
   border-bottom-right-radius: 4px;
+
   background: var(--tamanavi-green);
   color: #fff;
 }
@@ -136,55 +275,84 @@
 .tamanavi-suggestions {
   display: flex;
   gap: 7px;
+
   overflow-x: auto;
+
   padding: 9px 12px;
-  border-top: 1px solid rgba(102, 71, 34, .1);
+
+  border-top:
+    1px solid rgba(102, 71, 34, .1);
+
   background: #fff;
 }
 
 .tamanavi-suggestion {
   flex: 0 0 auto;
+
   padding: 7px 10px;
-  border: 1px solid rgba(49, 91, 82, .25);
+
+  border:
+    1px solid rgba(49, 91, 82, .25);
+
   border-radius: 999px;
+
   background: #f7fffc;
   color: var(--tamanavi-green);
+
   font: inherit;
   font-size: .78rem;
+
   cursor: pointer;
 }
 
 .tamanavi-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
   gap: 8px;
+
   padding: 10px 12px 6px;
-  border-top: 1px solid rgba(102, 71, 34, .12);
+
+  border-top:
+    1px solid rgba(102, 71, 34, .12);
+
   background: #fff;
 }
 
 .tamanavi-input {
   min-width: 0;
+
   padding: 10px 12px;
+
   border: 1px solid #d7d3ca;
   border-radius: 12px;
+
   font: inherit;
   font-size: .9rem;
 }
 
 .tamanavi-input:focus {
-  outline: 2px solid rgba(232, 168, 58, .4);
+  outline:
+    2px solid rgba(232, 168, 58, .4);
+
   border-color: var(--tamanavi-yellow);
 }
 
 .tamanavi-send {
   padding: 9px 13px;
+
   border: 0;
   border-radius: 12px;
+
   background: var(--tamanavi-green);
   color: #fff;
+
   font: inherit;
   font-weight: 700;
+
   cursor: pointer;
 }
 
@@ -197,53 +365,93 @@
 
 .tamanavi-notice {
   margin: 0;
+
   padding: 0 12px 10px;
+
   background: #fff;
   color: #71675a;
+
   font-size: .68rem;
   line-height: 1.45;
 }
 
 .tamanavi-loading::after {
   content: "";
+
   display: inline-block;
+
   width: 1.2em;
-  animation: tamanavi-dots 1.2s steps(4, end) infinite;
+
+  animation:
+    tamanavi-dots
+    1.2s
+    steps(4, end)
+    infinite;
 }
 
 @keyframes tamanavi-dots {
-  0% { content: ""; }
-  25% { content: "."; }
-  50% { content: ".."; }
-  75%, 100% { content: "..."; }
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75%,
+  100% {
+    content: "...";
+  }
 }
 
 @media (max-width: 520px) {
-  .tamanavi-launcher {
-    right: 12px;
-    bottom: 12px;
-  }
-
-  .tamanavi-launcher-label {
-    display: none;
+  .tamanavi-resident {
+    left: 6px;
+    bottom: 4px;
   }
 
   .tamanavi-launcher {
-    width: 60px;
-    height: 60px;
-    padding: 7px;
+    width: 78px;
+    height: 78px;
+  }
+
+  .tamanavi-launcher img {
+    width: 78px;
+    height: 78px;
+  }
+
+  .tamanavi-greeting {
+    left: 62px;
+    bottom: 62px;
+
+    width: min(
+      220px,
+      calc(100vw - 90px)
+    );
+
+    font-size: .8rem;
   }
 
   .tamanavi-panel {
-    right: 8px;
-    bottom: 80px;
+    left: 8px;
+    bottom: 88px;
+
     width: calc(100vw - 16px);
-    height: min(650px, calc(100dvh - 92px));
+
+    height: min(
+      650px,
+      calc(100dvh - 100px)
+    );
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .tamanavi-launcher,
+  .tamanavi-greeting,
   .tamanavi-loading::after {
     transition: none;
     animation: none;
