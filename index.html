@@ -198,16 +198,34 @@
     </div>
   </main>
 
-  <button
-    id="tamanaviLauncher"
-    class="tamanavi-launcher"
-    type="button"
-    aria-controls="tamanaviPanel"
-    aria-expanded="false"
-  >
-    <img src="/assets/tamanavi.png" alt="" width="46" height="46" />
-    <span class="tamanavi-launcher-label">たまナビに聞く</span>
-  </button>
+  <div class="tamanavi-resident">
+    <div
+      id="tamanaviGreeting"
+      class="tamanavi-greeting"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+  
+    <button
+      id="tamanaviLauncher"
+      class="tamanavi-launcher"
+      type="button"
+      aria-controls="tamanaviPanel"
+      aria-expanded="false"
+      aria-label="たまナビに聞く"
+    >
+      <img
+        src="/assets/tamanavi.png"
+        alt=""
+        width="110"
+        height="110"
+      />
+      <span class="tamanavi-launcher-label">
+        たまナビに聞く
+      </span>
+    </button>
+  </div>
 
   <section
     id="tamanaviPanel"
