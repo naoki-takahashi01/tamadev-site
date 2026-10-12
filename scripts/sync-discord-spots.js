@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "23";
+const DATA_VERSION = "25";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -520,6 +520,67 @@ function normalizePlaceName(value) {
   return name;
 }
 
+// 紹介記事の見出しには、紹介対象だけでなく修業元・系列店・会場名なども
+// 含まれることがある。見出し中の引用部分を店舗名候補として取り出し、
+// 「○○出身『紹介対象』が開店」のような形では後ろの名称を優先する。
+function extractPagePlaceNames(pages = []) {
+  const names = [];
+
+  const add = (value) => {
+    const name = normalizePlaceName(value);
+
+    if (
+      name &&
+      name.length <= 50 &&
+      !names.includes(name) &&
+      !/^(?:おすすめ|こちら|お店|店舗|施設|スポット)$/u.test(name)
+    ) {
+      names.push(name);
+    }
+  };
+
+  for (const page of pages) {
+    const title = String(page?.name || "");
+    const quotedMatches = [
+      ...title.matchAll(/[「『“"]([^」』”"]{1,50})[」』”"]/gu)
+    ];
+    const quoted = quotedMatches
+      .filter((match) => {
+        const suffix = title.slice((match.index || 0) + match[0].length);
+        return !/^\s*(?:出身|修業|修行|プロデュース|監修)/u.test(suffix);
+      })
+      .map((match) => match[1]);
+
+    // ニュース・紹介記事では、後ろの引用名ほど主語（紹介対象）であることが多い。
+    for (const value of quoted.reverse()) {
+      add(value);
+    }
+
+    // 引用された名称を取れない公式ページでは、従来どおりページ名を使う。
+    if (quoted.length === 0) {
+      add(title);
+    }
+  }
+
+  return names;
+}
+
+function isPreviousSpotCompatible(message, spot) {
+  const previewNames = extractPagePlaceNames(
+    (message.embeds || []).map((embed) => ({ name: embed.title || "" }))
+  );
+
+  if (previewNames.length === 0) {
+    return true;
+  }
+
+  const previousName = normalizeSearchName(spot.name);
+  return previewNames.some((name) => {
+    const expectedName = normalizeSearchName(name);
+    return previousName.includes(expectedName) || expectedName.includes(previousName);
+  });
+}
+
 // 店名を取得できなかったときに作られた説明用の仮タイトルは、
 // 実在する施設名として地図へ掲載しない。
 function isPlaceholderPlaceName(value) {
@@ -941,7 +1002,7 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
     if (
       name &&
       !candidates.includes(name) &&
-      !name.includes("�")
+      !name.includes(" ")
     ) {
       candidates.push(name);
     }
@@ -1837,10 +1898,13 @@ async function convertMessageToSpot(message, previousSpot) {
   const sourcePlaceHints = sourceUrls
     .map(findSourcePlaceHint)
     .filter(Boolean);
+  const pagePlaceNames = extractPagePlaceNames(pages);
+  const messagePlaceNames = extractPlaceCandidates(message, mapsUrl, candidatePages);
   const candidates = [...new Set([
     ...sourcePlaceHints.map((hint) => hint.name).filter(Boolean),
     ...instagramNames,
-    ...extractPlaceCandidates(message, mapsUrl, candidatePages)
+    ...pagePlaceNames,
+    ...(pagePlaceNames.length > 0 ? [] : messagePlaceNames)
   ])];
 
   const addresses = [
@@ -2178,6 +2242,7 @@ async function main() {
             normalizePlaceName(spot.name) &&
             spot.name !== "トップ" &&
             !isPlaceholderPlaceName(spot.name) &&
+            isPreviousSpotCompatible(message, spot) &&
             // 駅名付きでURLのない投稿は、以前の検索で別の街の同名店を
             // 掲載している可能性がある。再検索失敗時にその座標を復活させない。
             !(extractNearbyStation(message) && !spot.sourceUrl)
@@ -2209,6 +2274,7 @@ async function main() {
             normalizePlaceName(spot.name) &&
             spot.name !== "トップ" &&
             !isPlaceholderPlaceName(spot.name) &&
+            isPreviousSpotCompatible(message, spot) &&
             !(extractNearbyStation(message) && !spot.sourceUrl)
         )
       );
@@ -2282,6 +2348,7 @@ module.exports = {
   extractMapSections,
   extractLinkedPlaceSections,
   extractInstagramPlaceNames,
+  extractPagePlaceNames,
   extractPlaceCandidates,
   extractUrls,
   findAddressWithGsi,
@@ -2295,6 +2362,7 @@ module.exports = {
   getMapReaction,
   isGoogleMapsUrl,
   isInstagramUrl,
+  isPreviousSpotCompatible,
   matchesAreaHint,
   normalizeEmoji,
   normalizeAreaHint,
