@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "26";
+const DATA_VERSION = "27";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -29,6 +29,15 @@ const AREAS = new RegExp(
 // HTML取得が不安定な公式サイトや、同名店舗が多い紹介記事の住所を補う。
 // 住所は店舗の公式サイト・紹介元に掲載されている公開情報のみを使用する。
 const SOURCE_ADDRESS_HINTS = [
+  {
+    matches: (url) =>
+      url.hostname === "cicoute-bakery.com" ||
+      url.hostname === "www.cicoute-bakery.com",
+    name: "CICOUTE BAKERY（チクテベーカリー）",
+    address: "東京都八王子市南大沢3-9-5-101",
+    position: [35.607502, 139.378891],
+    genre: "パン"
+  },
   {
     matches: (url) =>
       (url.hostname === "keio-sc.jp" || url.hostname === "www.keio-sc.jp") &&
