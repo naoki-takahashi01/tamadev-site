@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "27";
+const DATA_VERSION = "28";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -29,6 +29,14 @@ const AREAS = new RegExp(
 // HTML取得が不安定な公式サイトや、同名店舗が多い紹介記事の住所を補う。
 // 住所は店舗の公式サイト・紹介元に掲載されている公開情報のみを使用する。
 const SOURCE_ADDRESS_HINTS = [
+  {
+    matches: (url) =>
+      (url.hostname === "ramental.net" || url.hostname === "www.ramental.net") &&
+      /^\/2026\/09\/20\/ishamori\/?$/u.test(url.pathname),
+    name: "立川 石ゃ森",
+    address: "東京都立川市錦町3-5-4 ウィング新井1F",
+    genre: "ラーメン"
+  },
   {
     matches: (url) =>
       url.hostname === "cicoute-bakery.com" ||
