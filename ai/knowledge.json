@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T15:36:02.117Z",
+  "generatedAt": "2026-10-15T23:28:04.889Z",
   "scope": "多摩.devと東京都多摩地域に関する公開情報",
   "community": {
     "name": "多摩.dev",
@@ -106,6 +106,16 @@
       "venue": "たましんRISURUホール 第1会議室（立川）",
       "url": "https://tamadev.jp/events/20261016/",
       "connpassUrl": "https://tamadev.connpass.com/event/401154/"
+    },
+    {
+      "id": "event-20261107",
+      "type": "event",
+      "name": "多摩.dev #5.5 休日午前のゆるもく会",
+      "date": "2026-11-07",
+      "startDate": "2026-11-07T10:00:00+09:00",
+      "venue": "関戸公民館（聖蹟桜ヶ丘）",
+      "url": "https://tamadev.jp/events/20261107/",
+      "connpassUrl": ""
     },
     {
       "id": "event-20261213",
