@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T23:28:04.889Z",
+  "generatedAt": "2026-10-15T23:29:03.471Z",
   "scope": "多摩.devと東京都多摩地域に関する公開情報",
   "community": {
     "name": "多摩.dev",
@@ -115,6 +115,16 @@
       "startDate": "2026-11-07T10:00:00+09:00",
       "venue": "関戸公民館（聖蹟桜ヶ丘）",
       "url": "https://tamadev.jp/events/20261107/",
+      "connpassUrl": ""
+    },
+    {
+      "id": "event-20261124",
+      "type": "event",
+      "name": "多摩.dev #5.75 ボードゲーム会",
+      "date": "2026-11-24",
+      "startDate": "2026-11-24T19:00:00+09:00",
+      "venue": "JELLY JELLY CAFE 八王子店 東京都八王子市三崎町4-10 三崎町ランドビル4階 JR八王子駅北口から徒歩約3分",
+      "url": "https://tamadev.jp/events/20261124/",
       "connpassUrl": ""
     },
     {
