@@ -1300,7 +1300,10 @@
           venue.position,
           {
             radius:
-              10,
+              12,
+
+            interactive: true,
+            bubblingMouseEvents: false,
 
             fillColor:
               statusColors[
@@ -1322,11 +1325,18 @@
         );
 
       marker.bindPopup(
-        createPopup(
-          venue
-        )
+        createPopup(venue),
+        { autoPan: true, closeButton: true }
       );
-      
+
+      // マーカーをクリック・タップしたときに確実に詳細を開く。
+      marker.on("click", (event) => {
+        if (event.originalEvent) {
+          L.DomEvent.stopPropagation(event.originalEvent);
+        }
+        marker.openPopup();
+      });
+
       marker.bindTooltip(
         venue.name,
         {
