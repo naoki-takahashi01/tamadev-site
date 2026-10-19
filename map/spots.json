@@ -520,6 +520,19 @@
     "revision": "2026-08-24T12:33:34.370000+00:00:v28"
   },
   {
+    "id": "1453756358980665565",
+    "name": "落合商店街",
+    "type": "spot",
+    "genre": "その他",
+    "area": "多摩市",
+    "position": [
+      35.6160039,
+      139.430194
+    ],
+    "sourceUrl": "https://mosimosi.biz/column/220121-1-shoutengai-tanbou/",
+    "revision": "2025-12-25T14:28:45.468000+00:00:v28"
+  },
+  {
     "id": "1453604318857920533",
     "name": "atelier BASEL",
     "type": "shop",
