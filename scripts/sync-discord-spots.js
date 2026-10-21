@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "28";
+const DATA_VERSION = "29";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -29,6 +29,76 @@ const AREAS = new RegExp(
 // HTML取得が不安定な公式サイトや、同名店舗が多い紹介記事の住所を補う。
 // 住所は店舗の公式サイト・紹介元に掲載されている公開情報のみを使用する。
 const SOURCE_ADDRESS_HINTS = [
+  {
+    matches: (url) =>
+      (url.hostname === "x.com" || url.hostname === "twitter.com") &&
+      /^\/studiolibrairie(?:\/|$)/iu.test(url.pathname),
+    name: "フォトスタジオリブレリー",
+    address: "東京都多摩市永山1-8-3",
+    position: [35.631973, 139.446518],
+    genre: "その他"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "tokyo-park.or.jp" || url.hostname === "www.tokyo-park.or.jp") &&
+      /\/sakuragaoka-hotaru\.pdf$/iu.test(url.pathname),
+    name: "都立桜ヶ丘公園",
+    address: "東京都多摩市連光寺5-15",
+    position: [35.633114, 139.459274],
+    genre: "公園・レジャー"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "ten-ants.biz" || url.hostname === "www.ten-ants.biz") &&
+      /^\/free\/bbj\/?$/iu.test(url.pathname),
+    name: "BEER BULK J",
+    address: "東京都多摩市一ノ宮3-5-16",
+    position: [35.650337, 139.443481],
+    genre: "酒店"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "news.yahoo.co.jp" || url.hostname === "www.news.yahoo.co.jp") &&
+      /\/171b88d5540520120379b61110add123eaa80676\/?$/iu.test(url.pathname),
+    name: "レストラン アポロ",
+    address: "東京都府中市晴見町1-23-19",
+    position: [35.681858, 139.477737],
+    genre: "洋食"
+  },
+  {
+    matches: (url) =>
+      url.hostname === "btf-428cafe.com" || url.hostname === "www.btf-428cafe.com",
+    name: "428cafe+",
+    address: "東京都府中市四谷2-41-3",
+    position: [35.66626, 139.446686],
+    genre: "カフェ"
+  },
+  {
+    matches: (url) =>
+      url.hostname === "merise-tamashin.net" || url.hostname === "www.merise-tamashin.net",
+    name: "me:rise 立川",
+    address: "東京都立川市曙町2-8-28",
+    position: [35.700897, 139.414886],
+    genre: "その他"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "tabelog.com" || url.hostname === "www.tabelog.com") &&
+      /\/A1327\/A132702\/13026104(?:\/|$)/u.test(url.pathname),
+    name: "特一番 聖蹟桜ケ丘店",
+    address: "東京都多摩市関戸1-11-5",
+    position: [35.650349, 139.447342],
+    genre: "ラーメン"
+  },
+  {
+    matches: (url) =>
+      (url.hostname === "tabelog.com" || url.hostname === "www.tabelog.com" || url.hostname === "s.tabelog.com") &&
+      /\/A1329\/A132904\/13061398(?:\/|$)/u.test(url.pathname),
+    name: "atelier BASEL",
+    address: "東京都八王子市上柚木2-7-5",
+    position: [35.623096, 139.375778],
+    genre: "カフェ"
+  },
   {
     matches: (url) =>
       (url.hostname === "ramental.net" || url.hostname === "www.ramental.net") &&
@@ -134,6 +204,36 @@ const SOURCE_ADDRESS_HINTS = [
   }
 ];
 
+// Googleマップ短縮URLは、実行環境によって名称・座標を返さないことがある。
+// 投稿本文に貼られたURLそのものへ、確認済みの店舗情報を対応付ける。
+const GOOGLE_MAP_PLACE_HINTS = [
+  {
+    matches: (url) => url.hostname === "maps.app.goo.gl" && url.pathname === "/714BFKV2E36krs4D9",
+    name: "TAILWIND coffee brewers",
+    address: "東京都府中市栄町2-27-10",
+    position: [35.689861, 139.479706],
+    area: "府中市",
+    genre: "カフェ"
+  },
+  {
+    matches: (url) => url.hostname === "maps.app.goo.gl" && url.pathname === "/hL8Y8k5MaHQ6SQvb6",
+    name: "SOIGIN COFFEE",
+    address: "東京都府中市本町2-20-20",
+    position: [35.666134, 139.475845],
+    area: "府中市",
+    genre: "カフェ"
+  }
+];
+
+function findGoogleMapPlaceHint(value) {
+  try {
+    const url = new URL(value);
+    return GOOGLE_MAP_PLACE_HINTS.find((hint) => hint.matches(url)) || null;
+  } catch {
+    return null;
+  }
+}
+
 function findSourcePlaceHint(value) {
   try {
     const url = new URL(value);
@@ -213,6 +313,22 @@ const VERIFIED_STATION_PLACES = [
     genre: "中華"
   }
 ];
+
+// URLも住所もない過去投稿は、本文だけから同名店を推測すると誤登録になる。
+// 投稿内容と公式情報を照合できたものだけ、Discordの投稿IDで補完する。
+const VERIFIED_MESSAGE_PLACES = new Map([
+  [
+    "1513848006779342989",
+    {
+      name: "銀龍",
+      area: "多摩市",
+      address: "東京都多摩市関戸5-9-11",
+      position: [35.641861, 139.451431],
+      genre: "中華",
+      sourceUrl: "https://ginryu.net/"
+    }
+  ]
+]);
 
 function distanceKm(left, right) {
   const lat = (left[0] - right[0]) * 111;
@@ -398,10 +514,17 @@ function extractMapSections(message) {
   }
 
   const sections = [];
+  const seenUrls = new Set();
 
   let previousUrlEnd = 0;
 
   for (const item of matches) {
+    // 同じ短縮URLが本文と説明の両方に現れても、同じ店舗を重複登録しない。
+    if (seenUrls.has(item.url)) {
+      continue;
+    }
+    seenUrls.add(item.url);
+
     sections.push({
       url: item.url,
       description: cleanText(content.slice( previousUrlEnd, item.match.index ), 300)
@@ -1029,7 +1152,7 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
     if (
       name &&
       !candidates.includes(name) &&
-      !name.includes(" ")
+      !name.includes("�")
     ) {
       candidates.push(name);
     }
@@ -1883,6 +2006,23 @@ async function convertMessageToSpot(message, previousSpot) {
     return previousSpot;
   }
 
+  const verifiedMessagePlace = VERIFIED_MESSAGE_PLACES.get(String(message.id));
+
+  if (verifiedMessagePlace) {
+    console.log(`投稿IDで確認済みの場所を使用: ${verifiedMessagePlace.name} / ${verifiedMessagePlace.address}`);
+    return {
+      id: message.id,
+      name: verifiedMessagePlace.name,
+      type: classifySpot(message),
+      genre: verifiedMessagePlace.genre,
+      area: verifiedMessagePlace.area,
+      position: verifiedMessagePlace.position,
+      description: extractDescription(message, verifiedMessagePlace.name),
+      sourceUrl: verifiedMessagePlace.sourceUrl,
+      revision
+    };
+  }
+
   const urls = extractUrls(message);
 
   // GoogleマップURLはDiscordの埋め込み情報ではなく、投稿者が本文へ
@@ -2124,6 +2264,8 @@ async function convertMessageToSpots(message, previousSpotsById) {
 
     const mapsInformation = await fetchGoogleMapsInformation(section.url);
 
+    const mapPlaceHint = findGoogleMapPlaceHint(section.url);
+
     const mapsUrl = mapsInformation.url || section.url;
 
     const sectionMessage = {
@@ -2132,11 +2274,15 @@ async function convertMessageToSpots(message, previousSpotsById) {
       embeds: []
     };
 
-    const candidates = extractPlaceCandidates(sectionMessage, mapsUrl, mapsInformation.name ? [mapsInformation] : []);
+    const candidates = [
+      mapPlaceHint?.name,
+      ...extractPlaceCandidates(sectionMessage, mapsUrl, mapsInformation.name ? [mapsInformation] : [])
+    ].filter(Boolean);
 
-    const areaHint = normalizeAreaHint(extractAreaHint(sectionMessage, []));
+    const areaHint = normalizeAreaHint(mapPlaceHint?.area || extractAreaHint(sectionMessage, []));
 
-    let name = mapsInformation.name ||
+    let name = mapPlaceHint?.name ||
+      mapsInformation.name ||
       candidates[0] ||
       `${areaHint || "多摩地域"}のおすすめスポット ${index + 1}`;
 
@@ -2150,15 +2296,13 @@ async function convertMessageToSpots(message, previousSpotsById) {
 
     // GoogleマップHTML本文には画面中心など無関係な座標も多数ある。
     // リダイレクト後URLに明記された座標だけを信頼する。
-    let position = extractCoordinatesFromUrl(mapsUrl);
+    let position = mapPlaceHint?.position || extractCoordinatesFromUrl(mapsUrl);
 
-    let area = areaHint ||
+    let area = mapPlaceHint?.area || areaHint ||
       "多摩地域";
 
     if (!position) {
-      const addresses = mapsInformation.address
-        ? [mapsInformation.address]
-        : [];
+      const addresses = [mapPlaceHint?.address, mapsInformation.address].filter(Boolean);
       
       const place = await findPlaceFromCandidates(candidates, addresses, areaHint);
 
@@ -2185,7 +2329,7 @@ async function convertMessageToSpots(message, previousSpotsById) {
       messageId: message.id,
       name,
       type: classifySpot(sectionMessage),
-      genre: classifyGenre(sectionMessage, name, mapsInformation.name || ""),
+      genre: mapPlaceHint?.genre || classifyGenre(sectionMessage, name, mapsInformation.name || ""),
       area,
       position,
       description: section.description ||
