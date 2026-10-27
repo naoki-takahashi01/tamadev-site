@@ -10,7 +10,7 @@ const OVERPASS = "https://overpass-api.de/api/interpreter";
 const GSI_ADDRESS_SEARCH = "https://msearch.gsi.go.jp/address-search/AddressSearch";
 const USER_AGENT = "tamadev-discord-spots/8.0 (+https://tamadev.jp/map/)";
 
-const DATA_VERSION = "29";
+const DATA_VERSION = "30";
 
 const SPOTS_PATH = path.join(__dirname, "..", "map", "spots.json");
 
@@ -29,6 +29,17 @@ const AREAS = new RegExp(
 // HTML取得が不安定な公式サイトや、同名店舗が多い紹介記事の住所を補う。
 // 住所は店舗の公式サイト・紹介元に掲載されている公開情報のみを使用する。
 const SOURCE_ADDRESS_HINTS = [
+  {
+    matches: (url) =>
+      (url.hostname === "tabelog.com" ||
+        url.hostname === "www.tabelog.com" ||
+        url.hostname === "s.tabelog.com") &&
+      /\/A1327\/A132702\/13288257(?:\/|$)/u.test(url.pathname),
+    name: "LATTE GRAPHIC 聖蹟桜ヶ丘",
+    address: "東京都多摩市関戸1-20-2 サクテラスモール1F",
+    position: [35.653062, 139.448078],
+    genre: "カフェ"
+  },
   {
     matches: (url) =>
       (url.hostname === "x.com" || url.hostname === "twitter.com") &&
@@ -1152,7 +1163,7 @@ function extractPlaceCandidates(message, mapsUrl, pages = []) {
     if (
       name &&
       !candidates.includes(name) &&
-      !name.includes("�")
+      !name.includes(" ")
     ) {
       candidates.push(name);
     }
