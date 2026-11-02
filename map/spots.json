@@ -1,5 +1,18 @@
 [
   {
+    "id": "1566750955796697210",
+    "name": "VITA MALL SEISEKI 店 – 髙木珈琲",
+    "type": "shop",
+    "genre": "コーヒー",
+    "area": "多摩市",
+    "position": [
+      35.649632,
+      139.447052
+    ],
+    "sourceUrl": "https://takagicoffee.com/shops/vita-mall-seiseki/",
+    "revision": "2026-11-02T09:48:56.687000+00:00:v30"
+  },
+  {
     "id": "1565572922238705674",
     "name": "味、雰囲気、価格と3拍子がバランス良く揃った小...",
     "type": "shop",
