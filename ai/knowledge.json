@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T11:55:06.749Z",
+  "generatedAt": "2026-11-07T12:00:54.166Z",
   "scope": "多摩.devと東京都多摩地域に関する公開情報",
   "community": {
     "name": "多摩.dev",
@@ -155,6 +155,16 @@
       "startDate": "2027-01-15T19:00:00+09:00",
       "venue": "府中けやきテラス 東京都府中市宮西町2-2-12 京王線府中駅から徒歩約3分 JR府中本町駅から徒歩約8分",
       "url": "https://tamadev.jp/events/20270115/",
+      "connpassUrl": ""
+    },
+    {
+      "id": "event-20270123",
+      "type": "event",
+      "name": "多摩.dev #6.5 休日午前のゆるもく会",
+      "date": "2027-01-23",
+      "startDate": "2027-01-23T09:00:00+09:00",
+      "venue": "多摩市民館 第1会議室",
+      "url": "https://tamadev.jp/events/20270123/",
       "connpassUrl": ""
     }
   ],
