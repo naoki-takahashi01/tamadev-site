@@ -1,5 +1,18 @@
 [
   {
+    "id": "1571037777989210153",
+    "name": "logi",
+    "type": "shop",
+    "genre": "その他",
+    "area": "東京都",
+    "position": [
+      35.6652956,
+      139.7153352
+    ],
+    "sourceUrl": "https://www.instagram.com/noel_fuchu?vrfl=MWVyMWN5NXEzODJ1OQ==",
+    "revision": "2026-11-14T05:43:14.743000+00:00:v30"
+  },
+  {
     "id": "1566750955796697210",
     "name": "VITA MALL SEISEKI 店 – 髙木珈琲",
     "type": "shop",
