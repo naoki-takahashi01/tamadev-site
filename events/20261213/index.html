@@ -44,10 +44,9 @@
   <link rel="stylesheet" href="/style.css">
 
   <!-- Leaflet -->
-  <link rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoV1y8gKkQp0="
-    crossorigin="">
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+
 
   <style>
     :root {
@@ -609,6 +608,7 @@
       grid-template-columns: minmax(0,1.35fr) minmax(0,1fr);
       gap: 18px;
       align-items: start;
+      overflow: hidden;
     }
 
     #lunch-map #lunch-map-canvas {
@@ -619,6 +619,7 @@
       border-radius: 18px;
       background: #e5eceb;
       z-index: 0;
+      overflow: hidden;
     }
 
     #lunch-map .lunch-list {
