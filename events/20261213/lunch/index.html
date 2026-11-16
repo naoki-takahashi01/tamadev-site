@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="TechTAMA 2026 Conferenceのランチマップ。#techtama26lunch で紹介された聖蹟桜ヶ丘のお店を地図で紹介します。">
+  <meta property="og:title" content="TechTAMA 2026 ランチマップ">
+  <meta property="og:description" content="#techtama26lunch で紹介されたお店を探そう！">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tamadev.jp/events/20261213/lunch/">
+  <meta property="og:image" content="https://tamadev.jp/events/20261213/techtama-2026-banner.png">
+  <title>TechTAMA 2026 ランチマップ | 多摩.dev</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoV1y8gKkQp0=" crossorigin="">
+  <style>
+    :root{--navy:#283f7b;--orange:#e47b47;--ink:#22313f;--muted:#596a78;--edge:#d8e7e5;--bg:#f4fbfa}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.65}
+    .wrap{width:min(1120px,calc(100% - 28px));margin:auto}.back{display:inline-block;margin:18px 0;color:var(--navy);font-weight:700}
+    header{background:white;border:1px solid var(--edge);border-radius:22px;padding:25px;margin-bottom:18px;box-shadow:0 8px 24px #1935440c}
+    .eyebrow{font-weight:800;color:var(--orange);font-size:.86rem;letter-spacing:.06em}h1{font-size:clamp(1.6rem,4vw,2.45rem);color:var(--navy);line-height:1.35;margin:8px 0}
+    header p{margin:0;color:var(--muted)}.tag{display:inline-block;padding:4px 10px;border-radius:50px;background:#fff0e8;color:#914725;font-weight:700;font-size:.88rem;margin:13px 0 0}
+    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,1fr);gap:18px;align-items:start}
+    #map{height:650px;min-height:420px;background:#e5eceb;border:1px solid var(--edge);border-radius:20px;z-index:0}
+    .side{background:white;border:1px solid var(--edge);border-radius:20px;padding:18px;max-height:650px;overflow:auto}
+    .side h2{font-size:1.1rem;margin:0 0 4px;color:var(--navy)}.small{font-size:.85rem;color:var(--muted);margin:4px 0 14px}
+    .spot{border:1px solid var(--edge);background:white;border-radius:14px;margin:0 0 10px;padding:14px}.spot h3{font-size:1rem;margin:0 0 3px}.spot .category{font-size:.8rem;color:#8c502b;font-weight:700}
+    .spot p{font-size:.91rem;margin:7px 0;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px}
+    .actions a,.actions button{font:inherit;font-size:.86rem;font-weight:700;color:var(--navy);border:1px solid #b8c9db;background:#f7fbff;border-radius:9px;padding:7px 10px;text-decoration:none;cursor:pointer}
+    .actions a:hover,.actions button:hover{background:#e6f0fc}.venue-icon,.food-icon{display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 10px #0003;border-radius:50%;font-size:19px}
+    .venue-icon{background:var(--navy);color:white}.food-icon{background:var(--orange);color:white}.leaflet-popup-content{line-height:1.5}
+    .info{background:white;border:1px solid var(--edge);border-radius:16px;margin:18px 0 30px;padding:16px 20px;color:var(--muted);font-size:.92rem}.info p{margin:5px 0}.info a{color:var(--navy)}
+    .error{color:#a52a2a;font-weight:700}.loading{padding:10px 0;color:var(--muted)}
+    @media(max-width:780px){.layout{grid-template-columns:1fr}#map{height:52vh;min-height:340px}.side{max-height:none}header{padding:20px}.wrap{width:min(100% - 22px,1120px)}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← TechTAMA 2026 Conferenceへ戻る</a>
+  <header><div class="eyebrow">TechTAMA 2026 Conference · 2026.12.13</div><h1>聖蹟桜ヶ丘 ランチマップ</h1><p>「廊下は街」。ランチタイムも、聖蹟桜ヶ丘を楽しもう。<br>ハッシュタグで紹介されたお店を地図から探せます。</p><span class="tag">#techtama26lunch</span></header>
+  <div class="layout">
+    <div id="map" aria-label="ランチ店舗と会場を示す地図" role="application"></div>
+    <section class="side" aria-label="紹介した飲食店"><h2>紹介したお店 <span id="count"></span></h2><p class="small">オレンジ色＝飲食店 ／ 青色＝会場。店舗名を押すと地図が移動します。</p><div id="spots" aria-live="polite"><p class="loading">店舗データを読み込んでいます…</p></div></section>
+  </div>
+  <aside class="info"><p>※ 掲載店舗はハッシュタグで紹介されたお店をもとに手動登録しています。X投稿との自動同期ではありません。</p><p>※ ピンは建物周辺の目安です。同一建物内の店はピンが重ならないよう表示位置を少しずらしています。正確な入口は「道順」で確認してください。営業時間・提供内容・混雑状況は当日、店舗の公式情報をご確認ください。</p><p><a href="https://x.com/search?q=%23techtama26lunch&f=live" target="_blank" rel="noopener noreferrer">Xで #techtama26lunch の投稿を探す</a></p></aside>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(() => {
+  'use strict';
+  const map = L.map('map', {scrollWheelZoom:false}).setView([35.6501,139.4487],15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+  const icon = (emoji, kind) => L.divIcon({className:'',html:`<div class="${kind}-icon" style="width:36px;height:36px">${emoji}</div>`,iconSize:[36,36],iconAnchor:[18,18]});
+  const mapLink = address => 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
+  const xSearchLink = name => 'https://x.com/search?q='+encodeURIComponent('"'+name+'" #techtama26lunch')+'&f=live';
+  const bounds = [];
+  const locationCounts = new Map();
+  const el = (tag, cls, value) => {const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=value;return node};
+  const link = (parent, title, href) => {const a=el('a','',title);a.href=href;a.target='_blank';a.rel='noopener noreferrer';parent.append(a);return a};
+  const validPost = post => typeof post === 'string' && /^https:\/\/(x\.com|twitter\.com)\/[^/]+\/status\/\d+(?:[/?#].*)?$/i.test(post);
+  fetch('./spots.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(data=>{
+    for(const venue of data.venues||[]){
+      const marker=L.marker([venue.lat,venue.lng],{icon:icon('★','venue')}).addTo(map);
+      const popup=el('div');popup.append(el('strong','',venue.name),el('div','',venue.address));link(popup,'道順を調べる',mapLink(venue.address));marker.bindPopup(popup);bounds.push([venue.lat,venue.lng]);
+    }
+    const list=document.getElementById('spots');list.textContent='';const items=data.spots||[];
+    document.getElementById('count').textContent='('+items.length+'店)';
+    for(const item of items){
+      if(!Number.isFinite(item.lat)||!Number.isFinite(item.lng))continue;
+      const key = item.lat.toFixed(4)+','+item.lng.toFixed(4);
+      const index = locationCounts.get(key)||0;locationCounts.set(key,index+1);
+      // 同一建物内の店舗が重なるため、地図上の表示だけ約10mずらして見分けられるようにする。
+      const shownLat = item.lat + index*0.00009;
+      const shownLng = item.lng + index*0.00009;
+      const marker=L.marker([shownLat,shownLng],{icon:icon('🍴','food')}).addTo(map);bounds.push([item.lat,item.lng]);
+      const searchName = item.searchName || item.name.replace(/\s*VITA MALL SEISEKI店$/u, "").replace(/\s*聖蹟桜ヶ丘店$/u, "");
+      const post = validPost(item.postUrl) ? item.postUrl : xSearchLink(searchName);
+      const postLabel = validPost(item.postUrl) ? '紹介投稿を見る' : 'Xで紹介投稿を探す';
+      const popup=el('div');popup.append(el('strong','',item.name),el('div','',item.category),el('p','',item.description));link(popup,'道順',mapLink(item.address));popup.append(' ／ ');link(popup,postLabel,post);marker.bindPopup(popup);
+      const card=el('article','spot'),heading=el('h3','',item.name),category=el('div','category',item.category),description=el('p','',item.description),address=el('p','',item.address),actions=el('div','actions');
+      const view=el('button','','地図で見る');view.type='button';view.addEventListener('click',()=>{map.setView([shownLat,shownLng],17);marker.openPopup();document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'});});actions.append(view);
+      link(actions,'道順',mapLink(item.address));link(actions,postLabel,post);card.append(heading,category,description,address,actions);list.append(card);
+    }
+    if(!items.length)list.textContent='掲載店舗は準備中です。';
+    if(bounds.length)map.fitBounds(bounds,{padding:[35,35],maxZoom:16});
+  }).catch(error=>{document.getElementById('spots').replaceChildren(el('p','error','店舗情報を読み込めませんでした。再読み込みしてください。'));console.error('Failed to load spots.json',error)});
+})();
+</script>
+</body>
+</html>

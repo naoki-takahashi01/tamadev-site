@@ -1,0 +1,97 @@
+{
+  "notice": "掲載7店舗は主催者が #techtama26lunch で紹介済みと確認したものです。ピンは現地精査前の概略位置です（MASCOT.も住所は確認済みですが座標は概略）。個別のX投稿URLが未確認の店舗はハッシュタグ検索へリンクします。",
+  "venues": [
+    {
+      "name": "関戸公民館（多摩川Track）",
+      "address": "東京都多摩市関戸4-72 ヴィータ・コミューネ8F",
+      "lat": 35.6495,
+      "lng": 139.4474
+    },
+    {
+      "name": "関・一つむぎ館（大栗川Track）",
+      "address": "東京都多摩市関戸4-19-5 健康センター3F",
+      "lat": 35.6475,
+      "lng": 139.4489
+    }
+  ],
+  "spots": [
+    {
+      "id": "madre",
+      "name": "Madre",
+      "category": "カレー・スパイス料理",
+      "description": "スパイスが香るカツカレー。ランチタイムはカレーを楽しめるお店。",
+      "address": "東京都多摩市関戸2-37-3 さくらゲート1F",
+      "lat": 35.6495,
+      "lng": 139.452,
+      "postUrl": null,
+      "sourceUrl": "https://www.keio-sc.jp/shop/?cd=000127"
+    },
+    {
+      "id": "san-coffee",
+      "name": "サンコーヒー",
+      "category": "喫茶・洋食",
+      "description": "寒い季節にうれしい温かいドリア。京王SC A館3Fの喫茶店。",
+      "address": "東京都多摩市関戸1-11-1 京王聖蹟桜ヶ丘SC A館3F",
+      "lat": 35.6511,
+      "lng": 139.4478,
+      "postUrl": null,
+      "sourceUrl": "https://www.keio-sc.jp/shop/?cd=000079"
+    },
+    {
+      "id": "takagi-coffee",
+      "name": "髙木珈琲 VITA MALL SEISEKI店",
+      "category": "カフェ・軽食",
+      "description": "サンドイッチなどの食事も楽しめるカフェ。VITA MALL SEISEKI 2F。",
+      "address": "東京都多摩市関戸4-72 VITA MALL SEISEKI 2F",
+      "lat": 35.6496,
+      "lng": 139.4475,
+      "postUrl": null,
+      "sourceUrl": "https://takagicoffee.com/shops/"
+    },
+    {
+      "id": "torihana",
+      "name": "鳥はな",
+      "category": "釜めし・やきとり",
+      "description": "釜めしだけでなく担々麺も紹介。ザ・スクエア1F。",
+      "address": "東京都多摩市関戸1-1-5 ザ・スクエア1F",
+      "lat": 35.6512,
+      "lng": 139.446,
+      "postUrl": null,
+      "sourceUrl": "https://square-sc.com/gourmet-search/"
+    },
+    {
+      "id": "sankyusan",
+      "name": "三九三",
+      "category": "とんかつ・カツ丼",
+      "description": "つゆが染み込んだカツに、穏やかな甘さと海苔の風味がよく合うカツ丼。",
+      "address": "東京都多摩市関戸1-1-5 ザ・スクエア1F",
+      "lat": 35.6512,
+      "lng": 139.446,
+      "postUrl": null,
+      "sourceUrl": "https://square-sc.com/gourmet-search/sankyusan/"
+    },
+    {
+      "id": "sushimatsu",
+      "name": "すし松 聖蹟桜ヶ丘店",
+      "category": "寿司・和食",
+      "description": "チェーン店にもおすすめあり。期間限定のつけ麺が紹介されました（当日の提供は要確認）。",
+      "address": "東京都多摩市関戸2-40-2 興進ビル",
+      "lat": 35.6497,
+      "lng": 139.4505,
+      "postUrl": null,
+      "sourceUrl": "https://pkg.navitime.co.jp/matsuyafoods/spot/detail?code=0000001630"
+    },
+    {
+      "id": "mascot",
+      "name": "MASCOT.（マスコット）",
+      "searchName": "mascot.",
+      "category": "生パスタ・カフェ",
+      "description": "風通しがよく居心地のよい店内。パスタも美味しい、聖蹟桜ヶ丘の路地裏のお店。",
+      "address": "東京都多摩市関戸2-23-18",
+      "lat": 35.6495,
+      "lng": 139.453,
+      "postUrl": null,
+      "sourceUrl": "https://tamashi-oka.jp/story/mascot"
+    }
+  ]
+}
