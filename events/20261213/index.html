@@ -622,13 +622,18 @@
       overflow: hidden;
     }
 
+
     #lunch-map .lunch-list {
       min-width: 0;
+      height: 540px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 18px;
       background: #f8fcfc;
       border: 1px solid var(--tamadev-border);
       border-radius: 18px;
     }
+
 
     #lunch-map .lunch-list h3 {
       margin: 0 0 6px;
@@ -769,7 +774,9 @@
         height: 400px;
       }
 
+
       #lunch-map .lunch-list {
+        height: 400px;
         padding: 14px;
       }
     }
