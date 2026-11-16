@@ -77,8 +77,8 @@
       "category": "寿司・和食",
       "description": "チェーン店にもおすすめあり。期間限定のつけ麺が紹介されました（当日の提供は要確認）。",
       "address": "東京都多摩市関戸2-40-2 興進ビル",
-      "lat": 35.6497,
-      "lng": 139.4505,
+      "lat": 35.650865,
+      "lng": 139.4485297,
       "postUrl": null,
       "sourceUrl": "https://pkg.navitime.co.jp/matsuyafoods/spot/detail?code=0000001630"
     },
@@ -89,8 +89,8 @@
       "category": "生パスタ・カフェ",
       "description": "風通しがよく居心地のよい店内。パスタも美味しい、聖蹟桜ヶ丘の路地裏のお店。",
       "address": "東京都多摩市関戸2-23-18",
-      "lat": 35.6495,
-      "lng": 139.453,
+      "lat": 35.6513125,
+      "lng": 139.4498125
       "postUrl": null,
       "sourceUrl": "https://tamashi-oka.jp/story/mascot"
     }
