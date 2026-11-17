@@ -1,13 +1,12 @@
+
 {
-  "notice": "掲載7店舗は主催者が #techtama26lunch で紹介済みと確認したものです。ピンは現地精査前の概略位置です（MASCOT.も住所は確認済みですが座標は概略）。個別のX投稿URLが未確認の店舗はハッシュタグ検索へリンクします。",
   "venues": [
     {
       "name": "関戸公民館（多摩川Track）",
       "address": "東京都多摩市関戸4-72 ヴィータ・コミューネ8F",
-      "lat": 35.6495,
-      "lng": 139.4474
+      "lat": 35.6495785,
+      "lng": 139.4469976
     },
-
     {
       "name": "関・一つむぎ館（大栗川Track）",
       "address": "東京都多摩市関戸4-19-5 健康センター3F",
@@ -22,8 +21,8 @@
       "category": "カレー・スパイス料理",
       "description": "スパイスが香るカツカレー。ランチタイムはカレーを楽しめるお店。",
       "address": "東京都多摩市関戸2-37-3 さくらゲート1F",
-      "lat": 35.6495,
-      "lng": 139.452,
+      "lat": 35.64991716,
+      "lng": 139.45024988,
       "postUrl": null,
       "sourceUrl": "https://www.keio-sc.jp/shop/?cd=000127"
     },
@@ -33,8 +32,8 @@
       "category": "喫茶・洋食",
       "description": "寒い季節にうれしい温かいドリア。京王SC A館3Fの喫茶店。",
       "address": "東京都多摩市関戸1-11-1 京王聖蹟桜ヶ丘SC A館3F",
-      "lat": 35.6511,
-      "lng": 139.4478,
+      "lat": 35.65060234,
+      "lng": 139.44740663,
       "postUrl": null,
       "sourceUrl": "https://www.keio-sc.jp/shop/?cd=000079"
     },
@@ -44,8 +43,8 @@
       "category": "カフェ・軽食",
       "description": "サンドイッチなどの食事も楽しめるカフェ。VITA MALL SEISEKI 2F。",
       "address": "東京都多摩市関戸4-72 VITA MALL SEISEKI 2F",
-      "lat": 35.6496,
-      "lng": 139.4475,
+      "lat": 35.6495785,
+      "lng": 139.4469976,
       "postUrl": null,
       "sourceUrl": "https://takagicoffee.com/shops/"
     },
@@ -55,8 +54,8 @@
       "category": "釜めし・やきとり",
       "description": "釜めしだけでなく担々麺も紹介。ザ・スクエア1F。",
       "address": "東京都多摩市関戸1-1-5 ザ・スクエア1F",
-      "lat": 35.6512,
-      "lng": 139.446,
+      "lat": 35.65183563,
+      "lng": 139.44593607,
       "postUrl": null,
       "sourceUrl": "https://square-sc.com/gourmet-search/"
     },
@@ -66,8 +65,8 @@
       "category": "とんかつ・カツ丼",
       "description": "つゆが染み込んだカツに、穏やかな甘さと海苔の風味がよく合うカツ丼。",
       "address": "東京都多摩市関戸1-1-5 ザ・スクエア1F",
-      "lat": 35.6512,
-      "lng": 139.446,
+      "lat": 35.65184375,
+      "lng": 139.44592618,
       "postUrl": null,
       "sourceUrl": "https://square-sc.com/gourmet-search/sankyusan/"
     },
@@ -89,10 +88,22 @@
       "category": "生パスタ・カフェ",
       "description": "風通しがよく居心地のよい店内。パスタも美味しい、聖蹟桜ヶ丘の路地裏のお店。",
       "address": "東京都多摩市関戸2-23-18",
-      "lat": 35.6513125,
-      "lng": 139.4498125,
+      "lat": 35.65133569,
+      "lng": 139.44980366,
       "postUrl": null,
       "sourceUrl": "https://tamashi-oka.jp/story/mascot"
+    },
+    {
+      "id": "uguisu",
+      "name": "地鶏と金目鯛 中華そば 鶯",
+      "searchName": "鶯",
+      "category": "ラーメン",
+      "description": "地鶏と金目鯛のラーメンが看板のお店。ずわい蟹のラーメンも美味すぎます🦀🍜",
+      "address": "東京都多摩市関戸1-12-5 ハッピービル1F",
+      "lat": 35.65013588,
+      "lng": 139.44823314,
+      "postUrl": null,
+      "sourceUrl": "https://tabelog.com/tokyo/A1327/A132702/13276418/"
     }
   ]
 }
