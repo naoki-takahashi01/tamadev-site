@@ -40,7 +40,7 @@
       --tamadev-sky: #73bfdc;
       --tamadev-bg: #f4fbfa;
       --tamadev-mint: #dff2ef;
-      --tamadev-card: #ffffff;
+      --tamadev-card: #fff;
       --tamadev-text: #22313f;
       --tamadev-subtext: #5d6b78;
       --tamadev-border: #d7e7e4;
@@ -49,9 +49,7 @@
       --container: 1100px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -65,9 +63,7 @@
       line-height: 1.7;
     }
 
-    a {
-      color: inherit;
-    }
+    a { color: inherit; }
 
     .page {
       width: min(calc(100% - 32px), var(--container));
@@ -97,9 +93,7 @@
       text-decoration: none;
     }
 
-    .topbar a:hover {
-      text-decoration: underline;
-    }
+    .topbar a:hover { text-decoration: underline; }
 
     /* Key visual */
     .conference-visual {
@@ -151,18 +145,12 @@
       display: none !important;
     }
 
-    .tech-tama-word {
-      white-space: nowrap;
-    }
+    .tech-tama-word { white-space: nowrap; }
 
     .tama-accent,
-    .tama-initial {
-      color: var(--tamadev-orange);
-    }
+    .tama-initial { color: var(--tamadev-orange); }
 
-    .tama-initial {
-      font-weight: 800;
-    }
+    .tama-initial { font-weight: 800; }
 
     .conference-expansion {
       margin: 0 0 18px;
@@ -215,10 +203,7 @@
       display: none !important;
     }
 
-    .info-list {
-      display: grid;
-      gap: 0;
-    }
+    .info-list { display: grid; gap: 0; }
 
     .info-item {
       display: grid;
@@ -229,9 +214,7 @@
       border-bottom: 1px dashed var(--tamadev-border);
     }
 
-    .info-item:first-child {
-      padding-top: 4px;
-    }
+    .info-item:first-child { padding-top: 4px; }
 
     .info-item:last-child {
       padding-bottom: 0;
@@ -266,9 +249,7 @@
       box-shadow: var(--tamadev-shadow);
     }
 
-    .section-header {
-      margin-bottom: 18px;
-    }
+    .section-header { margin-bottom: 18px; }
 
     .section-header h2 {
       margin: 0 0 8px;
@@ -286,13 +267,9 @@
       line-height: 1.9;
     }
 
-    .section > p:last-child {
-      margin-bottom: 0;
-    }
+    .section > p:last-child { margin-bottom: 0; }
 
-    #overview {
-      padding-top: 28px !important;
-    }
+    #overview { padding-top: 28px !important; }
 
     #overview > .section-header {
       position: static !important;
@@ -366,9 +343,7 @@
     }
 
     .proposal-link strong,
-    .proposal-link span {
-      display: block;
-    }
+    .proposal-link span { display: block; }
 
     .proposal-link strong {
       margin-bottom: 4px;
@@ -407,9 +382,7 @@
       border-radius: 16px;
     }
 
-    .proposal-detail strong {
-      color: var(--tamadev-text);
-    }
+    .proposal-detail strong { color: var(--tamadev-text); }
 
     .proposal-detail p {
       margin: 4px 0 0;
@@ -448,23 +421,15 @@
       font-weight: 600;
     }
 
-    .news-item span {
-      font-weight: 600;
-    }
+    .news-item span { font-weight: 600; }
 
     .news-item:hover span {
       color: var(--tamadev-blue);
       text-decoration: underline;
     }
 
-    .news-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .news-list::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
+    .news-list::-webkit-scrollbar { width: 8px; }
+    .news-list::-webkit-scrollbar-track { background: transparent; }
     .news-list::-webkit-scrollbar-thumb {
       background: var(--tamadev-border);
       border-radius: 999px;
@@ -499,9 +464,7 @@
       line-height: 1.9;
     }
 
-    .keynote-content p:last-child {
-      margin-bottom: 0;
-    }
+    .keynote-content p:last-child { margin-bottom: 0; }
 
     .keynote-links {
       display: flex;
@@ -515,9 +478,7 @@
     }
 
     /* Staff */
-    .staff-group + .staff-group {
-      margin-top: 34px;
-    }
+    .staff-group + .staff-group { margin-top: 34px; }
 
     .staff-group-title {
       display: inline-block;
@@ -573,20 +534,16 @@
       font-size: .95rem;
     }
 
-    .footer-links {
-      margin: 0;
-    }
+    .footer-links { margin: 0; }
 
     .footer-links a {
       color: var(--tamadev-blue);
       text-decoration: none;
     }
 
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
+    .footer-links a:hover { text-decoration: underline; }
 
-    /* Lunch map */
+    /* Lunch / Venue / Afterparty map */
     #lunch-map .lunch-layout {
       display: grid;
       grid-template-columns: minmax(0,1.35fr) minmax(0,1fr);
@@ -691,6 +648,51 @@
       background: #edf5fb;
     }
 
+    /* Afterparty card */
+    #lunch-map .lunch-afterparty {
+      margin: 0 0 22px;
+      padding: 16px 14px;
+      border: 1px solid #d8c6ef;
+      border-radius: 14px;
+      background: #f8f3fe;
+      cursor: pointer;
+      transition: background-color .2s ease;
+    }
+
+    #lunch-map .lunch-afterparty:hover {
+      background: #f1e8fc;
+    }
+
+    #lunch-map .lunch-afterparty:focus-visible {
+      outline: 3px solid #8b5cf6;
+      outline-offset: 3px;
+    }
+
+    #lunch-map .lunch-afterparty-label {
+      margin: 0 0 8px;
+      color: #7041a5;
+      font-size: .85rem;
+      font-weight: 800;
+    }
+
+    #lunch-map .lunch-afterparty h3 {
+      margin: 0 0 8px;
+      color: var(--tamadev-text);
+      font-size: 1.05rem;
+    }
+
+    #lunch-map .lunch-afterparty p {
+      margin: 5px 0;
+      color: var(--tamadev-subtext);
+      font-size: .9rem;
+      line-height: 1.7;
+    }
+
+    #lunch-map .lunch-afterparty .lunch-afterparty-time {
+      color: #7041a5;
+      font-weight: 700;
+    }
+
     #lunch-map .lunch-note {
       margin: 16px 0 0;
       color: var(--tamadev-subtext);
@@ -745,7 +747,6 @@
       color: var(--tamadev-blue) !important;
     }
 
-    /* Tablet */
     @media (max-width: 960px) {
       .event-summary {
         grid-template-columns: 1.2fr .9fr;
@@ -757,7 +758,6 @@
       }
     }
 
-    /* Mobile */
     @media (max-width: 760px) {
       .conference-visual {
         margin-top: 14px;
@@ -804,7 +804,6 @@
         padding: 14px;
       }
 
-      /* スマホの吹き出しをコンパクトに表示 */
       #lunch-map .leaflet-popup-content {
         font-size: 12px;
         line-height: 1.5;
@@ -820,48 +819,26 @@
     }
 
     @media (max-width: 600px) {
-      .conference-expansion {
-        font-size: .86rem;
-      }
-
-      .hero-tagline {
-        border-radius: 14px;
-      }
-
-      .keynote-profile {
-        grid-template-columns: 1fr;
-      }
+      .conference-expansion { font-size: .86rem; }
+      .hero-tagline { border-radius: 14px; }
+      .keynote-profile { grid-template-columns: 1fr; }
 
       .keynote-image {
         width: 120px;
         height: 120px;
       }
 
-      .staff-list {
-        gap: 20px 12px;
-      }
-
-      .staff-member {
-        width: 78px;
-      }
+      .staff-list { gap: 20px 12px; }
+      .staff-member { width: 78px; }
 
       .staff-avatar {
         width: 60px;
         height: 60px;
       }
 
-      .staff-name {
-        font-size: .78rem;
-      }
-
-      .info-note {
-        margin-left: 4px;
-        font-size: .76rem;
-      }
-
-      .news-list {
-        max-height: 270px;
-      }
+      .staff-name { font-size: .78rem; }
+      .info-note { margin-left: 4px; font-size: .76rem; }
+      .news-list { max-height: 270px; }
 
       .news-item {
         grid-template-columns: 1fr;
@@ -1005,14 +982,13 @@
     </div>
 
     <div class="news-list">
-
       <a class="news-item"
          href="https://hiliteeternal.hatenablog.com/entry/2026/11/18/080000"
          target="_blank" rel="noopener noreferrer">
         <time datetime="2026-11-18">2026.11.18</time>
         <span>【開催25日前】地域コミュニティの楽しさを広げる、こうのさんのキーノート</span>
       </a>
-      
+
       <a class="news-item"
          href="https://hiliteeternal.hatenablog.com/entry/2026/11/13/080000"
          target="_blank" rel="noopener noreferrer">
@@ -1021,85 +997,85 @@
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/11/03/201133"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/11/03/201133"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-11-03">2026.11.03</time>
         <span>【開催40日前】TechTAMA 2026 Conference、ランチもきっと楽しい時間に</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/10/27/210829"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/10/27/210829"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-10-27">2026.10.27</time>
         <span>TechTAMA 2026 Conferenceの懇親会は、多摩川沿いのLATTE GRAPHICで開催します</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/10/25/230200"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/10/25/230200"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-10-26">2026.10.26</time>
         <span>TechTAMA 2026 Conferenceのタイムテーブルが決まりました！ — クロスコミュニティと「廊下は街」</span>
       </a>
 
       <a class="news-item"
-        href="https://fortee.jp/techtama-26-conf/timetable"
-        target="_blank" rel="noopener noreferrer">
+         href="https://fortee.jp/techtama-26-conf/timetable"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-10-23">2026.10.23</time>
         <span>タイムテーブルが確定しました！ 採択された皆さま全員から登壇のご承諾をいただきました。</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/10/18/103649"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/10/18/103649"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-10-18">2026.10.18</time>
         <span>プロポーザルの一次採択を終えました。選考で大切にしたことをブログにまとめました。</span>
       </a>
 
       <a class="news-item"
-        href="https://fortee.jp/techtama-26-conf/proposal/all"
-        target="_blank" rel="noopener noreferrer">
+         href="https://fortee.jp/techtama-26-conf/proposal/all"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-10-05">2026.10.05</time>
         <span>プロポーザルの募集を締め切りました。35件に及ぶプロポーザルのご応募、ありがとうございました！</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/26/132056"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/26/132056"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-26">2026.09.26</time>
         <span>「いつか登壇してみたい」を、TechTAMAでやってみませんか？</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/21/113532"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/21/113532"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-21">2026.09.21</time>
         <span>いろいろな背景を持つ人たちに、TechTAMAで話してほしい</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/18/190000"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/18/190000"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-18">2026.09.18</time>
         <span>初回のTechTAMAで、あなたの経験を話してみませんか？</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/16/190000"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/16/190000"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-16">2026.09.16</time>
         <span>TechTAMAの舞台・聖蹟桜ヶ丘と関戸公民館について紹介しました</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/14/212339"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/14/212339"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-14">2026.09.14</time>
         <span>TechTAMA 2026 Conferenceのプロポーザル募集について紹介しました</span>
       </a>
 
       <a class="news-item"
-        href="https://hiliteeternal.hatenablog.com/entry/2026/09/01/215242"
-        target="_blank" rel="noopener noreferrer">
+         href="https://hiliteeternal.hatenablog.com/entry/2026/09/01/215242"
+         target="_blank" rel="noopener noreferrer">
         <time datetime="2026-09-01">2026.09.01</time>
         <span>TechTAMA 2026 Conferenceを開催します</span>
       </a>
@@ -1246,37 +1222,43 @@
     </a>
   </section>
 
-  <!-- Lunch Map -->
+  <!-- Venue / Lunch / Afterparty Map -->
   <section id="lunch-map" class="section">
     <div class="section-header">
-      <h2>聖蹟桜ヶ丘のランチを楽しもう！</h2>
+      <h2>TechTAMA 会場・周辺マップ</h2>
       <p>
-        TechTAMAのランチタイムは、
-        聖蹟桜ヶ丘の街も楽しんでみませんか？<br>
+        カンファレンス会場、ランチのお店、懇親会会場を
+        ひとつの地図にまとめました。<br>
         <a href="https://x.com/search?q=%23techtama26lunch&amp;f=live"
            target="_blank" rel="noopener noreferrer">
           #techtama26lunch
         </a>
-        で紹介したお店を地図にまとめました。
-        気になるお店を探してみてください！
+        で紹介したお店も掲載しています。
+        聖蹟桜ヶ丘の街を楽しんでみてください！
       </p>
     </div>
 
     <div class="lunch-layout">
       <div
         id="lunch-map-canvas"
-        aria-label="紹介された飲食店とカンファレンス会場の地図"
+        aria-label="TechTAMAの会場、ランチ紹介店舗、懇親会会場の地図"
         role="region">
       </div>
 
       <div class="lunch-list">
+
+        <!-- Afterparty: lunch spotsとは別枠 -->
+        <div id="lunch-afterparty"></div>
+
         <h3>
-          紹介したお店
+          紹介したランチのお店
           <span id="lunch-count"></span>
         </h3>
 
         <p class="lunch-legend">
-          🟠 飲食店 ／ 🔵 カンファレンス会場
+          🔵 カンファレンス会場 ／
+          🟠 ランチ紹介店舗 ／
+          🟣 懇親会会場
         </p>
 
         <div id="lunch-spots" aria-live="polite">
@@ -1403,18 +1385,20 @@
 </div>
 
 <!-- Leaflet -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin="">
 </script>
 
-<!-- Lunch Map -->
+<!-- Venue / Lunch / Afterparty Map -->
 <script>
 (() => {
   "use strict";
 
   const list = document.getElementById("lunch-spots");
   const count = document.getElementById("lunch-count");
+  const afterpartyContainer = document.getElementById("lunch-afterparty");
 
   if (typeof L === "undefined") {
     list.textContent =
@@ -1440,8 +1424,12 @@
   const markerEntries = [];
 
   /*
-   * 元の緯度経度を保持し、
-   * 表示するピンの位置のみ調整する。
+   * ピンの本来の位置を保持。
+   * 表示上の重なりのみ回避する。
+   *
+   * venue      = カンファレンス会場
+   * afterparty = 懇親会会場
+   * food       = ランチ紹介店舗
    */
   function registerMarker(marker, lat, lng, kind) {
     markerEntries.push({
@@ -1451,10 +1439,6 @@
     });
   }
 
-  /*
-   * 会場を優先し、近接する飲食店のピンを
-   * 画面上で少しずらして重なりを防ぐ。
-   */
   function positionPins() {
     const occupied = [];
     const gap = 43;
@@ -1479,7 +1463,9 @@
       const base = map.latLngToLayerPoint(entry.origin);
       let selected = base;
 
-      if (entry.kind === "food") {
+      // 会場は本来の位置を優先する。
+      // 懇親会・飲食店のピンは必要に応じてずらす。
+      if (entry.kind !== "venue") {
         for (const [dx, dy] of offsets) {
           const candidate = L.point(
             base.x + dx,
@@ -1530,6 +1516,7 @@
 
   const venueIcon = makeIcon("★", "#283f7b");
   const foodIcon = makeIcon("🍴", "#e47b47");
+  const afterpartyIcon = makeIcon("🍻", "#8752b8");
 
   function mapsUrl(address) {
     return "https://www.google.com/maps/search/?api=1&query=" +
@@ -1566,8 +1553,8 @@
   }
 
   /*
-   * 吹き出しのサイズを地図の表示領域に合わせる。
-   * 長い文章は吹き出し内でスクロールする。
+   * スマホでも吹き出しが地図から
+   * 見切れないようにサイズを制限する。
    */
   function popupOptions() {
     const size = map.getSize();
@@ -1588,10 +1575,6 @@
     };
   }
 
-  /*
-   * 画面サイズの変化に合わせて、
-   * 開いている吹き出しの制限値を更新する。
-   */
   map.on("resize", () => {
     const opened = map._popup;
     if (!opened || !map.hasLayer(opened)) return;
@@ -1600,6 +1583,54 @@
     opened.options.maxHeight = popupOptions().maxHeight;
     opened.update();
   });
+
+  /*
+   * カードをタップしたとき、
+   * 地図のピンと吹き出しを表示する。
+   */
+  function focusMarker(marker, lat, lng) {
+    map.setView(
+      [lat, lng],
+      17,
+      { animate: false }
+    );
+
+    positionPins();
+    marker.openPopup();
+
+    document.getElementById("lunch-map-canvas")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+  }
+
+  /*
+   * カード全体のクリック・キーボード操作。
+   * カード内のリンクは通常の動作を優先。
+   */
+  function makeCardClickable(article, label, onActivate) {
+    article.tabIndex = 0;
+    article.setAttribute("role", "button");
+    article.setAttribute("aria-label", label);
+
+    article.addEventListener("click", event => {
+      if (event.target.closest("a")) return;
+      onActivate();
+    });
+
+    article.addEventListener("keydown", event => {
+      if (event.target !== article) return;
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+        event.preventDefault();
+        onActivate();
+      }
+    });
+  }
 
   function addVenue(venue) {
     if (!Number.isFinite(venue.lat) ||
@@ -1634,6 +1665,98 @@
     bounds.push(position);
   }
 
+  /*
+   * 懇親会会場。
+   * ランチ営業ありの店舗としても紹介するが、
+   * #techtama26lunch の8店舗には含めない。
+   */
+  function addAfterparty(place) {
+    if (!place ||
+        !Number.isFinite(place.lat) ||
+        !Number.isFinite(place.lng)) {
+      return;
+    }
+
+    const position = [place.lat, place.lng];
+
+    const marker = L.marker(position, {
+      icon: afterpartyIcon,
+      zIndexOffset: 50
+    }).addTo(map);
+
+    bounds.push(position);
+
+    registerMarker(
+      marker,
+      place.lat,
+      place.lng,
+      "afterparty"
+    );
+
+    const popup = document.createElement("div");
+
+    popup.append(
+      textElement("strong", place.name),
+      textElement("p", "ランチ営業あり"),
+      textElement("p", "TechTAMA懇親会：12月13日（日）19:30開始"),
+      makeLink("道順", mapsUrl(place.address)),
+      document.createTextNode(" ／ "),
+      makeLink("公式サイト", place.sourceUrl)
+    );
+
+    marker.bindPopup(popup, popupOptions());
+
+    const article = document.createElement("article");
+    article.className = "lunch-afterparty";
+
+    const label = textElement(
+      "p",
+      "🟣 懇親会会場・ランチ営業あり"
+    );
+    label.className = "lunch-afterparty-label";
+
+    const name = textElement("h3", place.name);
+
+    const time = textElement(
+      "p",
+      "12月13日（日）懇親会 19:30開始"
+    );
+    time.className = "lunch-afterparty-time";
+
+    article.append(
+      label,
+      name,
+      time,
+      textElement("p", place.description),
+      textElement("p", place.address)
+    );
+
+    const actions = document.createElement("div");
+    actions.className = "lunch-actions";
+
+    actions.append(
+      makeLink("道順", mapsUrl(place.address)),
+      makeLink("公式サイト", place.sourceUrl)
+    );
+
+    article.append(actions);
+
+    makeCardClickable(
+      article,
+      place.name + "を地図で見る",
+      () => focusMarker(
+        marker,
+        place.lat,
+        place.lng
+      )
+    );
+
+    afterpartyContainer.replaceChildren(article);
+  }
+
+  /*
+   * #techtama26lunch の紹介店舗。
+   */
   function addSpot(spot) {
     if (!Number.isFinite(spot.lat) ||
         !Number.isFinite(spot.lng)) {
@@ -1698,47 +1821,6 @@
       textElement("p", spot.address)
     );
 
-    function focusSpot() {
-      map.setView(
-        [spot.lat, spot.lng],
-        17,
-        { animate: false }
-      );
-
-      positionPins();
-      marker.openPopup();
-
-      document.getElementById("lunch-map-canvas")
-        .scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
-    }
-
-    article.tabIndex = 0;
-    article.setAttribute("role", "button");
-    article.setAttribute(
-      "aria-label",
-      spot.name + "を地図で見る"
-    );
-
-    article.addEventListener("click", event => {
-      if (event.target.closest("a")) return;
-      focusSpot();
-    });
-
-    article.addEventListener("keydown", event => {
-      if (event.target !== article) return;
-
-      if (
-        event.key === "Enter" ||
-        event.key === " "
-      ) {
-        event.preventDefault();
-        focusSpot();
-      }
-    });
-
     const actions = document.createElement("div");
     actions.className = "lunch-actions";
 
@@ -1748,9 +1830,24 @@
     );
 
     article.append(actions);
+
+    makeCardClickable(
+      article,
+      spot.name + "を地図で見る",
+      () => focusMarker(
+        marker,
+        spot.lat,
+        spot.lng
+      )
+    );
+
     list.append(article);
   }
 
+  /*
+   * データ読み込み。
+   * 会場 → 懇親会 → ランチ店舗の順に登録。
+   */
   fetch("./lunch/spots.json", {
     cache: "no-cache"
   })
@@ -1758,6 +1855,7 @@
       if (!response.ok) {
         throw new Error("HTTP " + response.status);
       }
+
       return response.json();
     })
     .then(data => {
@@ -1767,8 +1865,14 @@
       const spots = data.spots || [];
 
       venues.forEach(addVenue);
+
+      if (data.afterparty) {
+        addAfterparty(data.afterparty);
+      }
+
       spots.forEach(addSpot);
 
+      // 紹介したランチ店舗のみカウント
       count.textContent =
         "(" + spots.length + "店)";
 
@@ -1793,7 +1897,7 @@
     })
     .catch(error => {
       console.error(
-        "ランチマップの読み込みエラー",
+        "周辺マップの読み込みエラー",
         error
       );
 
