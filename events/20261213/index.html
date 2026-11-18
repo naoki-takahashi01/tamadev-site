@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>TechTAMA 2026 Conference | 多摩.dev #6</title>
+  <title>TechTAMA 2026 Conference | 多摩.dev #6">
   <meta name="description" content="2026年12月13日開催。多摩.dev #6「TechTAMA 2026 Conference」。タイムテーブル公開中、参加申込受付中です。">
 
   <!-- OGP -->
@@ -706,11 +706,20 @@
     /* Leaflet popup */
     #lunch-map .leaflet-popup-content {
       line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
     #lunch-map .leaflet-popup-content > strong:first-child {
       display: block;
       padding-right: 34px;
+    }
+
+    #lunch-map .leaflet-popup-content p {
+      margin: 8px 0;
+    }
+
+    #lunch-map .leaflet-popup-content a {
+      overflow-wrap: anywhere;
     }
 
     #lunch-map .leaflet-popup-close-button {
@@ -793,6 +802,20 @@
       #lunch-map .lunch-list {
         height: 400px;
         padding: 14px;
+      }
+
+      /* スマホの吹き出しをコンパクトに表示 */
+      #lunch-map .leaflet-popup-content {
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      #lunch-map .leaflet-popup-content p {
+        margin: 6px 0;
+      }
+
+      #lunch-map .leaflet-popup-content-wrapper {
+        border-radius: 12px;
       }
     }
 
@@ -1406,18 +1429,12 @@
   ).addTo(map);
 
   const bounds = [];
-
-  /*
-   * ピンの重なりを防ぐための表示情報。
-   *
-   * venue = 会場
-   * food  = 飲食店
-   *
-   * 元の緯度経度は変更しない。
-   * 地図上での表示位置のみ調整する。
-   */
   const markerEntries = [];
 
+  /*
+   * 元の緯度経度を保持し、
+   * 表示するピンの位置のみ調整する。
+   */
   function registerMarker(marker, lat, lng, kind) {
     markerEntries.push({
       marker,
@@ -1427,19 +1444,12 @@
   }
 
   /*
-   * 近接するピンの表示位置を調整する。
-   *
-   * 会場を優先して元の地点に表示し、
-   * 飲食店のピンのみ必要に応じて移動する。
-   *
-   * ピクセル単位で調整するため、
-   * ズームしてもピン同士が重なりにくい。
+   * 会場を優先し、近接する飲食店のピンを
+   * 画面上で少しずらして重なりを防ぐ。
    */
   function positionPins() {
     const occupied = [];
     const gap = 43;
-
-    // 候補となるピクセルオフセット
     const offsets = [[0, 0]];
 
     for (let ring = 1; ring <= 7; ring++) {
@@ -1458,13 +1468,10 @@
     }
 
     for (const entry of markerEntries) {
-      // JSONで指定した本来の位置
       const base = map.latLngToLayerPoint(entry.origin);
-
       let selected = base;
 
       if (entry.kind === "food") {
-        // 他のピンと一定距離以上離れる候補を選択
         for (const [dx, dy] of offsets) {
           const candidate = L.point(
             base.x + dx,
@@ -1482,7 +1489,6 @@
         }
       }
 
-      // 表示位置だけ変更。データ側の座標は維持する
       entry.marker.setLatLng(
         map.layerPointToLatLng(selected)
       );
@@ -1491,7 +1497,6 @@
     }
   }
 
-  // ズーム倍率が変わった場合にも重なりを再計算
   map.on("zoomend resize", positionPins);
 
   function makeIcon(symbol, color) {
@@ -1552,6 +1557,42 @@
     return a;
   }
 
+  /*
+   * 吹き出しのサイズを地図の表示領域に合わせる。
+   * 長い文章は吹き出し内でスクロールする。
+   */
+  function popupOptions() {
+    const size = map.getSize();
+
+    return {
+      autoPan: true,
+      closeButton: true,
+      maxWidth: Math.max(
+        130,
+        Math.min(260, size.x - 76)
+      ),
+      maxHeight: Math.max(
+        120,
+        Math.min(190, size.y - 150)
+      ),
+      autoPanPaddingTopLeft: L.point(14, 18),
+      autoPanPaddingBottomRight: L.point(14, 18)
+    };
+  }
+
+  /*
+   * 画面サイズの変化に合わせて、
+   * 開いている吹き出しの制限値を更新する。
+   */
+  map.on("resize", () => {
+    const opened = map._popup;
+    if (!opened || !map.hasLayer(opened)) return;
+
+    opened.options.maxWidth = popupOptions().maxWidth;
+    opened.options.maxHeight = popupOptions().maxHeight;
+    opened.update();
+  });
+
   function addVenue(venue) {
     if (!Number.isFinite(venue.lat) ||
         !Number.isFinite(venue.lng)) {
@@ -1573,12 +1614,8 @@
       makeLink("道順を見る", mapsUrl(venue.address))
     );
 
-    marker.bindPopup(popup, {
-      autoPan: true,
-      closeButton: true
-    });
+    marker.bindPopup(popup, popupOptions());
 
-    // 会場の座標を優先して登録
     registerMarker(
       marker,
       venue.lat,
@@ -1603,7 +1640,6 @@
 
     bounds.push(position);
 
-    // 飲食店の元の座標を登録
     registerMarker(
       marker,
       spot.lat,
@@ -1626,7 +1662,6 @@
       ? "紹介投稿を見る"
       : "Xで紹介投稿を探す";
 
-    // 地図のポップアップ
     const popup = document.createElement("div");
 
     popup.append(
@@ -1637,12 +1672,8 @@
       makeLink(postLabel, postUrl)
     );
 
-    marker.bindPopup(popup, {
-      autoPan: true,
-      closeButton: true
-    });
+    marker.bindPopup(popup, popupOptions());
 
-    // 店舗一覧
     const article = document.createElement("article");
     article.className = "lunch-spot";
 
@@ -1659,7 +1690,6 @@
       textElement("p", spot.address)
     );
 
-    // カード全体をタップすると地図へ移動
     function focusSpot() {
       map.setView(
         [spot.lat, spot.lng],
@@ -1667,7 +1697,6 @@
         { animate: false }
       );
 
-      // ズーム後の表示位置を更新してから開く
       positionPins();
       marker.openPopup();
 
@@ -1714,7 +1743,6 @@
     list.append(article);
   }
 
-  // 店舗データを読み込む
   fetch("./lunch/spots.json", {
     cache: "no-cache"
   })
@@ -1730,7 +1758,6 @@
       const venues = data.venues || [];
       const spots = data.spots || [];
 
-      // 会場を先に登録することで優先表示する
       venues.forEach(addVenue);
       spots.forEach(addSpot);
 
@@ -1744,7 +1771,6 @@
         });
       }
 
-      // すべてのピンを配置した後で重なりを解消
       positionPins();
 
       if (spots.length === 0) {
