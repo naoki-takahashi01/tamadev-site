@@ -14,6 +14,16 @@
       "lng": 139.4495117
     }
   ],
+  "afterparty": {
+    "id": "latte-graphic",
+    "name": "LATTE GRAPHIC 聖蹟桜ヶ丘店",
+    "category": "懇親会会場・カフェダイニング",
+    "description": "多摩川沿いのカフェダイニング。ランチ営業もあり、パスタやピザなどの食事を楽しめます。",
+    "address": "東京都多摩市関戸1-20-2 サクテラスモール1F",
+    "lat": 35.6531316,
+    "lng": 139.4480719,
+    "sourceUrl": "https://lattegraphic.co.jp/shoplist/shoplist-2-550/"
+  },
   "spots": [
     {
       "id": "madre",
