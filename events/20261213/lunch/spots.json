@@ -114,6 +114,18 @@
       "lng": 139.44823314,
       "postUrl": null,
       "sourceUrl": "https://tabelog.com/tokyo/A1327/A132702/13276418/"
+    },
+    {
+      "id": "resuto-nana",
+      "name": "カフェれすと なな",
+      "searchName": "れすと なな",
+      "category": "カフェ・洋食",
+      "description": "オムライスがおいしい、関戸公民館7階のカフェ。天気のよい日は眺めも最高！☀️",
+      "address": "東京都多摩市関戸4-72 ヴィータ・コミューネ7F",
+      "lat": 35.6495785,
+      "lng": 139.4469976,
+      "postUrl": null,
+      "sourceUrl": "https://resuto-tamacity.org/lp/nana/"
     }
   ]
 }
