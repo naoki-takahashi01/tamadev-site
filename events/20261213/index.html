@@ -40,7 +40,7 @@
       --tamadev-sky: #73bfdc;
       --tamadev-bg: #f4fbfa;
       --tamadev-mint: #dff2ef;
-      --tamadev-card: #fff;
+      --tamadev-card: #ffffff;
       --tamadev-text: #22313f;
       --tamadev-subtext: #5d6b78;
       --tamadev-border: #d7e7e4;
@@ -49,7 +49,9 @@
       --container: 1100px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -63,7 +65,9 @@
       line-height: 1.7;
     }
 
-    a { color: inherit; }
+    a {
+      color: inherit;
+    }
 
     .page {
       width: min(calc(100% - 32px), var(--container));
@@ -93,7 +97,9 @@
       text-decoration: none;
     }
 
-    .topbar a:hover { text-decoration: underline; }
+    .topbar a:hover {
+      text-decoration: underline;
+    }
 
     /* Key visual */
     .conference-visual {
@@ -145,12 +151,18 @@
       display: none !important;
     }
 
-    .tech-tama-word { white-space: nowrap; }
+    .tech-tama-word {
+      white-space: nowrap;
+    }
 
     .tama-accent,
-    .tama-initial { color: var(--tamadev-orange); }
+    .tama-initial {
+      color: var(--tamadev-orange);
+    }
 
-    .tama-initial { font-weight: 800; }
+    .tama-initial {
+      font-weight: 800;
+    }
 
     .conference-expansion {
       margin: 0 0 18px;
@@ -203,7 +215,10 @@
       display: none !important;
     }
 
-    .info-list { display: grid; gap: 0; }
+    .info-list {
+      display: grid;
+      gap: 0;
+    }
 
     .info-item {
       display: grid;
@@ -214,7 +229,9 @@
       border-bottom: 1px dashed var(--tamadev-border);
     }
 
-    .info-item:first-child { padding-top: 4px; }
+    .info-item:first-child {
+      padding-top: 4px;
+    }
 
     .info-item:last-child {
       padding-bottom: 0;
@@ -249,7 +266,9 @@
       box-shadow: var(--tamadev-shadow);
     }
 
-    .section-header { margin-bottom: 18px; }
+    .section-header {
+      margin-bottom: 18px;
+    }
 
     .section-header h2 {
       margin: 0 0 8px;
@@ -267,9 +286,13 @@
       line-height: 1.9;
     }
 
-    .section > p:last-child { margin-bottom: 0; }
+    .section > p:last-child {
+      margin-bottom: 0;
+    }
 
-    #overview { padding-top: 28px !important; }
+    #overview {
+      padding-top: 28px !important;
+    }
 
     #overview > .section-header {
       position: static !important;
@@ -343,7 +366,9 @@
     }
 
     .proposal-link strong,
-    .proposal-link span { display: block; }
+    .proposal-link span {
+      display: block;
+    }
 
     .proposal-link strong {
       margin-bottom: 4px;
@@ -382,7 +407,9 @@
       border-radius: 16px;
     }
 
-    .proposal-detail strong { color: var(--tamadev-text); }
+    .proposal-detail strong {
+      color: var(--tamadev-text);
+    }
 
     .proposal-detail p {
       margin: 4px 0 0;
@@ -421,15 +448,23 @@
       font-weight: 600;
     }
 
-    .news-item span { font-weight: 600; }
+    .news-item span {
+      font-weight: 600;
+    }
 
     .news-item:hover span {
       color: var(--tamadev-blue);
       text-decoration: underline;
     }
 
-    .news-list::-webkit-scrollbar { width: 8px; }
-    .news-list::-webkit-scrollbar-track { background: transparent; }
+    .news-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .news-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
     .news-list::-webkit-scrollbar-thumb {
       background: var(--tamadev-border);
       border-radius: 999px;
@@ -464,7 +499,9 @@
       line-height: 1.9;
     }
 
-    .keynote-content p:last-child { margin-bottom: 0; }
+    .keynote-content p:last-child {
+      margin-bottom: 0;
+    }
 
     .keynote-links {
       display: flex;
@@ -478,7 +515,9 @@
     }
 
     /* Staff */
-    .staff-group + .staff-group { margin-top: 34px; }
+    .staff-group + .staff-group {
+      margin-top: 34px;
+    }
 
     .staff-group-title {
       display: inline-block;
@@ -534,14 +573,18 @@
       font-size: .95rem;
     }
 
-    .footer-links { margin: 0; }
+    .footer-links {
+      margin: 0;
+    }
 
     .footer-links a {
       color: var(--tamadev-blue);
       text-decoration: none;
     }
 
-    .footer-links a:hover { text-decoration: underline; }
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
 
     /* Lunch / Venue / Afterparty map */
     #lunch-map .lunch-layout {
@@ -650,7 +693,7 @@
 
     /* Afterparty card */
     #lunch-map .lunch-afterparty {
-      margin: 0 0 22px;
+      margin: 22px 0 0;
       padding: 16px 14px;
       border: 1px solid #d8c6ef;
       border-radius: 14px;
@@ -819,26 +862,48 @@
     }
 
     @media (max-width: 600px) {
-      .conference-expansion { font-size: .86rem; }
-      .hero-tagline { border-radius: 14px; }
-      .keynote-profile { grid-template-columns: 1fr; }
+      .conference-expansion {
+        font-size: .86rem;
+      }
+
+      .hero-tagline {
+        border-radius: 14px;
+      }
+
+      .keynote-profile {
+        grid-template-columns: 1fr;
+      }
 
       .keynote-image {
         width: 120px;
         height: 120px;
       }
 
-      .staff-list { gap: 20px 12px; }
-      .staff-member { width: 78px; }
+      .staff-list {
+        gap: 20px 12px;
+      }
+
+      .staff-member {
+        width: 78px;
+      }
 
       .staff-avatar {
         width: 60px;
         height: 60px;
       }
 
-      .staff-name { font-size: .78rem; }
-      .info-note { margin-left: 4px; font-size: .76rem; }
-      .news-list { max-height: 270px; }
+      .staff-name {
+        font-size: .78rem;
+      }
+
+      .info-note {
+        margin-left: 4px;
+        font-size: .76rem;
+      }
+
+      .news-list {
+        max-height: 270px;
+      }
 
       .news-item {
         grid-template-columns: 1fr;
@@ -1246,10 +1311,6 @@
       </div>
 
       <div class="lunch-list">
-
-        <!-- Afterparty: lunch spotsとは別枠 -->
-        <div id="lunch-afterparty"></div>
-
         <h3>
           紹介したランチのお店
           <span id="lunch-count"></span>
@@ -1264,12 +1325,15 @@
         <div id="lunch-spots" aria-live="polite">
           店舗情報を読み込んでいます…
         </div>
+
+        <!-- 懇親会会場はランチ店舗一覧の一番下 -->
+        <div id="lunch-afterparty"></div>
       </div>
     </div>
 
     <p class="lunch-note">
       ※ 地図の位置は目安です。
-      会場とお店が近接する場合は、ピンの重なりを避けるため表示位置を調整しています。<br>
+      同じ建物に複数のピンがある場合は、重なりを避けるため表示位置を少しずらしています。<br>
       ※ 営業時間や提供メニューは、当日の店舗情報をご確認ください。
     </p>
   </section>
@@ -1424,73 +1488,166 @@
   const markerEntries = [];
 
   /*
-   * ピンの本来の位置を保持。
-   * 表示上の重なりのみ回避する。
+   * 同じ建物を識別するためのキーを作る。
    *
-   * venue      = カンファレンス会場
-   * afterparty = 懇親会会場
-   * food       = ランチ紹介店舗
+   * 例：
+   * 関戸4-72 ヴィータ・コミューネ8F
+   * 関戸4-72 VITA MALL SEISEKI 2F
+   *
+   * どちらも「東京都多摩市関戸4-72」として扱う。
+   *
+   * 異なる番地の店舗は、たとえピンが近くても
+   * 別の建物として扱い、表示位置を変えない。
    */
-  function registerMarker(marker, lat, lng, kind) {
+  function buildingKey(address, lat, lng) {
+    const normalized = String(address || "")
+      .replace(/\s+/g, "")
+      .replace(/[－ー―‐]/g, "-");
+
+    const match = normalized.match(
+      /東京都多摩市関戸\d+(?:-\d+){1,2}/u
+    );
+
+    if (match) {
+      return match[0];
+    }
+
+    // 住所から判定できない場合は座標の完全一致のみ扱う
+    return (
+      "coordinates:" +
+      lat.toFixed(7) + "," + lng.toFixed(7)
+    );
+  }
+
+  /*
+   * マーカー登録。
+   * データ上の緯度経度は常に保持する。
+   */
+  function registerMarker(marker, lat, lng, kind, address) {
     markerEntries.push({
       marker,
       origin: L.latLng(lat, lng),
-      kind
+      kind,
+      building: buildingKey(address, lat, lng)
     });
   }
 
+  /*
+   * ピンの重複回避。
+   *
+   * 【今回の修正】
+   * 以前は近くに他のピンがあるだけで
+   * 位置を大きく移動させていた。
+   *
+   * 新しい処理では、同じ建物のマーカーだけを
+   * 画面上で最大42px程度離して配置する。
+   *
+   * 異なる建物のマーカーは本来の位置のまま。
+   * ジャサナなどが遠くへ移動する問題を防ぐ。
+   */
   function positionPins() {
-    const occupied = [];
-    const gap = 43;
-    const offsets = [[0, 0]];
+    const groups = new Map();
 
-    for (let ring = 1; ring <= 7; ring++) {
-      const d = gap * ring;
+    // 同じ建物のマーカーをまとめる
+    for (const entry of markerEntries) {
+      if (!groups.has(entry.building)) {
+        groups.set(entry.building, []);
+      }
 
-      offsets.push(
-        [d, 0],
-        [-d, 0],
-        [0, -d],
-        [0, d],
-        [d, -d],
-        [-d, -d],
-        [d, d],
-        [-d, d]
-      );
+      groups.get(entry.building).push(entry);
     }
 
-    for (const entry of markerEntries) {
-      const base = map.latLngToLayerPoint(entry.origin);
-      let selected = base;
+    for (const group of groups.values()) {
+      // 1つだけなら必ず元の位置に戻す
+      if (group.length === 1) {
+        group[0].marker.setLatLng(group[0].origin);
+        continue;
+      }
 
-      // 会場は本来の位置を優先する。
-      // 懇親会・飲食店のピンは必要に応じてずらす。
-      if (entry.kind !== "venue") {
-        for (const [dx, dy] of offsets) {
-          const candidate = L.point(
-            base.x + dx,
-            base.y + dy
-          );
+      const venues = group.filter(
+        entry => entry.kind === "venue"
+      );
 
-          const noOverlap = occupied.every(point =>
-            point.distanceTo(candidate) >= gap
-          );
+      const others = group.filter(
+        entry => entry.kind !== "venue"
+      );
 
-          if (noOverlap) {
-            selected = candidate;
-            break;
-          }
+      // カンファレンス会場は元の正確な場所に置く
+      for (const venue of venues) {
+        venue.marker.setLatLng(venue.origin);
+      }
+
+      let offsets;
+
+      if (venues.length > 0) {
+        /*
+         * 同じ建物に会場がある場合。
+         *
+         * 関戸公民館：中央
+         * 髙木珈琲：左側
+         * れすとなな：右側
+         *
+         * すべてを押せるようにする。
+         */
+        if (others.length === 1) {
+          offsets = [
+            [42, 0]
+          ];
+        } else {
+          offsets = [
+            [-42, 0],
+            [42, 0],
+            [0, -42],
+            [0, 42]
+          ];
+        }
+      } else {
+        /*
+         * 飲食店だけが同じ建物にある場合。
+         *
+         * 鳥はな・三九三などは
+         * 元の位置から左右21pxずつ移動する。
+         */
+        if (others.length === 2) {
+          offsets = [
+            [-21, 0],
+            [21, 0]
+          ];
+        } else {
+          offsets = [
+            [0, 0],
+            [-42, 0],
+            [42, 0],
+            [0, -42],
+            [0, 42]
+          ];
         }
       }
 
-      entry.marker.setLatLng(
-        map.layerPointToLatLng(selected)
-      );
+      others.forEach((entry, index) => {
+        // グループが想定数を超えた場合は元の位置を使用
+        const offset = offsets[index] || [0, 0];
 
-      occupied.push(selected);
+        const base = map.latLngToLayerPoint(
+          entry.origin
+        );
+
+        const shifted = L.point(
+          base.x + offset[0],
+          base.y + offset[1]
+        );
+
+        entry.marker.setLatLng(
+          map.layerPointToLatLng(shifted)
+        );
+      });
     }
   }
 
+  /*
+   * 拡大・縮小、地図サイズの変更時にも再計算。
+   * 元の座標から計算するため、ずれは累積しない。
+   */
   map.on("zoomend resize", positionPins);
 
   function makeIcon(symbol, color) {
@@ -1659,7 +1816,8 @@
       marker,
       venue.lat,
       venue.lng,
-      "venue"
+      "venue",
+      venue.address
     );
 
     bounds.push(position);
@@ -1667,8 +1825,7 @@
 
   /*
    * 懇親会会場。
-   * ランチ営業ありの店舗としても紹介するが、
-   * #techtama26lunch の8店舗には含めない。
+   * ランチ営業もあるが、ランチ紹介店舗数には含めない。
    */
   function addAfterparty(place) {
     if (!place ||
@@ -1690,7 +1847,8 @@
       marker,
       place.lat,
       place.lng,
-      "afterparty"
+      "afterparty",
+      place.address
     );
 
     const popup = document.createElement("div");
@@ -1775,7 +1933,8 @@
       marker,
       spot.lat,
       spot.lng,
-      "food"
+      "food",
+      spot.address
     );
 
     const searchName = spot.searchName ||
@@ -1846,7 +2005,8 @@
 
   /*
    * データ読み込み。
-   * 会場 → 懇親会 → ランチ店舗の順に登録。
+   * 会場 → 懇親会 → ランチ店舗の順にピンを登録。
+   * 右側の一覧はHTMLの並び順で表示する。
    */
   fetch("./lunch/spots.json", {
     cache: "no-cache"
@@ -1872,7 +2032,6 @@
 
       spots.forEach(addSpot);
 
-      // 紹介したランチ店舗のみカウント
       count.textContent =
         "(" + spots.length + "店)";
 
