@@ -126,6 +126,18 @@
       "lng": 139.4469976,
       "postUrl": null,
       "sourceUrl": "https://resuto-tamacity.org/lp/nana/"
+    },
+    {
+      "id": "jasana-dining",
+      "name": "ジャサナ ダイニング&バー",
+      "searchName": "ジャサナ ダイニング",
+      "category": "インドカレー・インド料理",
+      "description": "大きなナンとカレーがおいしいインド料理店。バターチキンカレーもおすすめ！🍛",
+      "address": "東京都多摩市関戸2-24-23 トミザワビル2F",
+      "lat": 35.650478,
+      "lng": 139.448645,
+      "postUrl": null,
+      "sourceUrl": "https://tabelog.com/tokyo/A1327/A132702/13259905/"
     }
   ]
 }
