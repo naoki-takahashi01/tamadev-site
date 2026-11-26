@@ -138,6 +138,18 @@
       "lng": 139.448645,
       "postUrl": null,
       "sourceUrl": "https://tabelog.com/tokyo/A1327/A132702/13259905/"
+    },
+    {
+      "id": "mosburger-vita",
+      "name": "モスバーガー ヴィータモールせいせき店",
+      "searchName": "モスバーガー",
+      "category": "ハンバーガー・ファストフード",
+      "description": "関戸公民館と同じ建物の2階。おなじみのハンバーガーもおいしい！ランチにも休憩にもおすすめです🍔",
+      "address": "東京都多摩市関戸4-72 VITA MALL SEISEKI 2F",
+      "lat": 35.6495785,
+      "lng": 139.4469976,
+      "postUrl": null,
+      "sourceUrl": "https://vitamallseiseki.jp/shop/%E3%83%A2%E3%82%B9%E3%83%90%E3%83%BC%E3%82%AC%E3%83%BC/"
     }
   ]
 }
